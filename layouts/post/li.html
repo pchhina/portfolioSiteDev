@@ -1,0 +1,23 @@
+<article id="li-art">
+  <header id="bh">
+    <h2><a href="{{ .Permalink }}"  class="blog-header"  >{{ .Title }}</a></h2>
+    <div class="post-meta clearfix">
+      <div class="post-date pull-left">
+        Posted on
+        <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">
+          {{ .Date.Format "Jan 2, 2006" }}
+        </time>
+      </div>
+    </div>
+  </header>
+  <div class = "blog-summary">
+    {{ .Summary }}
+  </div>
+  {{ if .Truncated }}
+  <footer>
+    <ul class="pager">
+      <li class="next"><a href="{{ .Permalink }}">Continue Reading <span aria-hidden="true">&rarr;</span></a></li>
+    </ul>
+  </footer>
+  {{ end }}
+</article>

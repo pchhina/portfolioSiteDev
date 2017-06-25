@@ -1,0 +1,125 @@
+/*!
+ * Start Bootstrap - Freelancer Bootstrap Theme (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+
+/* Article */
+
+.article-list header {
+    background-color: #fff;
+    color: #2c3e50;
+
+
+
+}
+
+.article-list h2 {
+    font-weight: 400;
+    text-transform: none;
+    text-align: center;
+}
+
+.article-list {
+    font-size: 20px;
+    font-weight: 300;
+
+}
+
+.single {
+    font-size: 20px;
+    font-weight: 300;
+    color: black;
+    text-align: justify;
+}
+
+.single-title header {
+    text-align: center;
+}
+
+.pager li>a {
+    font-size: 16px;
+    border-width: 2px;
+    border-color: #2c3e50; 
+    background-color: transparent;
+    color: #18bc9c;
+    font-weight: normal;
+    border-radius: 20px;
+    transition: border .3s ease;
+}
+
+.pager li>a:hover {
+    font-size: 16px;
+    border-width: 2px;
+    border-color: #18bc9c; 
+    background-color: transparent;
+    color: #18bc9c;
+    font-weight: normal;
+}
+
+
+#li-art {
+    border-bottom: 1px solid #eee;
+}
+
+.blog-header {
+    color: #2c3e50;
+}
+
+#blog h1 {
+    font-weight: 800;
+}
+
+
+
+/* Pagination */
+
+.pagination
+{
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    margin-bottom: 20px;
+
+}
+
+.older-posts,.newer-posts
+{
+    display: inline!important;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    text-decoration: none;
+    transition: border .2s ease;
+    padding: 5px 14px;
+}
+
+.page-number
+{
+    display: inline-block;
+    min-width: 100px;
+    padding: 2px 0;
+}
+
+.newer-posts
+{
+    float: left;
+    border-width: 2px;
+    border-color: #2c3e50;
+    border-radius: 20px;
+}
+
+.older-posts
+{
+    float: right;
+    border-width: 2px;
+    border-color: #2c3e50;
+    border-radius: 20px;
+}
+
+.older-posts:hover,.newer-posts:hover
+{
+    border-color: #98a0a4;
+    text-decoration: none;
+}
+

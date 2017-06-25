@@ -1,0 +1,131 @@
+# Site settings
+baseurl = "https://pchhina.github.io/portfolioSite/"
+languageCode = "en-us"
+title = "Paramjot Singh"
+theme = "hugo-freelancer-theme"
+paginate = 5
+
+[params]
+
+    # You can use Markdown syntax for urls [text](//url.to/source) for
+    # most longer texts.
+
+    # To provide some metadata for search engines feel free to add a few
+    # information about you and your website.
+    name = "Mr. Hugo"
+    description = "My awesome description"
+
+    # Since this template is static, the contact form uses www.formspree.io as a
+    # proxy. The form makes a POST request to their servers to send the actual
+    # email. Visitors can send up to a 1000 emails each month for free.
+    #
+    # What you need to do for the setup?
+    #
+    # - set your email address under 'email' below
+    # - upload the generated site to your server
+    # - send a dummy email youself to confirm your account
+    # - click the confirm link in the email from www.formspree.io
+    # - you're done. Happy mailing!
+    email = "param.chhina@gmail.com"
+
+    # Custom assets
+	custom_css = []
+	custom_js  = []
+
+    [params.navigation]
+        brand = "@bitsBeagle"
+
+
+    [params.header]
+        # Copy your own image into './static/img/'' if you wish
+        image = "profile.png"
+        name = "Paramjot Singh"
+        subtitle = "Data Scientist - Engineer -Blogger"
+
+
+    [params.portfolio]
+        # All projects defined in their own files. You can find example projects
+        # at 'exampleSite/data/projects'. Copy the 'projects' folder into the 'data' directory
+        # at the root of this Hugo site.
+        # For more informtion take a look at the README.
+        title = "Portfolio"
+
+        
+        [params.portfolio.modal]
+            client = "Client"
+            date = "Date"
+            category = "Category"
+            buttontext = "Close"
+
+    [params.blog]
+        title = "From the Blog" 
+        navtitle = "Blog" 
+
+        [params.blog.button]
+            text = "Read More"
+            link = "post/"
+            icon = "download"      
+
+
+
+    [params.about]
+        title = "About"
+        # The about text is splitted into a left and right column
+        left = "Hi, I am an application support engineer for an industry-standard multi-physics simulation software."
+        right = "I also have recently finished Data Science specialization offered by John Hopkins University through Coursera. I am interested in open-source projects and building web applications using a variety of data."
+
+        [params.about.button]
+            text = "Download them"
+            link = "//github.com/digitalcraftsman/hugo-freelancer-theme/archive/master.zip"
+            icon = "download"
+
+
+    [params.contact]
+        title = "Contact"
+
+        # 'error' defines error messages for invalid inputs
+        [params.contact.form.name]
+            text = "Name"
+            error = "Please enter your name."
+
+        [params.contact.form.email]
+            text = "Email Address"
+            error = "Please enter your email address."
+
+        [params.contact.form.phone]
+            text = "Phone Number"
+            error = "Please enter your phone number."
+
+        [params.contact.form.message]
+            text = "Message"
+            error = "Please enter a message."
+
+        [params.contact.form.button]
+            text = "Send"
+
+
+    [params.footer]
+        copyright = "Published under the Apache License 2.0. Powered by [Hugo](//gohugo.io)."
+
+        [params.footer.location]
+            title = "Location"
+            # Postal address (add as many lines as necessary)
+            address = ["2675 Asbury Dr", "Aurora, IL 60504"]
+
+        [params.footer.social]
+            title = "Around the web"
+            # All icons using Fontawesome's icon font. Look at fortawesome.github.io/Font-Awesome/icons/
+            # for more icons. The icons are represented by their corresponding
+            # CSS class.
+            [[params.footer.social.networks]]
+                icon = "fa-github"
+                link = "//github.com/spf13/hugo"
+
+            [[params.footer.social.networks]]
+                icon = "fa-stack-overflow"
+                link=  "//stackoverflow.com/questions/tagged/hugo"
+
+
+        [params.footer.credits]
+            title = "About Freelancer"
+            text = "Freelance is a free to use, open source Bootstrap theme created by [Start Bootstrap](//startbootstrap.com)."

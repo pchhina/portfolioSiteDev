@@ -1,0 +1,32 @@
+{{ "<!-- Post Grid Section -->" | safeHTML }}
+<section id="blog">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>{{ with .Site.Params.blog.title }}{{.}}{{end}}</h2>
+                <hr class="star-primary">
+            </div>
+        </div>
+                <hr/>
+        <div class="article-list">
+
+        {{ range $index, $page := first 3 .Paginator.Pages }}
+        {{ if ne $index 0 }}
+       
+        {{ end }}
+
+        {{ .Render "li" }}
+        {{ end }}
+
+        </div>
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+             <ul class="pager">
+             <li>
+                <a href="{{ with .Site.Params.blog.button.link }}{{.}}{{ end }}" class="btn btn-lg">
+                     {{ with .Site.Params.blog.button.text }}{{ . }}{{ end }}
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </a>
+                </li>
+                </ul>
+            </div>
+</section>

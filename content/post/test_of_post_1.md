@@ -7,7 +7,7 @@ title = "test_of_post_1"
 
 # Nitro
 
-Quick and easy performance analyzer library for [Go](http://golang.org/).
+This is the intro to Nitro
 
 ## Overview
 

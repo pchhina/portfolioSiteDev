@@ -71,7 +71,7 @@ paginate = 5
     [params.about]
         title = "About"
         # The about text is splitted into a left and right column
-        left = "Hi, I am an application support engineer for an industry-standard multi-physics simulation software."
+        left = "I have yet to invent myself...still exploring"
         right = "I also have recently finished Data Science specialization offered by John Hopkins University through Coursera. I am interested in open-source projects and building web applications using a variety of data."
 
         [params.about.button]

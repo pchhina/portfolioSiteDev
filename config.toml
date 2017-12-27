@@ -62,7 +62,7 @@ paginate = 5
         navtitle = "Blog" 
 
         [params.blog.button]
-            text = "Read More"
+            text = "All Posts From Main"
             link = "post/"
             icon = "download"      
 

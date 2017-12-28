@@ -1,8 +1,8 @@
 modalID: 1
-title: Project Cabin
-date: 2014-07-13
-img: cabin.png
-client: Start Bootstrap
+title: Word Up!
+date: 2017-07-13
+img: wordup.png
+client: Personal (See Code on Github)
 clientLink: "#"
-category: Web Development
-description: Use this area of the page to describe your project. The icon above is part of a free icon set by [Flat Icons](//sellfy.com/p/8Q9P/jV3VZ/"). On their website, you can download their free set with 16 icons, or you can purchase the entire set with 146 icons for only $12!
+category: Text Mining, Web Applications
+description: This project is a web application to predict the next likely word(s) that the user intends to type. The main goal is to keep the predictions accurate yet fast for limiting the memory footprint since it is intended for mobile applications. Feel free to checkout the application [here](https://param-singh.shinyapps.io/word_prediction_app/).

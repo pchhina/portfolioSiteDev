@@ -22,15 +22,16 @@
 }
 
 .article-list {
-    font-size: 19px;
-    font-weight: 200;
+    font-size: 20px;
+    font-weight: 300;
 
 }
 
 .single {
-    font-size: 19px;
-    font-weight: 100;
-
+    font-size: 20px;
+    font-weight: 300;
+    color: black;
+    text-align: justify;
 }
 
 .single-title header {

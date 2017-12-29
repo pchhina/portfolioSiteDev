@@ -2,8 +2,10 @@
 baseurl = "https://pchhina.github.io/portfolioSite/"
 languageCode = "en-us"
 title = "Paramjot Singh"
-theme = "hugo-freelancer-theme"
+theme = ""
 paginate = 5
+
+staticDir = ["static"]
 
 [params]
 

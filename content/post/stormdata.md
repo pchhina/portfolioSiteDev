@@ -61,7 +61,7 @@ ggplot(data=fatal,aes(x=reorder(EVTYPE,FATALITIES),y=FATALITIES)) +
              x = "Type of Events")
 ```
 
-{{<figure src="../images/fatalities-1.png" width="900px" >}}
+{{<figure src="../images/fatalities-1.png" width="90%" >}}
 
 The plot shows that tornadoes are the largest cause of fatalities resulting in more than 5500 deaths. These are followed by excessive heat causing close to 2000 deaths. Other events causing large fatalities include flash floods, lightning and thunderstorm winds.
 
@@ -86,7 +86,7 @@ ggplot(data=injury,aes(x=reorder(EVTYPE,INJURIES),y=INJURIES)) +
                 x = "Type of Events")
 ```
 
-{{<figure src="../images/injuries-1.png" width="900px" >}}
+{{<figure src="../images/injuries-1.png" width="90%" >}}
 
 It is clear from the above plot that tornadoes are leading causes of injuries. These are followed by thunderstorm winds, floods, excessive heat and lightning as other major events causing injuries.
 
@@ -145,6 +145,6 @@ ggplot(data=econ,aes(x=reorder(EVTYPE,DMG),y=DMG)) +
                 x = "Type of Events")
 ```
 
-{{<figure src="../images/econ-1.png" width="900px" >}}
+{{<figure src="../images/econ-1.png" width="90%" >}}
 
 The plot above shows that floods are most severe events as far as economic damage is concerned. Other events that resulted in large economic damage include hurricanes, tornadoes and storm surges.

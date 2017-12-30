@@ -42,7 +42,7 @@ staticDir = ["static"]
         # Copy your own image into './static/img/'' if you wish
         image = "profile.png"
         name = "Paramjot Singh"
-        subtitle = "Data Scientist - Engineer -Blogger"
+        subtitle = "Data Scientist - Tinkerer -Blogger"
 
 
     [params.portfolio]
@@ -64,7 +64,7 @@ staticDir = ["static"]
         navtitle = "Blog" 
 
         [params.blog.button]
-            text = "All Posts From Main"
+            text = "All Posts"
             link = "post/"
             icon = "download"      
 
@@ -73,8 +73,8 @@ staticDir = ["static"]
     [params.about]
         title = "About"
         # The about text is splitted into a left and right column
-        left = "I have yet to invent myself...still exploring"
-        right = "I also have recently finished Data Science specialization offered by John Hopkins University through Coursera. I am interested in open-source projects and building web applications using a variety of data."
+        left = "I just like to play with data. The open-source tools available today makes it hard not to have fun with data. The community developing these tools is hard not to be a part of! Broad topics I am interested in for data exploration purposes are technology, climate change, energy, transportation and public health."
+        right = " The tools I currently use are vim and R. I have recently started to get my hands dirty with a bit of Python too. Feel free to checkout my projects and posts. I try to make all the code available on Github. You are welcome to contact me if you think we can collaborate on a project."
 
         [params.about.button]
             text = "Download them"

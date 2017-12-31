@@ -1,0 +1,63 @@
+---
+title: "US Wind Energy Production (2016)"
+author: "Paramjot Singh"
+date: "2017-03-15"
+output: html_document
+---
+
+Last week I learned while listening to NPR that Texas is at the top when it comes to wind power production among all US states. While it is a suprising fact given that Texas is a conservative state and the [article](http://www.npr.org/2017/03/08/518988840/wind-energy-takes-flight-in-the-heart-of-texas-oil-country) is an interesting read  in itself, this led me to pull some [data](http://widgets.nrel.gov/mea/wind-exchange/data/installed_wind_capacity_by_state.xls) from US Department of Energy and create the map I have presented here. 
+
+### Description and Use
+
+* Size of the circles represent the amount of wind energy production from each state
+* Hovering over the circle will reveal name of state and energy produced in Q4 of 2016 in MW.
+
+```{r city-pop, message=TRUE, warning=TRUE}
+library(leaflet)
+library(maps)
+library(rvest)
+library(readxl)
+library(htmltools)
+
+# Download Data from http://widgets.nrel.gov/mea/wind-exchange/data/installed_wind_capacity_by_state.xls
+dat <- read_excel("../../data/installed_wind_capacity_by_state.xls", skip=5)
+red.dat <- dat[1:52,c(1,19)]
+
+url.coord <- c("https://inkplant.com/code/state-latitudes-longitudes")
+coord <- url.coord %>% 
+        read_html() %>% 
+        html_nodes(xpath='//*[@id="main_content_div"]/table') %>% 
+        html_table()
+
+coord <- coord[[1]]
+colnames(coord) <- coord[1,]
+coord <- coord[-1,]
+coord[,2] <- as.numeric(coord[,2])
+coord[,3] <- as.numeric(coord[,3])
+
+wind.states <- merge(red.dat,coord)
+names(wind.states)[2] <- "MW"
+mapStates <- map("state", fill = TRUE, plot = FALSE)
+wind.states %>% 
+        leaflet(width="100%") %>% 
+        addTiles() %>% 
+        addPolygons(data=mapStates, 
+                    color="black",
+                    stroke = TRUE, 
+                    weight=0.5, 
+                    fillOpacity=0) %>% 
+        addCircles(radius=10*wind.states$MW,
+                   color="grey",
+                   weight=1,
+                   fillColor = "orange",
+                   fillOpacity=0.8,
+                   label= ~htmlEscape(paste(wind.states$State, as.character(wind.states$MW),"MW"))) %>% 
+        setView(zoom=4, lat=39,lng=-95)
+
+
+
+
+
+
+```
+

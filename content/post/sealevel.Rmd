@@ -1,0 +1,50 @@
+---
+title: "Global Sea Level Trends"
+author: Paramjot Singh
+date: "2017-03-08"
+output: html_document
+---
+
+This post takes a look at the global mean sea level trends as recorded by NASA since 1991. For the first 10 or so years, the observations were recorded with two measurement systems. In science, this is typically done to make sure that the instrument is not fooling us. Baking redundancy into a measurement system may have higher initial cost but saves a lot of money and answers important questions in the future.
+
+The data from the two instruments agree very well. The data shows that over the last 25 years, the seal level has risen by approximately 85 mm. I believe for the layman(which includes me too), it doesn't seem much. However, looking at the surface area of the sea, this increase is pretty alarming.
+
+The debate today seems to be going in the opposite direction and interestingly we are still debating about the direction of the trend!! I believe however that any *educated* person can easily answer that. The question we should be asking is whether we can agree on some means and take an action to reverse or slow down the trend. 
+
+## Data Source
+- Global Mean Sea Level Trend from Integrated Multi-Mission Ocean Altimeters 
+- TOPEX/Poseidon, Jason-1, OSTM/Jason-2 Version 4. Ver. 4. PO.DAAC, CA, USA.
+- Dataset accessed [2017-03-17] at 10.5067/GMSLM-TJ124.
+- https://climate.nasa.gov/vital-signs/sea-level/
+
+## Plot
+
+```{r c1, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(lubridate)
+
+
+#url <- "ftp://podaac.jpl.nasa.gov/allData/merged_alt/L2/TP_J1_OSTM/global_mean_sea_level/GMSL_TPJAOS_V4_199209_201701.txt"
+#download.file(url,"sealevel.txt")
+data <- read.csv("../../data/sealevel.txt", skip=44, header = FALSE, sep ="" ,na.strings = "99900.000")
+data <- data %>% 
+        mutate(level_normalized=V12+abs(min(V12))) %>% 
+        mutate(altimeter.type=factor(V1, 
+                               levels=c(0,999), 
+                               labels=c("Dual-Frequency","Single-Frequency"))) %>% 
+        mutate(date=date_decimal(V3))
+g <- ggplot(data = data, aes(x=date,y=level_normalized))+
+        geom_point(aes(col=altimeter.type)) +
+        theme_bw()+
+        labs(title="Global Mean Sea Level Trends",
+             x="Time",
+             y="Sea Height Variation (mm)")+
+        theme(legend.title=element_blank())+
+        scale_color_brewer(palette = "Paired")
+ggplotly(g)
+```
+
+<div style="font-size:0.75em;"><em>Between 1993 and 2001, two datasets from two different altimeters (single-frequency and dual-frequency) show good agreement.</em></div>
+

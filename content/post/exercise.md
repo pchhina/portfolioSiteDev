@@ -7,7 +7,7 @@ draft: false
 
 ## Introduction
 
-Many devices exists today in the market (such as Jawbone Up, Nike FuelBand, and Fitbit) inexpensively record, track and analyze data on personal physical activity. Although by using these deviices, quantiy of the physical activity is often monitored, quality is rarely quantified. In this project, our goal is be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants in an attempt to predict whether the activity is performed correcly or not. To generate the data, subjects were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+Many devices exists today in the market (such as Jawbone Up, Nike FuelBand, and Fitbit) inexpensively record, track and analyze data on personal physical activity. Although by using these devices, quantiy of the physical activity is often monitored, quality is rarely quantified. In this project, our goal is be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants in an attempt to predict whether the activity is performed correcly or not. To generate the data, subjects were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
 
 
 ### Loading Packages and Downloading Data

@@ -13,6 +13,7 @@ Last week I learned while listening to NPR that Texas is at the top when it come
 * Hovering over the circle will reveal name of state and energy produced in Q4 of 2016 in MW.
 
 ```{r city-pop, message=TRUE, warning=TRUE}
+
 library(leaflet)
 library(maps)
 library(rvest)
@@ -53,11 +54,6 @@ wind.states %>%
                    fillOpacity=0.8,
                    label= ~htmlEscape(paste(wind.states$State, as.character(wind.states$MW),"MW"))) %>% 
         setView(zoom=4, lat=39,lng=-95)
-
-
-
-
-
 
 ```
 

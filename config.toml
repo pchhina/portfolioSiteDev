@@ -36,6 +36,10 @@ staticDir = ["static"]
 
     [params.navigation]
         brand = "@bitsBeagle"
+    
+    [taxonomies]
+        tag = "tags"
+        category = "categories"
 
 
     [params.header]

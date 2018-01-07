@@ -2,6 +2,8 @@
 title: "Exercise Quality Prediction using Machine Learning"
 date: 2017-12-30T05:04:40-06:00
 draft: false
+tags: ["R","Machine Learning"]
+categories: ["Technology"]
 ---
 
 

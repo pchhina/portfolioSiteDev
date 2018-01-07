@@ -2,6 +2,8 @@
 date = "2017-12-28T19:32:52-06:00"
 draft = false
 title = "Economic and Health Impact of Severe Weather Events"
+tags = ["R"]
+categories = ["Technology"]
 
 +++
 

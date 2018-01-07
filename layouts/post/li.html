@@ -1,3 +1,4 @@
+{{ $baseurl := .Site.BaseURL }}
 <article id="li-art">
   <header id="bh">
     <h2><a href="{{ .Permalink }}"  class="blog-header"  >{{ .Title }}</a></h2>
@@ -7,6 +8,11 @@
         <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">
           {{ .Date.Format "Jan 2, 2006" }}
         </time>
+      </div>
+      <div class="pull-right">
+        {{ range .Params.tags }}
+        <span class="post-tag"><a href="{{ $baseurl }}/tags/{{ . | urlize }}">#{{ . }}</a></span>
+        {{ end }}
       </div>
     </div>
   </header>

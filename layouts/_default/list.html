@@ -12,17 +12,12 @@
                 
         <div class="article-list">
 
-        {{ range $index, $page := .Paginator.Pages }}
-        {{ if ne $index 0 }}
-       
-        {{ end }}
-
-        {{ .Render "li" }}
+        {{ range .Data.Pages }}
+          {{ .Render "li" }}
         {{ end }}
 
 
         </div>
-{{ partial "pagination.html" .Paginator }}
 </section>
 {{ partial "footer-post.html" . }}
 

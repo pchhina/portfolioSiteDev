@@ -7,8 +7,6 @@ categories = ["Technology"]
 
 +++
 
-## Synopsis
-
 This post aims to explore the NOAA Storm Database and answer some basic questions about severe weather events focusing on their economic and health impact. The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. The events in the database start in the year 1950 and end in November 2011. This report concludes the following:
 
 * Tornadoes, excessive heat and flash floods are primary causes of fatalities. 
@@ -16,9 +14,8 @@ This post aims to explore the NOAA Storm Database and answer some basic question
 * In addition, floods cause most economic damage, followed by hurricanes, tornadoes and storms. These four events alone caused damages in excess of 300 Billion US Dollars.
 
 ## Data Processing
-### Loading Libraries
 
-
+First, we load the necessary libraries:
 {{<highlight R>}}
 rm(list = ls())
 library(lubridate)
@@ -26,7 +23,7 @@ library(dplyr)
 library(ggplot2)
 {{</highlight>}}
 
-Now we are going to import data using `download.file` command and then this data is read into data frame using `read.csv` command. After reading the data, date variable (BGN_DATE) is transformed into 'date' class while event type (EVTYPE) is transformed into factor. The data is finally stored as tibble in `data1`.
+Now we are going to import data using `download.file` command and then read into data frame using `read.csv` command. After reading the data, date variable (BGN_DATE) is transformed into 'date' class while event type (EVTYPE) is transformed into factor. The data is finally stored as tibble in `data1`.
 
 
 {{<highlight R>}}
@@ -42,7 +39,7 @@ data1 <- tbl_df(data)
 
 ## Results
 
-### Data analysis to find events causing most fatalities
+### Fatalities
 We will first process the data to find events that caused most fatalities. We use `dplyr` package functions for this to first group the data by event type followed by adding fatalities and finally filtering events that caused 90% of the total fatalities.
 
 
@@ -67,7 +64,7 @@ ggplot(data=fatal,aes(x=reorder(EVTYPE,FATALITIES),y=FATALITIES)) +
 
 The plot shows that tornadoes are the largest cause of fatalities resulting in more than 5500 deaths. These are followed by excessive heat causing close to 2000 deaths. Other events causing large fatalities include flash floods, lightning and thunderstorm winds.
 
-### Data analysis to find events causing most injuries
+### Injuries
 Processing data from injuries follows the same method described earlier to process fatalities data.
 
 
@@ -92,7 +89,7 @@ ggplot(data=injury,aes(x=reorder(EVTYPE,INJURIES),y=INJURIES)) +
 
 It is clear from the above plot that tornadoes are leading causes of injuries. These are followed by thunderstorm winds, floods, excessive heat and lightning as other major events causing injuries.
 
-### Data analysis to find events causing most economic damage
+### Economic Damage
 Economic damage has variety of units that we need to consolidate first. For this we want to work with only economic variables so we select appropriate columns. We then create a table (using `data.frame`) for key-value pairs of `PROPDMGEXP` and their values. Similar method is applied for `CROPDMGEXP`.
 
 

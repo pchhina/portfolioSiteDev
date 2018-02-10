@@ -1,12 +1,12 @@
 ---
-title: "Building R package using command line options"
+title: "Building R Package using Command Line"
 date: 2018-02-10T05:04:40-06:00
 draft: false
 tags: ["R"]
 categories: ["Tools"]
 ---
 
-This post describes the process of building an R package without using RStudio. This will come in handy for anyone who is using vim (and of course Nvim-R!) as a code editor for their development work. Alright, let's get moving. We are going to create a small package offering a new ggplot theme to demonstrate the process.
+This post describes the process of building an R package without using RStudio. This can come in handy for anyone who is using vim (and of course Nvim-R!) as a code editor for their development work. Alright, let's get moving. We are going to create a small package offering a new ggplot theme to demonstrate the process.
 
 ### Step 0: Install the required packages
 
@@ -117,3 +117,8 @@ install_github("pchhina/themeSimple")
 ### Step 14: Test
 
 Test your new package and you are done!!
+
+### Care to learn more?
+- This [book](http://r-pkgs.had.co.nz/) on R packages by Hadley Wickham is a great resource.
+- This [post](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/) by Hillary Parker is a good resource for those in a hurry.
+- Karl Broman has put together a more comprehensive [tutorial](http://kbroman.org/pkg_primer/).

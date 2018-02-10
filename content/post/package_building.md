@@ -51,7 +51,7 @@ use_vignette("analysis")
 In the above example, it will create 'analysis.Rmd' in `/vignettes` directory.
 
 ### Step 6: Carry out the work
-Carry out the analysis, write cool functions. Add all functions in /R directory. I am using a function created in [this]({{< relref "creating_theme.md" >}}) blog post.
+Carry out the analysis, write cool functions. Add all functions in /R directory. I am using a function created in [this]({{< ref "creating_theme.md" >}}) blog post.
 
 ### Step 7: Update documentation
 {{< highlight R >}}
@@ -86,7 +86,7 @@ install(build_vignettes = TRUE)
 {{< /highlight >}}
 
 ### Step 12: Upload on Github
-First, create a new repo on Github. Follow instructions in [this]({{< relref "git-commands.md" >}}) blog if needed.
+First, create a new repo on Github. Follow instructions in [this]({{< ref "git-commands.md" >}}) blog if needed.
 
 Connect local repo to Github repo:
 

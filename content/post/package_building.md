@@ -10,20 +10,20 @@ This post describes the process of building an R package without using RStudio. 
 
 ### Step 0: Install the required packages
 
-{{< highlight R >}}
+```r
 install.packages(c("devtools", "roxygen2", "testthat", "knitr"))
 library(devtools)
 has_devel()
-{{< /highlight >}}
+```
 The command `has_devel()` basically checks that everything is installed as expected. At the end of its output, you should see `TRUE` if everything goes alright.
 
 ### Step 1: Create a package directory
 First, we are going to create the package directory where everything is going to reside related to this package. This will also generate some boilerplate files inside the package directory that we will edit soon. We will use the following command:
 
 
-{{< highlight R >}}
+```r
 create("~/projects/themeSimple")
-{{< /highlight >}}
+```
 
 In this case, I have created a directory called 'themeSimple' inside 'projects' directory. `themeSimple` will also be the name of our package. It is generally not recommended to use both cases for the package name since it becomes difficult for folks to remember or type correctly when installing. 
 
@@ -32,11 +32,11 @@ In this case, I have created a directory called 'themeSimple' inside 'projects' 
 
 ### Step 3: git it out!
 
-{{< highlight R >}}
+```r
 $git init
 $git add .
 $git commit 
-{{< /highlight >}}
+```
 
 ### Step 4: Add any raw data if needed
 In our case we do not need any data. In case you do, add any raw data in `inst/extdata` directory. Add any processed data (.RData or .rda) in `/data` directory.
@@ -44,9 +44,9 @@ In our case we do not need any data. In case you do, add any raw data in `inst/e
 ### Step 5: Create .Rmd for analysis
 It is good idea to keep notes in .Rmd file so it can be converted into vignette later if needed. In that case, save the file in `/vignettes` directory. To have `devtools` automatically create this for you and populate it with boilerplate content, use:
 
-{{< highlight R >}}
+```r
 use_vignette("analysis")
-{{< /highlight >}}
+```
 
 In the above example, it will create 'analysis.Rmd' in `/vignettes` directory.
 
@@ -54,65 +54,65 @@ In the above example, it will create 'analysis.Rmd' in `/vignettes` directory.
 Carry out the analysis, write cool functions. Add all functions in /R directory. I am using a function created in [this]({{< ref "creating_theme.md" >}}) blog post.
 
 ### Step 7: Update documentation
-{{< highlight R >}}
+```r
 document()
-{{< /highlight >}}
+```
 
 This uses Roxygen2 to create/update NAMESPACE file and .Rd files in `/man` directory for each function.
 
 ### Step 8: Build package
-{{< highlight R >}}
+```r
 build("themeSimple")
-{{< /highlight >}}
+```
 
 This creates a \*.tar.gz file that can be installed on any platform.
 
 ### Step 9: git it!
-{{< highlight R >}}
+```r
 $git add <files>
 $git commit
-{{< /highlight >}}
+```
 
 ### Step 10: Check it
-{{< highlight R >}}
+```r
 check()
-{{< /highlight >}}
+```
 This runs all sorts of checks on the contents (including examples) of the package, and gives warnings/errors when it finds that things aren't right.    
 
 ### Step 11: Install locally to test
 
-{{< highlight R >}}
+```r
 install(build_vignettes = TRUE)
-{{< /highlight >}}
+```
 
 ### Step 12: Upload on Github
 First, create a new repo on Github. Follow instructions in [this]({{< ref "git-commands.md" >}}) blog if needed.
 
 Connect local repo to Github repo:
 
-{{< highlight R >}}
+```r
 $git remote add origin <github repo name>
-{{< /highlight >}}
+```
 
 Push everything on Github:
 
-{{< highlight R >}}
+```r
 $git push -u origin master
-{{< /highlight >}}
+```
 
 ### Step 13: Test Github package
 
 Remove package from your installation:
 
-{{< highlight R >}}
+```r
 remove.packages("themeSimple")
-{{< /highlight >}}
+```
 
 Install package from Github:
 
-{{< highlight R >}}
+```r
 install_github("pchhina/themeSimple")
-{{< /highlight >}}
+```
 
 ### Step 14: Test
 

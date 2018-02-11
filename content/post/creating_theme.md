@@ -20,10 +20,10 @@ Theme is basically a set of pre-defined(default) values for elements that make u
 Instead of rewriting properties of all elements, it is more efficient to pick a theme that is closer to what you want and make some adjustments. In my case, I like the `theme_bw` so I will use that as a starting point. A scatter plot on this theme looks like this:
 
 
-{{<highlight R>}}
+```r
 theme_set(theme_bw())
 ggplot(mpg, aes(displ, hwy)) + geom_point()
-{{</highlight>}}
+```
 
 {{<figure src="../images/basetheme-1.png" width="70%" >}}
 
@@ -37,22 +37,22 @@ I like white background and black border of this theme. Few changes I would like
 To make these changes, we will simply 'add' these elements to our base theme:
 
 
-{{<highlight R>}}
+```r
 theme_simple <- function() {
     theme_bw(base_size = 14,
              base_family = "") %+replace%
     theme(panel.grid = element_blank(),
           axis.text = element_text(color = "black"))
 }
-{{</highlight>}}
+```
 
 Notice that I have created a new function for this theme instead of just storing it in an object. This makes it flexible since now it can be sourced in any project and used. Let's see how our plot looks now with the new theme.
 
 
-{{<highlight R>}}
+```r
 theme_set(theme_simple())
 ggplot(mpg, aes(displ, hwy)) + geom_point()
-{{</highlight>}}
+```
 
 {{<figure src="../images/plot-1.png" width="70%" >}}
 

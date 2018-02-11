@@ -4,7 +4,6 @@ languageCode = "en-us"
 title = "Paramjot Singh"
 theme = ""
 paginate = 5
-
 staticDir = ["static"]
 
 [params]

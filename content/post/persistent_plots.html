@@ -1,0 +1,17 @@
+---
+title: "Test for Rmd Files"
+author: "Paramjot Singh"
+date: "2018-02-11"
+draft: FALSE
+css: blog.css
+---
+
+  <link rel="stylesheet" href="blog.css" type="text/css" />
+
+
+<p>In this post, I describe the importance of persistent plots while carrying out a analysis. A case is made for simpler and persistent plots and the process to create the plots is demonstrated with an example. Finally, a package is created to stitch things together in a coherent fashion.</p>
+<p>With the amount of available options in R today to create plots, it is easy to get distracted and miss the point of using plots in first place - to bring to attention something unique about the data which otherwise could be difficult, if not impossible, just looking at the raw numbers.</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(mpg, aes(displ, hwy)) +
+    geom_point()</code></pre>
+<p><img src="/portfolioSite/post/persistent_plots_files/figure-html/test-1.png" width="672" /></p>

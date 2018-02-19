@@ -5,6 +5,13 @@ date: "2017-03-08"
 output: html_document
 ---
 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  class.source = 'white'
+)
+```
 This post takes a look at the global mean sea level trends as recorded by NASA since 1991. For the first 10 or so years, the observations were recorded with two measurement systems. In science, this is typically done to make sure that the instrument is not fooling us. Baking redundancy into a measurement system may have higher initial cost but saves a lot of money and answers important questions in the future.
 
 The data from the two instruments agree very well. The data shows that over the last 25 years, the seal level has risen by approximately 85 mm. I believe for the layman(which includes me too), it doesn't seem much. However, looking at the surface area of the sea, this increase is pretty alarming.

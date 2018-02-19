@@ -3,12 +3,15 @@ title: "Test for Rmd Files"
 author: "Paramjot Singh"
 date: "`r Sys.Date()`"
 draft: FALSE
+tags: ["R"]
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center'
 )
 ```
 In this post, I describe the importance of persistent plots while carrying out a analysis. A case is made for simpler and persistent plots and the process to create the plots is demonstrated with an example. Finally, a package is created to stitch things together in a coherent fashion.

@@ -1,0 +1,17 @@
+---
+title: "{{ replace .TranslationBaseName "-" " " | title }}"
+author: "Paramjot Singh"
+date: {{ .Date }}
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center'
+)
+```

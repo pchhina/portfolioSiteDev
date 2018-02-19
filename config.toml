@@ -1,10 +1,11 @@
 # Site settings
-baseurl = "https://pchhina.github.io/portfolioSite/"
+baseurl = "https://paramjot.io/"
+#baseurl = "https://pchhina.github.io/portfolioSite/"
 languageCode = "en-us"
 title = "Paramjot Singh"
 theme = ""
 paginate = 5
-relativeURLs = true
+#relativeURLs = true
 staticDir = ["static"]
 
 [params]

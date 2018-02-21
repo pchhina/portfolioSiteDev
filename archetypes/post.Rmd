@@ -10,6 +10,8 @@ categories: ["Tools"]
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
   comment = "#>",
   class.source = 'white',
   fig.align = 'center'

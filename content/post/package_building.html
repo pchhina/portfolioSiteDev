@@ -1,0 +1,100 @@
+---
+title: "Building R Package using Command Line"
+date: 2018-02-10T05:04:40-06:00
+draft: false
+output: html_document
+tags: ["R"]
+categories: ["Tools"]
+---
+
+
+
+<p>This post describes the process of building an R package without using RStudio. This can come in handy for anyone who is using vim (and of course Nvim-R!) as a code editor for their development work. Alright, let’s get moving. We are going to create a small package offering a new ggplot theme to demonstrate the process.</p>
+<div id="step-0-install-the-required-packages" class="section level3">
+<h3>Step 0: Install the required packages</h3>
+<pre class="r white"><code>install.packages(c(&quot;devtools&quot;, &quot;roxygen2&quot;, &quot;testthat&quot;, &quot;knitr&quot;))
+library(devtools)
+has_devel()</code></pre>
+<p>The command <code>has_devel()</code> basically checks that everything is installed as expected. At the end of its output, you should see <code>TRUE</code> if everything goes alright.</p>
+</div>
+<div id="step-1-create-a-package-directory" class="section level3">
+<h3>Step 1: Create a package directory</h3>
+<p>First, we are going to create the package directory where everything is going to reside related to this package. This will also generate some boilerplate files inside the package directory that we will edit soon. We will use the following command:</p>
+<pre class="r white"><code>create(&quot;~/projects/themeSimple&quot;)</code></pre>
+<p>In this case, I have created a directory called ‘themeSimple’ inside ‘projects’ directory. <code>themeSimple</code> will also be the name of our package. It is generally not recommended to use both cases for the package name since it becomes difficult for folks to remember or type correctly when installing.</p>
+</div>
+<div id="step-2-edit-the-description-file" class="section level3">
+<h3>Step 2: Edit the DESCRIPTION file</h3>
+<p><a href="https://github.com/pchhina/themeSimple/blob/master/DESCRIPTION">Here</a> is how my file looks like after editing.</p>
+</div>
+<div id="step-3-git-it-out" class="section level3">
+<h3>Step 3: git it out!</h3>
+<pre class="r white"><code>$git init
+$git add .
+$git commit </code></pre>
+</div>
+<div id="step-4-add-any-raw-data-if-needed" class="section level3">
+<h3>Step 4: Add any raw data if needed</h3>
+<p>In our case we do not need any data. In case you do, add any raw data in <code>inst/extdata</code> directory. Add any processed data (.RData or .rda) in <code>/data</code> directory.</p>
+</div>
+<div id="step-5-create-.rmd-for-analysis" class="section level3">
+<h3>Step 5: Create .Rmd for analysis</h3>
+<p>It is good idea to keep notes in .Rmd file so it can be converted into vignette later if needed. In that case, save the file in <code>/vignettes</code> directory. To have <code>devtools</code> automatically create this for you and populate it with boilerplate content, use:</p>
+<pre class="r white"><code>use_vignette(&quot;analysis&quot;)</code></pre>
+<p>In the above example, it will create ‘analysis.Rmd’ in <code>/vignettes</code> directory.</p>
+</div>
+<div id="step-6-carry-out-the-work" class="section level3">
+<h3>Step 6: Carry out the work</h3>
+<p>Carry out the analysis, write cool functions. Add all functions in /R directory. I am using a function created in [this]({{&lt; ref “creating_theme.md” &gt;}}) blog post.</p>
+</div>
+<div id="step-7-update-documentation" class="section level3">
+<h3>Step 7: Update documentation</h3>
+<pre class="r white"><code>document()</code></pre>
+<p>This uses Roxygen2 to create/update NAMESPACE file and .Rd files in <code>/man</code> directory for each function.</p>
+</div>
+<div id="step-8-build-package" class="section level3">
+<h3>Step 8: Build package</h3>
+<pre class="r white"><code>build(&quot;themeSimple&quot;)</code></pre>
+<p>This creates a *.tar.gz file that can be installed on any platform.</p>
+</div>
+<div id="step-9-git-it" class="section level3">
+<h3>Step 9: git it!</h3>
+<pre class="r white"><code>$git add &lt;files&gt;
+$git commit</code></pre>
+</div>
+<div id="step-10-check-it" class="section level3">
+<h3>Step 10: Check it</h3>
+<pre class="r white"><code>check()</code></pre>
+<p>This runs all sorts of checks on the contents (including examples) of the package, and gives warnings/errors when it finds that things aren’t right.</p>
+</div>
+<div id="step-11-install-locally-to-test" class="section level3">
+<h3>Step 11: Install locally to test</h3>
+<pre class="r white"><code>install(build_vignettes = TRUE)</code></pre>
+</div>
+<div id="step-12-upload-on-github" class="section level3">
+<h3>Step 12: Upload on Github</h3>
+<p>First, create a new repo on Github. Follow instructions in [this]({{&lt; ref “git-commands.md” &gt;}}) blog if needed.</p>
+<p>Connect local repo to Github repo:</p>
+<pre class="r white"><code>$git remote add origin &lt;github repo name&gt;</code></pre>
+<p>Push everything on Github:</p>
+<pre class="r white"><code>$git push -u origin master</code></pre>
+</div>
+<div id="step-13-test-github-package" class="section level3">
+<h3>Step 13: Test Github package</h3>
+<p>Remove package from your installation:</p>
+<pre class="r white"><code>remove.packages(&quot;themeSimple&quot;)</code></pre>
+<p>Install package from Github:</p>
+<pre class="r white"><code>install_github(&quot;pchhina/themeSimple&quot;)</code></pre>
+</div>
+<div id="step-14-test" class="section level3">
+<h3>Step 14: Test</h3>
+<p>Test your new package and you are done!!</p>
+</div>
+<div id="care-to-learn-more" class="section level3">
+<h3>Care to learn more?</h3>
+<ul>
+<li>This <a href="http://r-pkgs.had.co.nz/">book</a> on R packages by Hadley Wickham is a great resource.</li>
+<li>This <a href="https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/">post</a> by Hillary Parker is a good resource for those in a hurry.</li>
+<li>Karl Broman has put together a more comprehensive <a href="http://kbroman.org/pkg_primer/">tutorial</a>.</li>
+</ul>
+</div>

@@ -1,77 +1,87 @@
-+++
-date = "2017-12-26T21:40:42-06:00"
-draft = false
-title = "Just Enough... git"
-tags = ["git"]
-categories = ["Tutorials", "Tools"]
-
-+++
+---
+title: "Just Enough... git"
+author: "Paramjot Singh"
+date: "2017-12-26"
+draft: false
+output: html_document
+tags: ["git"]
+categories: ["Tutorials", "Tools"]
+---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white'
+)
+```
 This is just a list of git commands I am currently using. There are tons of tutorials out there as well as quite a few cheat sheets. While those are mostly comprehensive resources, I tend to get distracted and try to learn all commands at once without using them in real projects. That doesn't help much.
 
 **Initialize a local git repository**
-```git
+```{git}
 git init
 ```
 
 **Cloning an existing project from github**
-```git
+```{git}
 git clone <project url here>
 ```
 
 **Status Check**
-```git
+```{git}
 git status
 ```
 
 **Create a branch and check it out**
-```git
+```{git}
 git checkout -b <branch>
 ```
 
 **List all branches and active branch**
-```git
+```{git}
 git branch
 ```
 
 **Stage specific files, all files, all modified files**
-```git
+```{git}
 git add <files>
 git add --all
 git add -u
 ```
 
 **Unstage a file**
-```git
+```{git}
 git reset HEAD <file-name>
 ```
 
 **Commit changes**
-```git
+```{git}
 git commit -m "commit message"
 ```
 
 **Check log**
-```git
+```{git}
 git log
 ```
 
 **Merge branch into master**
-```git
+```{git}
 git merge <branch>
 ```
 
 **Delete a branch**
-```git
+```{git}
 git branch -d <branch>
 ```
 
 **Push changes to remote(master)**
-```git
+```{git}
 git push origin master
 ```
 
 With a new local git that has never been linked to remote, first create a new Github repo. Then:
-```git
+```{git}
 git remote add origin <remote repo URL>
 git remote -v #just for verification
 git push origin master

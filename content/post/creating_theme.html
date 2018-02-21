@@ -1,0 +1,54 @@
+---
+title: "Creating a New ggplot2 Theme"
+date: 2018-02-08T05:04:40-06:00
+draft: false
+output: html_document
+tags: ["R"]
+---
+
+
+
+<p>This post introduces simple steps on how to create your own ggplot2 theme. Of course, it will not go into details of changing all the aspects. Instead, it will highlight the process using few useful elements.</p>
+<p>Theme is basically a set of pre-defined(default) values for elements that make up a plot in ggplot2 library. Major elements are:</p>
+<ul>
+<li>Plot, the outermost area used by a plot. Think of this as let’s say your A4 sheet on which you want to draw a plot.</li>
+<li>Panel, this is the actual plotting area. This is defined by a rectangle inside the ploting area.</li>
+<li>Legend, another rectangle defining the plot legend. This can be anywhere in the panel, inside or outside of the plot.</li>
+<li>x-axis</li>
+<li>y-axis</li>
+</ul>
+<div id="default-theme" class="section level3">
+<h3>Default Theme</h3>
+<p>Instead of rewriting properties of all elements, it is more efficient to pick a theme that is closer to what you want and make some adjustments. In my case, I like the <code>theme_bw</code> so I will use that as a starting point. A scatter plot on this theme looks like this:</p>
+<pre class="r white"><code>theme_set(theme_bw())
+ggplot(mpg, aes(displ, hwy)) + geom_point()</code></pre>
+<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="new-theme" class="section level3">
+<h3>New Theme</h3>
+<p>I like white background and black border of this theme. Few changes I would like to make to this theme are:</p>
+<ul>
+<li>Remove gridlines. I personally think gridlines do not serve much purpose while doing analysis and are rather a distraction.</li>
+<li>Increase the base font size a bit to be more clear.</li>
+<li>Note that the axis marker font is grey color while the axis title is black. I will change these to black for consistency.</li>
+</ul>
+<p>To make these changes, we will simply ‘add’ these elements to our base theme:</p>
+<pre class="r white"><code>theme_simple &lt;- function() {
+    theme_bw(base_size = 14,
+             base_family = &quot;&quot;) %+replace%
+    theme(panel.grid = element_blank(),
+          axis.text = element_text(color = &quot;black&quot;))
+}</code></pre>
+<p>Notice that I have created a new function for this theme instead of just storing it in an object. This makes it flexible since now it can be sourced in any project and used. Let’s see how our plot looks now with the new theme.</p>
+<pre class="r white"><code>theme_set(theme_simple())
+ggplot(mpg, aes(displ, hwy)) + geom_point()</code></pre>
+<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>It looks more clear now bringing more attention to the data instead of theme or plot elements. You can find what else can be changed by <code>?theme</code>.</p>
+</div>
+<div id="additional-resources" class="section level3">
+<h3>Additional Resources</h3>
+<p>In case you want to dig deeper into the topic of customizing themes, here are some additional resource:</p>
+<ul>
+<li><a href="https://bookdown.org/rdpeng/RProgDA/building-a-new-theme.html">Building a New Theme</a> - From Roger Peng’s book.</li>
+</ul>
+</div>

@@ -3,8 +3,10 @@ title: "US Wind Energy Production (2016)"
 author: "Paramjot Singh"
 date: "2017-03-15"
 output: html_document
+tags: ["R"]
+categories: ["Analysis"]
 ---
-```{r setup}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,

@@ -1,0 +1,47 @@
+---
+title: "Just Enough... git"
+author: "Paramjot Singh"
+date: "2017-12-26"
+draft: false
+output: html_document
+tags: ["git"]
+categories: ["Tutorials", "Tools"]
+---
+
+
+
+<p>This is just a list of git commands I am currently using. There are tons of tutorials out there as well as quite a few cheat sheets. While those are mostly comprehensive resources, I tend to get distracted and try to learn all commands at once without using them in real projects. That doesn’t help much.</p>
+<p><strong>Initialize a local git repository</strong></p>
+<pre class="git white"><code>git init</code></pre>
+<p><strong>Cloning an existing project from github</strong></p>
+<pre class="git white"><code>git clone &lt;project url here&gt;</code></pre>
+<p><strong>Status Check</strong></p>
+<pre class="git white"><code>git status</code></pre>
+<p><strong>Create a branch and check it out</strong></p>
+<pre class="git white"><code>git checkout -b &lt;branch&gt;</code></pre>
+<p><strong>List all branches and active branch</strong></p>
+<pre class="git white"><code>git branch</code></pre>
+<p><strong>Stage specific files, all files, all modified files</strong></p>
+<pre class="git white"><code>git add &lt;files&gt;
+git add --all
+git add -u</code></pre>
+<p><strong>Unstage a file</strong></p>
+<pre class="git white"><code>git reset HEAD &lt;file-name&gt;</code></pre>
+<p><strong>Commit changes</strong></p>
+<pre class="git white"><code>git commit -m &quot;commit message&quot;</code></pre>
+<p><strong>Check log</strong></p>
+<pre class="git white"><code>git log</code></pre>
+<p><strong>Merge branch into master</strong></p>
+<pre class="git white"><code>git merge &lt;branch&gt;</code></pre>
+<p><strong>Delete a branch</strong></p>
+<pre class="git white"><code>git branch -d &lt;branch&gt;</code></pre>
+<p><strong>Push changes to remote(master)</strong></p>
+<pre class="git white"><code>git push origin master</code></pre>
+<p>With a new local git that has never been linked to remote, first create a new Github repo. Then:</p>
+<pre class="git white"><code>git remote add origin &lt;remote repo URL&gt;
+git remote -v #just for verification
+git push origin master</code></pre>
+<div id="care-to-learn-more" class="section level3">
+<h3>Care to learn more?</h3>
+<p>Please see the <a href="https://git-scm.com/doc">official git documentation</a>.</p>
+</div>

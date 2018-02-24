@@ -1,5 +1,7 @@
 {{ $baseurl := .Site.BaseURL }}
 <article id="li-art">
+<div class="row">
+   <div class="col-lg-10 col-lg-offset-1" class="center-block">
   <header id="bh">
     <h2><a href="{{ .Permalink }}"  class="blog-header"  >{{ .Title }}</a></h2>
     <div class="post-meta clearfix">
@@ -29,4 +31,6 @@
     </ul>
   </footer>
   {{ end }}
+   </div>
+   </div>
 </article>

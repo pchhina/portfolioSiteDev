@@ -1,6 +1,6 @@
 {{ "<!-- Post Grid Section -->" | safeHTML }}
 <section id="blog">
-    <div class="container">
+    <div class="container li-art">
         <div class="row">
             <div class="col-lg-12 text-center">
                 <h2>{{ with .Site.Params.blog.title }}{{.}}{{end}}</h2>
@@ -8,7 +8,7 @@
             </div>
         </div>
                 <hr/>
-        <div class="article-list">
+        <div class="blog-summary">
 
         {{ range $index, $page := first 3 .Paginator.Pages }}
         {{ if ne $index 0 }}

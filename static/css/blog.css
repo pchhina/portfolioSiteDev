@@ -19,12 +19,8 @@
     font-weight: 400;
     text-transform: none;
     text-align: center;
-}
-
-.article-list {
-    font-size: 18px;
-    font-weight: 300;
-
+    text-decoration: none;
+    color: blue;
 }
 
 .single {
@@ -38,6 +34,14 @@
     text-align: center;
 }
 
+.single h3 {
+    font-weight: bold;
+}
+
+.single-title h1 {
+    font-weight: bold;
+    font-size: 32px;
+}
 .pager li>a {
     font-size: 16px;
     border-width: 2px;
@@ -61,14 +65,27 @@
 
 #li-art {
     border-bottom: 1px solid #eee;
+    font-size: 17px;
+    line-height: 1.5;
+    word-spacing: 1.1;
+}
+
+#li-art h2 {
+    font-weight: 600;
 }
 
 .blog-header {
     color: #2c3e50;
 }
 
+.blog-header:hover {
+    text-decoration: none;
+}
+
+
 #blog h1 {
     font-weight: 800;
+    color: red;
 }
 
 
@@ -123,5 +140,5 @@
     text-decoration: none;
 }
 
-.white {background-color: white;
+.white {background-color: #272822;
 border: none;}

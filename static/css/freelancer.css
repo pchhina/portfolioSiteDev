@@ -459,13 +459,19 @@ footer .footer-below {
 }
 
 .blog-header {
-    font-size: 0.8em;
+    font-size: 0.7em;
     background-color: #fff;
-    font-weight: 400;
+    font-weight: 600;
     text-transform: none;
     text-align: center;
     color: #2c3e50;
 }
+
+.blog-header:hover {
+    text-decoration: none;
+}
+
+
 
 #bh {
      background-color: #fff;
@@ -474,6 +480,7 @@ footer .footer-below {
 .blog-summary {
     font-size: 18px;
     font-weight: 300;
+    line-height: 1.6;
 }
 
 #li-art {

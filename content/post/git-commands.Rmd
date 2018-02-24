@@ -87,5 +87,5 @@ git remote -v #just for verification
 git push origin master
 ```
 
-### Care to learn more?
+### Further Reading
 Please see the [official git documentation](https://git-scm.com/doc).

@@ -63,7 +63,7 @@ ggplot(mpg, aes(displ, hwy)) + geom_point()
 
 It looks more clear now bringing more attention to the data instead of theme or plot elements. You can find what else can be changed by `?theme`. 
 
-### Additional Resources
+### Further Reading
 In case you want to dig deeper into the topic of customizing themes, here are some additional resource:
 
 - [Building a New Theme](https://bookdown.org/rdpeng/RProgDA/building-a-new-theme.html) - From Roger Peng's book.

@@ -1,5 +1,5 @@
 ---
-title: "Test for Rmd Files"
+title: "Persistent Plotting in R"
 author: "Paramjot Singh"
 date: "`r Sys.Date()`"
 draft: FALSE
@@ -11,15 +11,131 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   class.source = 'white',
-  fig.align = 'center'
+  fig.align = 'center',
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
 )
+library(ggplot2)
+library(gridExtra)
 ```
 In this post, I describe the importance of persistent plots while carrying out a analysis. A case is made for simpler and persistent plots and the process to create the plots is demonstrated with an example. Finally, a package is created to stitch things together in a coherent fashion.
 
 With the amount of available options in R today to create plots, it is easy to get distracted and miss the point of using plots in first place - to bring to attention something unique about the data which otherwise could be difficult, if not impossible, just looking at the raw numbers.
 
-```{r test}
-library(ggplot2)
-ggplot(mpg, aes(displ, hwy)) +
-    geom_point()
+> *The simple graph has brought more information to the data analyst's mind than any other device.* - John Tukey
+
+The approach I use here is to automate the theming process so that we do not have to think about it unless needed by:
+
+* [Creating](../creating_theme) a new theme or modify the existing one to suit your needs.
+* Using functions to modify plot related properties so these can be reused later.
+* Using [package](../package_building) to make it easy to distribute or modify the stuff in future.
+* Finally, automatically loading this package at the start of R session.
+
+### Creating a theme
+
+Creating a new theme is first step towards creating persistent plots. I have described the process in an earlier [post](../creating_theme) so I will not go into the details here.
+
+### Using functions to modify plot related properties
+
+This part is mostly driven by personal workflow since here we choose certain types of plots that we use more often and fine tune their look and feel. I am showing the default plots on the left and with my modifications on the right. I used the following plots:
+
+1. Scatter plot: To show relationship between two continuous variables.
+
+```{r scatter}
+
+s1 <- ggplot(mpg, aes(displ, hwy)) +
+    geom_point() +
+    theme_gray()
+
+s2 <- ggplot(mpg, aes(displ, hwy)) +
+    scatter() +
+    theme_simple()
+
+grid.arrange(s1, s2, nrow = 1)
 ```
+2. Scatter plot with linear trendline: To show how the linear model fit looks like for a given set of continuous variables.
+
+```{r fit_linear}
+
+fl1 <- ggplot(mpg, aes(displ, hwy)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    theme_gray()
+
+fl2 <- ggplot(mpg, aes(displ, hwy)) +
+    scatter_fit() +
+    linear() +
+    theme_simple()
+
+grid.arrange(fl1, fl2, nrow = 1)
+```
+3. Scatter plot with smooth trendline: To show how the non-linear model fit looks like for a given set of continuous variables.
+
+```{r fit_nonlinear}
+
+fn1 <- ggplot(mpg, aes(displ, hwy)) +
+    geom_point() +
+    geom_smooth() +
+    theme_gray()
+
+fn2 <- ggplot(mpg, aes(displ, hwy)) +
+    scatter_fit() +
+    nonlinear() +
+    theme_simple()
+
+grid.arrange(fn1, fn2, nrow = 1)
+```
+
+4. Histogram: To show frequency distribution of a single continuous variable.
+
+```{r histogram}
+
+h1 <- ggplot(mpg, aes(hwy)) +
+    geom_histogram() +
+    theme_gray()
+
+h2 <- ggplot(mpg, aes(hwy)) +
+    histogram()  +
+    theme_simple()
+
+grid.arrange(h1, h2, nrow = 1)
+```
+
+5. Barplot: To show frequency distribution of a single discrete variable.
+
+```{r bar}
+
+b1 <- ggplot(mpg, aes(as.factor(cyl))) +
+    geom_bar() +
+    theme_gray()
+
+b2 <- ggplot(mpg, aes(as.factor(cyl))) +
+    bar() +
+    theme_simple()
+
+grid.arrange(b1, b2, nrow = 1)
+```
+
+6. Boxplot: To show relationship between a continuous and discrete variable.
+
+```{r box}
+
+x1 <- ggplot(mpg, aes(as.factor(cyl), hwy)) +
+    geom_boxplot() +
+    theme_gray()
+
+x2 <- ggplot(mpg, aes(as.factor(cyl), hwy)) +
+    box_simple() +
+    theme_simple()
+
+grid.arrange(x1, x2, nrow = 1)
+```
+
+### Building a package
+
+I have already described this process in a post [here](../package_building), so I won't go into details.
+
+### Automatically loading the theme
+
+This involves creating a hook in your `.Rprofile` file. [Here](https://github.com/pchhina/dotfiles/blob/master/.Rprofile) is how my file looks like after making the changes. Now each time you start a new R session, the plot package (`themeSimple`) is automatically loaded into the workspace and you can use the helper functions to create the modified plots.

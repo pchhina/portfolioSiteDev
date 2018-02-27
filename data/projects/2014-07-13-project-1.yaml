@@ -2,7 +2,7 @@ modalID: 1
 title: Word Up!
 date: 2017-07-13
 img: wordup.png
-imgicon: datascience.png
+imgicon: wordup.svg
 client: Personal (See Code on Github)
 clientLink: "#"
 category: Text Mining, Web Applications

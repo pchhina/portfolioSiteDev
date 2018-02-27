@@ -1,8 +1,9 @@
 modalID: 2
 title: R Data Explorer
 date: 2017-03-23
-img: cabin.png
-imgicon: dataexp.svg
+img: dataexp.svg
+imgicon: dataexp_i.png
+caption: explore built-in R datasets with ease
 client: Personal (See Code on Github)
 clientLink: "#"
 category: Web Applications, Data Mining

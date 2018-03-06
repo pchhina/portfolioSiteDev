@@ -1,0 +1,140 @@
+---
+title: "Just Enough Vim"
+author: "Paramjot Singh"
+date: 2018-03-06T05:05:20-06:00
+draft: FALSE
+tags: ["Vim"]
+categories: ["Tools"]
+---
+
+
+
+<p><a href="https://www.vim.org/">Vim</a> is an extremely powerful editor. It is a bit scary in the beginning but once you spend a little bit time playing with it, you would start to realize its power. One of the great advantages I feel about learning Vim(when compared to a dedicated IDE) is that it is language neutral. So if you switch to learning a new language in the future, you do not have to learn the ins and outs of a new IDE, Vim will be there for you. On the surface, Vim commands can feel cryptic(in reality there is a nice structure to those commands) which can make task of learning Vim somewhat daunting. To workaround the problem, I found that focusing on a handful of base Vim commands (and staying away from the plugins) is a good approach. So here is my list:</p>
+<p>Note that any of these commands can be executed multiple times by simply appending a number in front. Also dot(.) will repeat the last change(anything you do in insert mode before coming back to normal mode).</p>
+<div id="movement-commands" class="section level3">
+<h3>Movement Commands</h3>
+<p><em>Jump up and down the lines</em></p>
+<blockquote>
+<p>k j</p>
+</blockquote>
+<p><em>Jump to beginning of file, end of file</em></p>
+<blockquote>
+<p>gg G</p>
+</blockquote>
+<p><em>Jump to top, bottom and middle of current screen</em></p>
+<blockquote>
+<p>H L M</p>
+</blockquote>
+<p><em>Bring current line to the middle of screen</em></p>
+<blockquote>
+<p>zz</p>
+</blockquote>
+<p><em>Jump half page up/down</em></p>
+<blockquote>
+<p>Ctrl-d Ctrl-u</p>
+</blockquote>
+<p><em>Search forward/backward for partial/exact match</em></p>
+<blockquote>
+<p>/<search> ?<search></p>
+</blockquote>
+<p><em>Jump to beginning/end of the line</em></p>
+<blockquote>
+<p>^ $</p>
+</blockquote>
+<p><em>Jump forwards/backwards by words and paragraphs</em></p>
+<blockquote>
+<p>w b { }</p>
+</blockquote>
+<p><em>Jump forwards/backwards to/till a specific character in a line and repeat the search</em></p>
+<blockquote>
+<p>f<chr>; f<chr>,</p>
+</blockquote>
+</div>
+<div id="editing-commands" class="section level3">
+<h3>Editing Commands</h3>
+<p><em>Insert before/after a character</em></p>
+<blockquote>
+<p>i a</p>
+</blockquote>
+<p><em>Insert at the beginning/end of a line</em></p>
+<blockquote>
+<p>I A</p>
+</blockquote>
+<p><em>Insert before/after the current line</em></p>
+<blockquote>
+<p>O o</p>
+</blockquote>
+<p><em>Replace a character with a single/bunch of characters</em></p>
+<blockquote>
+<p>r<chr> s<characters></p>
+</blockquote>
+</div>
+<div id="editing-text-objects" class="section level3">
+<h3>Editing Text Objects</h3>
+<p><em>Replace a word/line/paragraph with new word/line/paragraph</em></p>
+<blockquote>
+<p>ciw S cip</p>
+</blockquote>
+<p><em>Delete a word/line/paragraph and repeat this change</em></p>
+<blockquote>
+<p>daw dd dap</p>
+</blockquote>
+<p><em>Yank a word/line/paragraph to the end of file</em></p>
+<blockquote>
+<p>yaw yy yap followed by G p</p>
+</blockquote>
+<p><em>Change from the current location to the end of line</em></p>
+<blockquote>
+<p>C</p>
+</blockquote>
+<p><em>Undo/Redo few changes</em></p>
+<blockquote>
+<p>u Ctrl-r</p>
+</blockquote>
+<p><em>Remove line break from current line(join the next line with the current line)</em></p>
+<blockquote>
+<p>J</p>
+</blockquote>
+<p><em>Replace a word with a new one in the whole file with/without confirming each change</em></p>
+<blockquote>
+<p>:%s/old/new/gc :%s/old/new/g</p>
+</blockquote>
+<p>*Change inside ( ’ “*</p>
+<blockquote>
+<p>ci( ci’ ci&quot;</p>
+</blockquote>
+<p>*Delete contents of ( ’ “*</p>
+<blockquote>
+<p>di( di’ di&quot;</p>
+</blockquote>
+</div>
+<div id="other-commands" class="section level3">
+<h3>Other Commands</h3>
+<p><em>Change case of a character</em></p>
+<blockquote>
+<p>~ <em>Delete a character</em></p>
+</blockquote>
+<blockquote>
+<p>x</p>
+</blockquote>
+<p><em>Set a mark and jump to it</em></p>
+<blockquote>
+<p>m<chr></p>
+</blockquote>
+<blockquote>
+<p>`<chr></p>
+</blockquote>
+<p><em>Record a macro and run it</em></p>
+<blockquote>
+<p>q<chr> <commands> q</p>
+</blockquote>
+<blockquote>
+<p>@<chr></p>
+</blockquote>
+</div>
+<div id="learning-more" class="section level3">
+<h3>Learning More</h3>
+<ul>
+<li>This <a href="https://www.youtube.com/watch?v=wlR5gYd6um0">Vim Meetup Talk</a> by Chris Toomey is an awesome resource. He talks about the structure of the language and more resources too.</li>
+</ul>
+</div>

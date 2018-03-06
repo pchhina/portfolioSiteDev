@@ -1,0 +1,141 @@
+---
+title: "Just Enough Vim"
+author: "Paramjot Singh"
+date: 2018-03-06T05:05:20-06:00
+draft: FALSE
+tags: ["Vim"]
+categories: ["Tools"]
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center'
+)
+```
+[Vim](https://www.vim.org/) is an extremely powerful editor. It is a bit scary in the beginning but once you spend a little bit time playing with it, you would start to realize its power. One of the great advantages I feel about learning Vim(when compared to a dedicated IDE) is that it is language neutral. So if you switch to learning a new language in the future, you do not have to learn the ins and outs of a new IDE, Vim will be there for you. On the surface, Vim commands can feel cryptic(in reality there is a nice structure to those commands) which can make task of learning Vim somewhat daunting. To workaround the problem, I found that focusing on a handful of base Vim commands (and staying away from the plugins) is a good approach. So here is my list:
+
+Note that any of these commands can be executed multiple times by simply appending a number in front. Also dot(.) will repeat the last change(anything you do in insert mode before coming back to normal mode).
+
+### Movement Commands
+
+*Jump up and down the lines*
+
+> k j
+
+*Jump to beginning of file, end of file*
+
+> gg G
+
+*Jump to top, bottom and middle of current screen*
+
+> H L M
+
+*Bring current line to the middle of screen*
+
+> zz
+
+*Jump half page up/down*
+
+> Ctrl-d Ctrl-u
+
+*Search forward/backward for partial/exact match*
+
+> /<search> ?<search>
+
+*Jump to beginning/end of the line*
+
+> ^ $
+
+*Jump forwards/backwards by words and paragraphs*
+
+> w b { }
+
+*Jump forwards/backwards to/till a specific character in a line and repeat the search*
+
+> f<chr>; f<chr>,
+
+### Editing Commands
+
+*Insert before/after a character*
+
+> i a
+
+*Insert at the beginning/end of a line*
+
+> I A
+
+*Insert before/after the current line*
+
+> O o
+
+*Replace a character with a single/bunch of characters*
+
+> r<chr> s<characters>
+
+### Editing Text Objects
+
+*Replace a word/line/paragraph with new word/line/paragraph*
+
+> ciw S cip 
+
+*Delete a word/line/paragraph and repeat this change*
+
+> daw dd dap
+
+*Yank a word/line/paragraph to the end of file*
+
+> yaw yy yap followed by G p
+
+*Change from the current location to the end of line*
+
+> C
+
+*Undo/Redo few changes*
+
+> u Ctrl-r
+
+*Remove line break from current line(join the next line with the current line)*
+
+> J 
+
+*Replace a word with a new one in the whole file with/without confirming each change*
+
+> :%s/old/new/gc :%s/old/new/g
+
+*Change inside ( ' "*
+
+> ci( ci' ci"
+
+*Delete contents of ( ' "*
+
+> di( di' di"
+
+### Other Commands
+
+*Change case of a character*
+
+> ~
+*Delete a character*
+
+> x
+
+*Set a mark and jump to it*
+
+> m<chr>
+
+> `<chr>
+
+*Record a macro and run it*
+
+> q<chr> <commands> q 
+
+> @<chr>
+
+### Learning More
+
+* This [Vim Meetup Talk](https://www.youtube.com/watch?v=wlR5gYd6um0) by Chris Toomey is an awesome resource. He talks about the structure of the language and more resources too. 

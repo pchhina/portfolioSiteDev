@@ -126,11 +126,11 @@ staticDir = ["static"]
             # CSS class.
             [[params.footer.social.networks]]
                 icon = "fa-github"
-                link = "//github.com/spf13/hugo"
+                link = "https://github.com/pchhina"
 
             [[params.footer.social.networks]]
-                icon = "fa-stack-overflow"
-                link=  "//stackoverflow.com/questions/tagged/hugo"
+                icon = "fa-linkedin"
+                link=  "https://www.linkedin.com/in/paramjot-singh-569959139"
 
 
         [params.footer.credits]

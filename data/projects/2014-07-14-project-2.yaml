@@ -5,6 +5,6 @@ img: rdata.png
 imgicon: dataexp_1.png
 caption: explore built-in R datasets with ease
 client: Personal (See Code on Github)
-clientLink: "#"
+clientLink: "https://github.com/pchhina/rdataexplorer"
 category: Web Applications, Data Mining
 description: R has quite a few built-in data sets that a new user can learn a lot from. Unfortunately, each time you need to look at those data sets, you have to write little code snippets to view plots/tables for understanding. This application comes to your rescue by pulling the available data sets in drop-down menus with plots and summary tables just a click away. Check this application [here](https://param-singh.shinyapps.io/r_data_explorer/).

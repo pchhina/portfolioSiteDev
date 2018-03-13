@@ -1,0 +1,232 @@
+---
+title: "Mastering Atomic Vectors in R"
+author: "Paramjot Singh"
+date: 2018-03-11T19:14:27-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#creating-our-first-atomic-vector">Creating Our First Atomic Vector</a></li>
+<li><a href="#peeking-into-our-vector">Peeking into our Vector</a></li>
+<li><a href="#objects-as-arguments-to-functions">Objects as Arguments to Functions</a></li>
+<li><a href="#other-ways-of-creating-a-vector">Other Ways of Creating a Vector</a></li>
+<li><a href="#vector-operations">Vector Operations</a></li>
+<li><a href="#chaining-of-functions">Chaining of Functions</a></li>
+<li><a href="#selecting-few-elements-of-a-vector-subsetting">Selecting Few Elements of a Vector (Subsetting)</a></li>
+<li><a href="#more-uses-of-logical-subsetting">More Uses of Logical Subsetting</a></li>
+<li><a href="#two-types-of-vectors">Two Types of Vectors</a></li>
+<li><a href="#pick-elements-randomly">Pick Elements Randomly</a></li>
+<li><a href="#some-special-values">Some Special Values</a></li>
+</ul>
+</div>
+
+<p>Atomic vectors in R are the fundamental data structures on which other more complex data structures are built. When we are comfortable manipulating atomic vectors, it is easier and more natural to work with higher level structures like lists, data frames and tibbles. So here I focus the discussion only on atomic vectors. This will also allow us to discuss and learn fundamental programming concepts without getting distracted by ‘variety’ of data structures. We will start with very simple vector and build upon our knowledge as we learn new things going forward.</p>
+<blockquote>
+<p>Everything that exists in R is an <code>object</code> and anything that happens is a <code>function</code> call.</p>
+</blockquote>
+<div id="creating-our-first-atomic-vector" class="section level3">
+<h3>Creating Our First Atomic Vector</h3>
+<p>We are going to create and manipulate vectors using existing functions and the resulting vectors will be objects. To create the objects (atomic vectors in our case), we will use an assignment operator (&lt;-). So we create our first object (‘num_one’), and assign it a value of 3:</p>
+<pre class="r white"><code>num_one &lt;- 3</code></pre>
+<p>Atomic vectors can only have one ‘type’ of data, and we start with <code>numeric</code> data type since this will be the most common one for our data analysis work. Our simple vector contains only one element (commonly called a scalar), but in all respects, it is a vector in R. <code>Expressions</code> on the right side are evaluated first and then assigned to the object name on the left. Let’s look at an expression evaluation:</p>
+<pre class="r white"><code>num_one_log &lt;- log(3)</code></pre>
+<p>log(3) is evaluated first and then assigned to an object named ‘num_one_log’. Let’s create a slightly longer vector:</p>
+<pre class="r white"><code>num_five &lt;- c(2, 15, -8, 0, -65)</code></pre>
+<p>Now we have a vector containing five elements instead of one. Here we make use of a function, <code>c</code>, that ‘concatenates’ the objects that are fed to it as its <code>arguments</code>. A function is ‘called’ by typing its name (in this case its just <em>c</em>) followed by one or more arguments typed inside parenthesis.</p>
+</div>
+<div id="peeking-into-our-vector" class="section level3">
+<h3>Peeking into our Vector</h3>
+<p>Let’s look into what kind of vector it is:</p>
+<pre class="r white"><code>str(num_five)
+#&gt;  num [1:5] 2 15 -8 0 -65</code></pre>
+<p><code>str</code> function gives a concise information of what kind of object we are dealing with. In this case, we have a numeric (num) object of length 5 ([1:5]). The above output is a good visual information but sometimes we want to use this output later in our work so it is good to know functions that extract type and length of the vector separately:</p>
+<pre class="r white"><code>typeof(num_five)
+#&gt; [1] &quot;double&quot;</code></pre>
+<pre class="r white"><code>length(num_five)
+#&gt; [1] 5</code></pre>
+<p>Note that ‘numeric’ type is further divided into <code>double</code> and <code>integer</code>. Sometimes we want to do a <code>logical</code> test to see whether a vector is of particular type before carrying out any further computations:</p>
+<pre class="r white"><code>library(purrr)
+is_numeric(num_five)
+#&gt; [1] TRUE</code></pre>
+<p>Above we used a function <code>is_numeric</code> from <code>purrr</code> package. There are equivalent functions in the base package too but slightly less consistent.</p>
+</div>
+<div id="objects-as-arguments-to-functions" class="section level3">
+<h3>Objects as Arguments to Functions</h3>
+<p>Objects can be arguments to a function:</p>
+<pre class="r white"><code>long_vec &lt;- c(num_five, num_one, num_one_log)
+long_vec
+#&gt; [1]   2.000000  15.000000  -8.000000   0.000000 -65.000000   3.000000
+#&gt; [7]   1.098612</code></pre>
+<p>Here we created a longer vector using existing vector objects as arguments to <em>c</em> function. This provides us a framework for doing more interesting work.</p>
+</div>
+<div id="other-ways-of-creating-a-vector" class="section level3">
+<h3>Other Ways of Creating a Vector</h3>
+<p>In addition to creating a vector from numbers or concatenating existing vectors, we can create sequences, repeat vectors, or pick numbers from common probability distributions:</p>
+<pre class="r white"><code>seq_simple &lt;- -5:10
+seq_interval &lt;- seq(from = 3, to = 50, by = 0.5)
+seq_length &lt;- seq(from = 3, to = 50, length.out = 20)
+rep_each &lt;- rep(num_five, each = 2)
+rep_times &lt;- rep(num_five, times = 2)
+norm_std &lt;- rnorm(25)
+norm_unique &lt;- rnorm(25, mean = 10, sd = 5)</code></pre>
+<p>First we created a simple sequence of whole numbers. Then we create a sequence with arbitrary start and end points and fixed interval between the elements. After that we created another one (seq_length) with desired number of elements between arbitrary start and end points. Then we created a vector by repeating each element twice and then by repeating the vector twice. In the end we created a vector (norm_std) with 25 elements from a standard normal distribution and then with non-standard normal distribution.</p>
+</div>
+<div id="vector-operations" class="section level3">
+<h3>Vector Operations</h3>
+<p>Alright, now that we know how to create vector objects, let’s play with these objects a bit and see what kind of operations we can perform on our vectors. We will use one of the vectors we created earlier:</p>
+<pre class="r white"><code>rep_times
+#&gt;  [1]   2  15  -8   0 -65   2  15  -8   0 -65</code></pre>
+<p><strong>Arithmatic Operations</strong></p>
+<p>Alright, we can do all kinds of math operations with our vectors. We are not going to store these in new objects but watch these <em>function calls</em> in action:</p>
+<pre class="r white"><code>rep_times ^ 2
+#&gt;  [1]    4  225   64    0 4225    4  225   64    0 4225</code></pre>
+<pre class="r white"><code>rep_times * 1 / 5
+#&gt;  [1]   0.4   3.0  -1.6   0.0 -13.0   0.4   3.0  -1.6   0.0 -13.0</code></pre>
+<p>Note that the way these operations are handled is slightly different than you might think. *, ^ and other operators are <em>vectorized</em> - so first the number 2, which is a vector of length one, is <em>recycled</em> to make it the same length as the larger vector (ten in this case). Then each element of first vector is operated upon with the corresponding element of the second vector.</p>
+<p>An interesting math operator is the modulo operator - to look at different parts of answer of division operation. If you divide two numbers, top number is called <em>divident</em> and bottom number is called <em>divisor</em>. The result will be a whole number (<em>quotient</em>), and whatever fraction is left out is <em>remainder</em>.</p>
+<pre class="r white"><code>rep_times %% 2      # get remainder of rep_times divided by 2.
+#&gt;  [1] 0 1 0 0 1 0 1 0 0 1</code></pre>
+<pre class="r white"><code>rep_times %/% 2     # get quotient of rep_times divided by 2.
+#&gt;  [1]   1   7  -4   0 -33   1   7  -4   0 -33</code></pre>
+<p><strong>Statistical Operations</strong></p>
+<p>R will make you dizzy for the amount of statistical wizardry it packs up its sleeve. We are not going to take a deep dive, not even scratching the surface by any standards:</p>
+<pre class="r white"><code>mean(rep_times)
+#&gt; [1] -11.2</code></pre>
+<pre class="r white"><code>sum(rep_times)
+#&gt; [1] -112</code></pre>
+<pre class="r white"><code>sd(rep_times)
+#&gt; [1] 29.40446</code></pre>
+<pre class="r white"><code>max(rep_times)
+#&gt; [1] 15</code></pre>
+<pre class="r white"><code>summary(rep_times)
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   -65.0    -8.0     0.0   -11.2     2.0    15.0</code></pre>
+<p><strong>Other Interesting Operations</strong></p>
+<pre class="r white"><code>sort(rep_times)
+#&gt;  [1] -65 -65  -8  -8   0   0   2   2  15  15</code></pre>
+<pre class="r white"><code>sort(rep_times, decreasing = TRUE)
+#&gt;  [1]  15  15   2   2   0   0  -8  -8 -65 -65</code></pre>
+<pre class="r white"><code>unique(rep_times)
+#&gt; [1]   2  15  -8   0 -65</code></pre>
+<pre class="r white"><code>rev(rep_times)
+#&gt;  [1] -65   0  -8  15   2 -65   0  -8  15   2</code></pre>
+</div>
+<div id="chaining-of-functions" class="section level3">
+<h3>Chaining of Functions</h3>
+<p>The output of one function can be used as an input to another function. Say we want to find standard deviation of 50 standard normals:</p>
+<pre class="r white"><code>sd(rnorm(50))
+#&gt; [1] 1.061041</code></pre>
+<p>You probably want to avoid more convoluted chains as it will be confusing to read.</p>
+</div>
+<div id="selecting-few-elements-of-a-vector-subsetting" class="section level3">
+<h3>Selecting Few Elements of a Vector (Subsetting)</h3>
+<p>So far we have created vectors using a variety of functions. Now, if a vector is given to us and we are tasked with selecting certain elements from it, how do we do that. There are two useful ways to do that:</p>
+<p><strong>Subsetting using position</strong></p>
+<p>In R, elements of a vector are positioned(<em>indexed</em>) from 1 (many languages start at 0) to the length of the vector. So our <em>rep_times</em> vector has 10 elements, and say we want to extract first and last element, we can feed these(<em>index values</em>) as integer vector inside square brackets:</p>
+<pre class="r white"><code>rep_times[c(1, length(rep_times))]
+#&gt; [1]   2 -65</code></pre>
+<p>If we want to select everything but the first and last element, you can put a ‘-’ sign before the vector:</p>
+<pre class="r white"><code>rep_times[-c(1, length(rep_times))]
+#&gt; [1]  15  -8   0 -65   2  15  -8   0</code></pre>
+<p>A more powerful way of subsetting is through logical expressions.</p>
+<p><strong>Subsetting using logical expressions</strong></p>
+<p>Say if we had a light bulb that we could turn on if we want an element in that position and off if we don’t, it would be great. It turns out that R (and generally any programming language) has a special data type for carrying out logical operations. Let’s say we want to extract all odd numbers from our <em>rep_times</em> vector:</p>
+<pre class="r white"><code>odd_filter &lt;- rep(c(TRUE, FALSE), 5)
+str(odd_filter)
+#&gt;  logi [1:10] TRUE FALSE TRUE FALSE TRUE FALSE ...</code></pre>
+<pre class="r white"><code>is_logical(odd_filter)
+#&gt; [1] TRUE</code></pre>
+<pre class="r white"><code>rep_times[odd_filter]
+#&gt; [1]   2  -8 -65  15   0</code></pre>
+<p>Cool, but most of the times we will not create this <em>switch</em> vector manually. Instead, <code>logical expressions</code> will be used to do this job, and this will serve as a handy tool in our R toolbox. Let’s look at some logical expressions and their output:</p>
+<pre class="r white"><code>rep_times &gt; 0
+#&gt;  [1]  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE</code></pre>
+<pre class="r white"><code>rep_times &lt; -10
+#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE</code></pre>
+<pre class="r white"><code>rep_times == 0
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<pre class="r white"><code>rep_times %% 2 != 0     # selecting odd numbers
+#&gt;  [1] FALSE  TRUE FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE</code></pre>
+<p>The output of these logical expressions is either TRUE or FALSE depending on whether the logical condition is satisfied or not. Now we can feed the output of these expressions inside square brackets for subsetting our vector:</p>
+<pre class="r white"><code>rep_times[rep_times &lt; -10]
+#&gt; [1] -65 -65</code></pre>
+</div>
+<div id="more-uses-of-logical-subsetting" class="section level3">
+<h3>More Uses of Logical Subsetting</h3>
+<p><strong>TRUE = 1 and FALSE = 0</strong></p>
+<p>Behind the scenes, TRUE is encoded as 1 and FALSE is encoded as 0. This means we can do some neat math operations on logical vectors. Let’s say we want to know how many values are positive in my vector:</p>
+<pre class="r white"><code>sum(rep_times &gt; 0)
+#&gt; [1] 4</code></pre>
+<p>Or say what proportion of values are non-zeros:</p>
+<pre class="r white"><code>mean(rep_times != 0)
+#&gt; [1] 0.8</code></pre>
+<p><strong>Reassignment of some elements of a vector</strong></p>
+<p>Sometimes we might need to reassign specific elements of a vector to new values. For example, let’s say, we want to replace all 0’s in our vector to -99:</p>
+<pre class="r white"><code>rep_times[rep_times == 0]  &lt;- -99
+rep_times
+#&gt;  [1]   2  15  -8 -99 -65   2  15  -8 -99 -65</code></pre>
+<p><strong>Any or all values matching a condition</strong></p>
+<p>Let’s say we just want to know if any of the values in our vector are negative:</p>
+<pre class="r white"><code>any(rep_times &lt; 0)
+#&gt; [1] TRUE</code></pre>
+<p>Or, if all of the values are non-zeros:</p>
+<pre class="r white"><code>all(rep_times != 0)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="two-types-of-vectors" class="section level3">
+<h3>Two Types of Vectors</h3>
+<p>Ok, now we know two types of atomic vectors: <code>numeric</code>, one that contains numeric numbers and <code>logical</code>, that contain logical values of either <code>TRUE</code> or <code>FALSE</code>.</p>
+</div>
+<div id="pick-elements-randomly" class="section level3">
+<h3>Pick Elements Randomly</h3>
+<p>So far we have looked at subsetting of vectors where we know which element we need either by their <em>index</em> or by <em>logical subsettin</em>. Sometimes we want to randomly select some elements, and <code>sample</code> function will come to our rescue here:</p>
+<pre class="r white"><code>sample(rep_times, 5)    # randomly select five elements from rep_times
+#&gt; [1]   2  15 -99 -65 -65</code></pre>
+<p><strong>Select certain fraction of elements</strong></p>
+<pre class="r white"><code>sample(rep_times, 0.4 * length(rep_times))    # 40% of elements
+#&gt; [1]  -8 -99 -65 -99</code></pre>
+<p><strong>A quick shortcut to shuffle integers</strong></p>
+<pre class="r white"><code>sample(10)
+#&gt;  [1]  3  7  5  4  6  1  9  8 10  2</code></pre>
+</div>
+<div id="some-special-values" class="section level3">
+<h3>Some Special Values</h3>
+<p>There are some special values that our two types of vectors can take, so we will discuss those here.</p>
+<p><strong>NA - Not Available</strong></p>
+<p>In real data, we do not always get nice clean numbers - some data points will be missing. A sensor could go bad, there could be a power failure during recording of data, a subject selected to interview is not at home etc. Before we decide what to do with these missing values, we need to understand some basic information on these values, for example how many or what proportion of the values are missing. R represents this missing data with <code>NA</code>. In reality the data exists, but we just don’t know what those values are.</p>
+<p>Let’s first randomly assign some values as NA to our vector:</p>
+<pre class="r white"><code>rep_times[sample(length(rep_times), 4)] &lt;- NA
+rep_times
+#&gt;  [1]  NA  15  -8  NA -65   2  NA  -8  NA -65</code></pre>
+<p>Now to find how many or what proportion of NAs we have, we could use <code>is.na</code> function:</p>
+<pre class="r white"><code>sum(is.na(rep_times))
+#&gt; [1] 4</code></pre>
+<pre class="r white"><code>mean(is.na(rep_times))
+#&gt; [1] 0.4</code></pre>
+<p>NAs are contagious:</p>
+<pre class="r white"><code>sum(rep_times)
+#&gt; [1] NA</code></pre>
+<pre class="r white"><code>mean(rep_times)
+#&gt; [1] NA</code></pre>
+<p>But R provides arguments in these functions, and others, to ignore NAs while computing these statistics:</p>
+<pre class="r white"><code>sum(rep_times, na.rm = TRUE)
+#&gt; [1] -129</code></pre>
+<pre class="r white"><code>mean(rep_times, na.rm = TRUE)
+#&gt; [1] -21.5</code></pre>
+<p><strong>What to do with these NAs?</strong></p>
+<p>There are two basic treatments we can do with vectors containing NAs. 1. We can remove those observations:</p>
+<pre class="r white"><code>rep_times_na_removed &lt;- rep_times[!is.na(rep_times)]</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>We can replace NAs with the mean of rest of observations:</li>
+</ol>
+<pre class="r white"><code>rep_times_clean &lt;- rep_times
+rep_times_clean[is.na(rep_times_clean)] &lt;- mean(rep_times_clean, na.rm = TRUE)</code></pre>
+</div>

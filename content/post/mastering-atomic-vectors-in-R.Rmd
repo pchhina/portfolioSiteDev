@@ -195,6 +195,13 @@ The output of these logical expressions is either TRUE or FALSE depending on whe
 ```{r}
 rep_times[rep_times < -10]
 ```
+**Logical expressions can be combined using and (&) and or (|) operators**
+
+```{r}
+(rep_times > 0) | (rep_times < -10)
+(rep_times > 0) & (rep_times %% 2 != 0)
+```
+
 ### More Uses of Logical Subsetting
 
 **TRUE = 1 and FALSE = 0**
@@ -291,7 +298,7 @@ sum(rep_times, na.rm = TRUE)
 mean(rep_times, na.rm = TRUE)
 ```
 
-**What to do with these NAs?**
+*What to do with these NAs?*
 
 There are two basic treatments we can do with vectors containing NAs. 
 
@@ -299,6 +306,7 @@ There are two basic treatments we can do with vectors containing NAs.
 
 ```{r}
 rep_times_na_removed <- rep_times[!is.na(rep_times)]
+rep_times_na_removed
 ```
 
 2. We can replace NAs with the mean of rest of observations:
@@ -306,5 +314,309 @@ rep_times_na_removed <- rep_times[!is.na(rep_times)]
 ```{r}
 rep_times_clean <- rep_times
 rep_times_clean[is.na(rep_times_clean)] <- mean(rep_times_clean, na.rm = TRUE)
+rep_times_clean
+```
+**Inf and NaN**
+
+Although not created intentionally, some chain of math operations in our code may lead to situations where we are dividing by 0. We want to avoid these situations since this will lead to errors and exceptions. So it is a good idea to check for these conditions on inputs before using the inputs in our functions. `is.infinite` and `is.nan` functions can be used to check these conditions:
+
+```{r}
+undesirable <- c(0, 1) / 0
+undesirable
+is.infinite(undesirable)
+is.nan(undesirable)
+```
+### Sequences for Loops
+
+Sometimes we need a vector of indices of a vector so we can do iterations, loops etc. `seq_along` will be a useful function for that. This will generate an index vector 1, 2,..., length(vector).
+
+```{r}
+seq_along(rep_times)
 ```
 
+### Creating an empty vector
+
+We may want to create an empty vector sometimes. This will be useful when we want to populate the vector using loops.
+
+```{r}
+new_num <- vector("numeric", 10)
+new_log <- vector("logical", 10)
+new_num
+new_log
+```
+
+### Some Useful Vector Transformations
+
+**Recenter around mean 0**
+
+```{r}
+data <- sample(1:20, 10) * sample(10)
+data - mean(data)
+```
+
+**Recenter around mean 0 and standard deviation 1**
+
+```{r}
+(data - mean(data)) / sd(data)
+```
+
+**Rescale so all values are between 0 and 1**
+
+```{r}
+(data- min(data)) / range(data)
+```
+
+### Comparing Two Vectors
+
+Sometimes we just want to check if two vectors are equal. `all.equal` can be a useful function for that:
+
+```{r}
+x1 <- c(1, 2, 3)
+y1 <- c(1, 2, 3)
+y2 <- c(2, 3, 4)
+all.equal(x1, y1)
+all.equal(x1, y2)
+```
+
+### Third Type of Atomic Vector
+
+Ok, the third and last type of atomic vector is `character` which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:
+
+```{r}
+x <- typeof(rep_times)
+x
+typeof(x)
+is_character(x)
+```
+Mastering `Regular Expressions` is key to working with character data so we will learn the basics here. We are going to use `stringr` package to play with our character vectors.
+
+```{r}
+library(stringr)
+```
+You can create a character vector by entering anything inside quotes. We are going to use double quotes for consistency:
+
+```{r}
+greet <- "hello!"
+greet
+typeof(greet)
+is_character(greet)
+```
+Alright, let's create another vector and combine the two with `c` just like we did earler for numeric vectors:
+
+```{r}
+subject <- "world"
+greetings <- c(greet, subject)
+greetings
+length(greetings)
+```
+
+So our greetings vector contains two *string* elements. It is interesting to note that both strings can have arbitrary number of characters. Let's say we want to know how many characters each string element has, we will use `str_length` function:
+
+```{r}
+str_length(greetings)
+```
+**Combining elements of a vector**
+
+If we want to combine the individual elements of a single character vector, we will use `str_c` function with *collapse* argument:
+
+```{r}
+str_c(greetings, collapse = "")
+```
+**Combining elements of two vectors**
+
+If we want to combine two character vectors (element wise), we will use the same `str_c` function but with *sep* argument:
+
+```{r}
+str_c(greetings, "!", sep = "")
+```
+
+### Sorting Character Vectors and Changing Case
+
+We will use data set, `words` available in *stringr* for this exercise:
+
+```{r}
+word_sample <- words[sample(length(words), 5)]
+word_sample
+str_sort(word_sample, locale = "en")
+str_to_lower(word_sample)
+str_to_upper(word_sample)
+str_to_title(word_sample)
+```
+
+### Pattern Matching in Character Vectors using Regular Expressions
+
+Now we are going to scratch the surface of regular expressions. Regular expressions is a subject in itself in computing world but we will cover minimum stuff just to get us started with cleaning data where needed and not worry (yet) about text analysis.
+
+> Everything in ASCII (or Unicode) is a *character* (letters, digits, spaces, punctuations, etc.) and sequence of characters is called a *string*.
+
+*stringr* has different functions to do different things using regular expressions but they have the same format. We will use one, `str_extract`, which extracts the matched pattern. At the end we will apply our pattern matching skills to other tools. Let's begin by picking five random strings from `sentences` data available in *stringr*. Note that we are using `set.seed` function, this lets us repeatedly get the same set of sentences:
+
+```{r}
+set.seed(1234)
+sent_five <- sentences[sample(length(sentences), 5)]
+sent_five
+```
+**Literal match - just type what you want to match**
+
+```{r}
+str_extract(sent_five, "northern")
+```
+
+**Use dot (.) to match any character**
+
+Here we introduce *regex*'s first metacharacter (something that is not matched literally but indicates some pattern). "." will match *any single character*. Let's say we are interested in grabbing ten characters following *the*:
+
+```{r}
+str_extract(sent_five, "the..........")
+```
+
+It picked *the* and the following ten characters including spaces. Note that it did not pick *The* from third sentence because it starts with a capital T. If we want to disregard the case, there are multiple ways but let's create a *character class* in this case to solve the problem.
+
+**Use character class [] to match one of the characters defined in the class**:
+
+```{r}
+str_extract(sent_five, "[Tt]he..........")
+```
+Now it matched either t or T followed by he followed by any ten characters. Great, now let's say we want to pick sentences that begin with The or the. In this case, it will only be the third sentence.
+
+- appending ^ to pattern inside [] will match all characters *excluding* those defined in the class.
+
+**^ to match the beginning of the string**
+
+If you want to match a pattern only at the beginning of the string, you would prepend your pattern with ^:
+
+```{r}
+str_extract(sent_five, "^[Tt]he..........")
+```
+
+**$ to match the end of the string**
+
+Append your pattern with \$ to match it only at the end of the string:
+
+```{r}
+str_extract(sent_five, "mouse$")
+```
+Hmm..it did not match our first string that we were hoping for. Aahhh, we missed the period (.). All strings are ending with a period so we have to include that too in our pattern, but remember that period already is a metacharacter. So how do we let regex engine know that we want the literal period. Well, we append our metacharacter with an *escape character*, \\. One problem here is that \\ is also used in our strings and regular expressions are string arguments to our functions. We we have to escape the escape character!
+
+> To match regex's metacharacter literally, append it with two escape charaters: \\\\ 
+
+```{r}
+str_extract(sent_five, "mouse\\.$")
+```
+**Use `writeLines` to check if your regex pattern is what you expected**
+
+Since these escape characters can cause confusion on what the regex engine is finally seeing, it is a good idea to feed our argument to `writeLines` first:
+
+```{r}
+writeLines("mouse\\.$")
+```
+**Repeating Patterns**
+
+So far we have looked at single character matches. So if we want to match two capital letter in the following vector, we will define a character class and repeat it twice:
+
+```{r}
+states <- c("AL", "MI", "Hawaii", "ME", "Illinois" )
+str_extract(states, "[A-Z][A-Z]")
+```
+This can get messy quickly, say if we want to match five capital letters, or ten digits. It turns out *regex engine* has a very powerful feature of matching repetetive patterns.
+
+- {n} match preceding character or group exactly *n* number of times:
+
+```{r}
+str_extract(states, "[A-Z]{2}")
+```
+
+- {m,} match the preceding character or a group m or more number of times:
+
+```{r}
+str_extract(sent_five, "l{2,}")
+```
+
+- similar concept applies for {,n} to match up to *n* times and {m,n} to match at least *m* times and at the most *n* times. There are shortcuts for some common repetitions:
+
+- \+ to match 1 or more times:
+```{r}
+money <- c("$23", "$ab", "$4000")
+str_extract(money, "\\$[0-9]+")
+```
+- \* to match 0 to more times:
+```{r}
+str_extract(money, "\\$[0-9]*")
+```
+
+- ? to match 0 or 1 times:
+```{r}
+days <- c("sunday", "mon", "tue", "wednesday")
+str_extract(days, "((sun)|(mon)|(tue)|(wednes))(day)?")
+```
+Here we also quickly demonstrated the conecept of or, |, and groups using ()
+
+**More character classes**
+
+Earlier we learned a couple of examples of how to define a character class. Another example is [A-Za-z0-9] will match any letter or digit. There are shortcuts available however for commonly used classes. These when used with repetetion matches results in can result in flexible and powerful patterns:
+
+- \\d will match any single digit:
+
+```{r}
+str_extract(money, "\\$\\d+")
+```
+
+- \\D will match any single non-digit
+```{r}
+address <- c("abc street", "NY", "US", "54875")
+str_extract(address, "\\D+")
+```
+- \\w will match any alphanumeric character including _. This is equivalent to [A-Za-z0-9_]
+
+```{r}
+some_txt <- c("$$Name..", "   $Class--", "$$$Address$$   ")
+str_extract(some_txt, "\\w+")
+```
+- \\W will match any non-alphanumeric character
+```{r}
+str_extract(some_txt , "\\W+")
+```
+- \\s will match any whitespace (space, tab, newline, carriage return)
+```{r}
+str_extract(some_txt , "\\s+")
+```
+- \\S will match any non-whitespace
+```{r}
+str_extract(some_txt , "\\S+")
+```
+- \\b will match a word boundary (end of word)
+```{r}
+str_extract(sent_five, "\\w+\\b")
+```
+
+### Stringr Tools
+
+Ok, now that we are comfortable using regular expressions, we need to put these into use with the available tools in stringr. We have already used one - `str_extract` which extracts the matched pattern. There are few others that can be very useful.
+
+**Logical output if a match is found**
+```{r}
+str_detect(address, "\\D+")
+```
+Note that this approach can also be used to simplify regular expressions.
+
+**How many matches are there in the string**
+
+```{r}
+str_count(sent_five, "the")
+```
+**Replace a match with new string**
+```{r}
+str_replace(sent_five, "the", "***")
+```
+**Split a string into pieces**
+```{r}
+str_split(sent_five[1], " ")
+```
+Note that this gave us a `list` object, which we have not studied yet, but you can see the function of splitting a string here.
+
+**Not one but all matches**
+All the tools that we have looked at so far will match and give you the *first* occurence in a string. All others are ignored. Above functions have equivalent `_all` commands that will apply to all matches. For example, `str_extract_all` will extract all matches. These will result in a data structure called `list`, which we have not studied yet but will look into in the future.
+
+### Factors - an Augmented Vector Type
+
+Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - `integer`.

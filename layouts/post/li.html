@@ -22,7 +22,12 @@
     </div>
   </header>
   <div class = "blog-summary">
-    {{ .Summary }}
+      {{ with .Description }}
+        {{ $.Scratch.Set "summary" (markdownify .) }}
+      {{ else }}
+        {{ $.Scratch.Set "summary" ((delimit (findRE "(<p.*?>.*?</p>\\s*)+" .Content) "[&hellip;] ") | plainify | truncate (default 200 .Site.Params.blog.summary_length) (default " &hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
+      {{ end }}
+      {{ $.Scratch.Get "summary" }}
   </div>
   {{ if .Truncated }}
   <footer>

@@ -67,6 +67,7 @@ staticDir = ["static"]
     [params.blog]
         title = "From the Blog" 
         navtitle = "Blog" 
+        summary_length = 300
 
         [params.blog.button]
             text = "All Posts"

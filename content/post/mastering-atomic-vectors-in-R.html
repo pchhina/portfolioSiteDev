@@ -25,6 +25,15 @@ output:
 <li><a href="#two-types-of-vectors">Two Types of Vectors</a></li>
 <li><a href="#pick-elements-randomly">Pick Elements Randomly</a></li>
 <li><a href="#some-special-values">Some Special Values</a></li>
+<li><a href="#sequences-for-loops">Sequences for Loops</a></li>
+<li><a href="#creating-an-empty-vector">Creating an empty vector</a></li>
+<li><a href="#some-useful-vector-transformations">Some Useful Vector Transformations</a></li>
+<li><a href="#comparing-two-vectors">Comparing Two Vectors</a></li>
+<li><a href="#third-type-of-atomic-vector">Third Type of Atomic Vector</a></li>
+<li><a href="#sorting-character-vectors-and-changing-case">Sorting Character Vectors and Changing Case</a></li>
+<li><a href="#pattern-matching-in-character-vectors-using-regular-expressions">Pattern Matching in Character Vectors using Regular Expressions</a></li>
+<li><a href="#stringr-tools">Stringr Tools</a></li>
+<li><a href="#factors---an-augmented-vector-type">Factors - an Augmented Vector Type</a></li>
 </ul>
 </div>
 
@@ -123,7 +132,7 @@ norm_unique &lt;- rnorm(25, mean = 10, sd = 5)</code></pre>
 <h3>Chaining of Functions</h3>
 <p>The output of one function can be used as an input to another function. Say we want to find standard deviation of 50 standard normals:</p>
 <pre class="r white"><code>sd(rnorm(50))
-#&gt; [1] 1.061041</code></pre>
+#&gt; [1] 1.042342</code></pre>
 <p>You probably want to avoid more convoluted chains as it will be confusing to read.</p>
 </div>
 <div id="selecting-few-elements-of-a-vector-subsetting" class="section level3">
@@ -158,6 +167,11 @@ str(odd_filter)
 <p>The output of these logical expressions is either TRUE or FALSE depending on whether the logical condition is satisfied or not. Now we can feed the output of these expressions inside square brackets for subsetting our vector:</p>
 <pre class="r white"><code>rep_times[rep_times &lt; -10]
 #&gt; [1] -65 -65</code></pre>
+<p><strong>Logical expressions can be combined using and (&amp;) and or (|) operators</strong></p>
+<pre class="r white"><code>(rep_times &gt; 0) | (rep_times &lt; -10)
+#&gt;  [1]  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE  TRUE</code></pre>
+<pre class="r white"><code>(rep_times &gt; 0) &amp; (rep_times %% 2 != 0)
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE</code></pre>
 </div>
 <div id="more-uses-of-logical-subsetting" class="section level3">
 <h3>More Uses of Logical Subsetting</h3>
@@ -189,13 +203,13 @@ rep_times
 <h3>Pick Elements Randomly</h3>
 <p>So far we have looked at subsetting of vectors where we know which element we need either by their <em>index</em> or by <em>logical subsettin</em>. Sometimes we want to randomly select some elements, and <code>sample</code> function will come to our rescue here:</p>
 <pre class="r white"><code>sample(rep_times, 5)    # randomly select five elements from rep_times
-#&gt; [1]   2  15 -99 -65 -65</code></pre>
+#&gt; [1]  -8   2 -99  15  -8</code></pre>
 <p><strong>Select certain fraction of elements</strong></p>
 <pre class="r white"><code>sample(rep_times, 0.4 * length(rep_times))    # 40% of elements
-#&gt; [1]  -8 -99 -65 -99</code></pre>
+#&gt; [1]  -8 -99 -99   2</code></pre>
 <p><strong>A quick shortcut to shuffle integers</strong></p>
 <pre class="r white"><code>sample(10)
-#&gt;  [1]  3  7  5  4  6  1  9  8 10  2</code></pre>
+#&gt;  [1]  3  2  4  8  1 10  6  9  5  7</code></pre>
 </div>
 <div id="some-special-values" class="section level3">
 <h3>Some Special Values</h3>
@@ -205,7 +219,7 @@ rep_times
 <p>Let’s first randomly assign some values as NA to our vector:</p>
 <pre class="r white"><code>rep_times[sample(length(rep_times), 4)] &lt;- NA
 rep_times
-#&gt;  [1]  NA  15  -8  NA -65   2  NA  -8  NA -65</code></pre>
+#&gt;  [1]  NA  15  -8 -99  NA  NA  15  -8 -99  NA</code></pre>
 <p>Now to find how many or what proportion of NAs we have, we could use <code>is.na</code> function:</p>
 <pre class="r white"><code>sum(is.na(rep_times))
 #&gt; [1] 4</code></pre>
@@ -218,15 +232,282 @@ rep_times
 #&gt; [1] NA</code></pre>
 <p>But R provides arguments in these functions, and others, to ignore NAs while computing these statistics:</p>
 <pre class="r white"><code>sum(rep_times, na.rm = TRUE)
-#&gt; [1] -129</code></pre>
+#&gt; [1] -184</code></pre>
 <pre class="r white"><code>mean(rep_times, na.rm = TRUE)
-#&gt; [1] -21.5</code></pre>
-<p><strong>What to do with these NAs?</strong></p>
-<p>There are two basic treatments we can do with vectors containing NAs. 1. We can remove those observations:</p>
-<pre class="r white"><code>rep_times_na_removed &lt;- rep_times[!is.na(rep_times)]</code></pre>
+#&gt; [1] -30.66667</code></pre>
+<p><em>What to do with these NAs?</em></p>
+<p>There are two basic treatments we can do with vectors containing NAs.</p>
+<ol style="list-style-type: decimal">
+<li>We can remove those observations:</li>
+</ol>
+<pre class="r white"><code>rep_times_na_removed &lt;- rep_times[!is.na(rep_times)]
+rep_times_na_removed
+#&gt; [1]  15  -8 -99  15  -8 -99</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>We can replace NAs with the mean of rest of observations:</li>
 </ol>
 <pre class="r white"><code>rep_times_clean &lt;- rep_times
-rep_times_clean[is.na(rep_times_clean)] &lt;- mean(rep_times_clean, na.rm = TRUE)</code></pre>
+rep_times_clean[is.na(rep_times_clean)] &lt;- mean(rep_times_clean, na.rm = TRUE)
+rep_times_clean
+#&gt;  [1] -30.66667  15.00000  -8.00000 -99.00000 -30.66667 -30.66667  15.00000
+#&gt;  [8]  -8.00000 -99.00000 -30.66667</code></pre>
+<p><strong>Inf and NaN</strong></p>
+<p>Although not created intentionally, some chain of math operations in our code may lead to situations where we are dividing by 0. We want to avoid these situations since this will lead to errors and exceptions. So it is a good idea to check for these conditions on inputs before using the inputs in our functions. <code>is.infinite</code> and <code>is.nan</code> functions can be used to check these conditions:</p>
+<pre class="r white"><code>undesirable &lt;- c(0, 1) / 0
+undesirable
+#&gt; [1] NaN Inf</code></pre>
+<pre class="r white"><code>is.infinite(undesirable)
+#&gt; [1] FALSE  TRUE</code></pre>
+<pre class="r white"><code>is.nan(undesirable)
+#&gt; [1]  TRUE FALSE</code></pre>
+</div>
+<div id="sequences-for-loops" class="section level3">
+<h3>Sequences for Loops</h3>
+<p>Sometimes we need a vector of indices of a vector so we can do iterations, loops etc. <code>seq_along</code> will be a useful function for that. This will generate an index vector 1, 2,…, length(vector).</p>
+<pre class="r white"><code>seq_along(rep_times)
+#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+</div>
+<div id="creating-an-empty-vector" class="section level3">
+<h3>Creating an empty vector</h3>
+<p>We may want to create an empty vector sometimes. This will be useful when we want to populate the vector using loops.</p>
+<pre class="r white"><code>new_num &lt;- vector(&quot;numeric&quot;, 10)
+new_log &lt;- vector(&quot;logical&quot;, 10)
+new_num
+#&gt;  [1] 0 0 0 0 0 0 0 0 0 0</code></pre>
+<pre class="r white"><code>new_log
+#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+</div>
+<div id="some-useful-vector-transformations" class="section level3">
+<h3>Some Useful Vector Transformations</h3>
+<p><strong>Recenter around mean 0</strong></p>
+<pre class="r white"><code>data &lt;- sample(1:20, 10) * sample(10)
+data - mean(data)
+#&gt;  [1] -19.3 -34.3  56.7 -34.3  26.7  -7.3  16.7  33.7  -3.3 -35.3</code></pre>
+<p><strong>Recenter around mean 0 and standard deviation 1</strong></p>
+<pre class="r white"><code>(data - mean(data)) / sd(data)
+#&gt;  [1] -0.5978898 -1.0625710  1.7564949 -1.0625710  0.8271325 -0.2261448
+#&gt;  [7]  0.5173450  1.0439837 -0.1022299 -1.0935497</code></pre>
+<p><strong>Rescale so all values are between 0 and 1</strong></p>
+<pre class="r white"><code>(data- min(data)) / range(data)
+#&gt;  [1]  2.00  0.01 11.50  0.01  7.75  0.28  6.50  0.69  4.00  0.00</code></pre>
+</div>
+<div id="comparing-two-vectors" class="section level3">
+<h3>Comparing Two Vectors</h3>
+<p>Sometimes we just want to check if two vectors are equal. <code>all.equal</code> can be a useful function for that:</p>
+<pre class="r white"><code>x1 &lt;- c(1, 2, 3)
+y1 &lt;- c(1, 2, 3)
+y2 &lt;- c(2, 3, 4)
+all.equal(x1, y1)
+#&gt; [1] TRUE</code></pre>
+<pre class="r white"><code>all.equal(x1, y2)
+#&gt; [1] &quot;Mean relative difference: 0.5&quot;</code></pre>
+</div>
+<div id="third-type-of-atomic-vector" class="section level3">
+<h3>Third Type of Atomic Vector</h3>
+<p>Ok, the third and last type of atomic vector is <code>character</code> which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:</p>
+<pre class="r white"><code>x &lt;- typeof(rep_times)
+x
+#&gt; [1] &quot;double&quot;</code></pre>
+<pre class="r white"><code>typeof(x)
+#&gt; [1] &quot;character&quot;</code></pre>
+<pre class="r white"><code>is_character(x)
+#&gt; [1] TRUE</code></pre>
+<p>Mastering <code>Regular Expressions</code> is key to working with character data so we will learn the basics here. We are going to use <code>stringr</code> package to play with our character vectors.</p>
+<pre class="r white"><code>library(stringr)</code></pre>
+<p>You can create a character vector by entering anything inside quotes. We are going to use double quotes for consistency:</p>
+<pre class="r white"><code>greet &lt;- &quot;hello!&quot;
+greet
+#&gt; [1] &quot;hello!&quot;</code></pre>
+<pre class="r white"><code>typeof(greet)
+#&gt; [1] &quot;character&quot;</code></pre>
+<pre class="r white"><code>is_character(greet)
+#&gt; [1] TRUE</code></pre>
+<p>Alright, let’s create another vector and combine the two with <code>c</code> just like we did earler for numeric vectors:</p>
+<pre class="r white"><code>subject &lt;- &quot;world&quot;
+greetings &lt;- c(greet, subject)
+greetings
+#&gt; [1] &quot;hello!&quot; &quot;world&quot;</code></pre>
+<pre class="r white"><code>length(greetings)
+#&gt; [1] 2</code></pre>
+<p>So our greetings vector contains two <em>string</em> elements. It is interesting to note that both strings can have arbitrary number of characters. Let’s say we want to know how many characters each string element has, we will use <code>str_length</code> function:</p>
+<pre class="r white"><code>str_length(greetings)
+#&gt; [1] 6 5</code></pre>
+<p><strong>Combining elements of a vector</strong></p>
+<p>If we want to combine the individual elements of a single character vector, we will use <code>str_c</code> function with <em>collapse</em> argument:</p>
+<pre class="r white"><code>str_c(greetings, collapse = &quot;&quot;)
+#&gt; [1] &quot;hello!world&quot;</code></pre>
+<p><strong>Combining elements of two vectors</strong></p>
+<p>If we want to combine two character vectors (element wise), we will use the same <code>str_c</code> function but with <em>sep</em> argument:</p>
+<pre class="r white"><code>str_c(greetings, &quot;!&quot;, sep = &quot;&quot;)
+#&gt; [1] &quot;hello!!&quot; &quot;world!&quot;</code></pre>
+</div>
+<div id="sorting-character-vectors-and-changing-case" class="section level3">
+<h3>Sorting Character Vectors and Changing Case</h3>
+<p>We will use data set, <code>words</code> available in <em>stringr</em> for this exercise:</p>
+<pre class="r white"><code>word_sample &lt;- words[sample(length(words), 5)]
+word_sample
+#&gt; [1] &quot;condition&quot; &quot;part&quot;      &quot;single&quot;    &quot;film&quot;      &quot;doubt&quot;</code></pre>
+<pre class="r white"><code>str_sort(word_sample, locale = &quot;en&quot;)
+#&gt; [1] &quot;condition&quot; &quot;doubt&quot;     &quot;film&quot;      &quot;part&quot;      &quot;single&quot;</code></pre>
+<pre class="r white"><code>str_to_lower(word_sample)
+#&gt; [1] &quot;condition&quot; &quot;part&quot;      &quot;single&quot;    &quot;film&quot;      &quot;doubt&quot;</code></pre>
+<pre class="r white"><code>str_to_upper(word_sample)
+#&gt; [1] &quot;CONDITION&quot; &quot;PART&quot;      &quot;SINGLE&quot;    &quot;FILM&quot;      &quot;DOUBT&quot;</code></pre>
+<pre class="r white"><code>str_to_title(word_sample)
+#&gt; [1] &quot;Condition&quot; &quot;Part&quot;      &quot;Single&quot;    &quot;Film&quot;      &quot;Doubt&quot;</code></pre>
+</div>
+<div id="pattern-matching-in-character-vectors-using-regular-expressions" class="section level3">
+<h3>Pattern Matching in Character Vectors using Regular Expressions</h3>
+<p>Now we are going to scratch the surface of regular expressions. Regular expressions is a subject in itself in computing world but we will cover minimum stuff just to get us started with cleaning data where needed and not worry (yet) about text analysis.</p>
+<blockquote>
+<p>Everything in ASCII (or Unicode) is a <em>character</em> (letters, digits, spaces, punctuations, etc.) and sequence of characters is called a <em>string</em>.</p>
+</blockquote>
+<p><em>stringr</em> has different functions to do different things using regular expressions but they have the same format. We will use one, <code>str_extract</code>, which extracts the matched pattern. At the end we will apply our pattern matching skills to other tools. Let’s begin by picking five random strings from <code>sentences</code> data available in <em>stringr</em>. Note that we are using <code>set.seed</code> function, this lets us repeatedly get the same set of sentences:</p>
+<pre class="r white"><code>set.seed(1234)
+sent_five &lt;- sentences[sample(length(sentences), 5)]
+sent_five
+#&gt; [1] &quot;See the cat glaring at the scared mouse.&quot;   
+#&gt; [2] &quot;Drop the ashes on the worn old rug.&quot;        
+#&gt; [3] &quot;The smell of burned rags itches my nose.&quot;   
+#&gt; [4] &quot;He wheeled the bike past. the winding road.&quot;
+#&gt; [5] &quot;Green moss grows on the northern side.&quot;</code></pre>
+<p><strong>Literal match - just type what you want to match</strong></p>
+<pre class="r white"><code>str_extract(sent_five, &quot;northern&quot;)
+#&gt; [1] NA         NA         NA         NA         &quot;northern&quot;</code></pre>
+<p><strong>Use dot (.) to match any character</strong></p>
+<p>Here we introduce <em>regex</em>’s first metacharacter (something that is not matched literally but indicates some pattern). “.” will match <em>any single character</em>. Let’s say we are interested in grabbing ten characters following <em>the</em>:</p>
+<pre class="r white"><code>str_extract(sent_five, &quot;the..........&quot;)
+#&gt; [1] &quot;the cat glari&quot; &quot;the ashes on &quot; NA              &quot;the bike past&quot;
+#&gt; [5] &quot;the northern &quot;</code></pre>
+<p>It picked <em>the</em> and the following ten characters including spaces. Note that it did not pick <em>The</em> from third sentence because it starts with a capital T. If we want to disregard the case, there are multiple ways but let’s create a <em>character class</em> in this case to solve the problem.</p>
+<p><strong>Use character class [] to match one of the characters defined in the class</strong>:</p>
+<pre class="r white"><code>str_extract(sent_five, &quot;[Tt]he..........&quot;)
+#&gt; [1] &quot;the cat glari&quot; &quot;the ashes on &quot; &quot;The smell of &quot; &quot;the bike past&quot;
+#&gt; [5] &quot;the northern &quot;</code></pre>
+<p>Now it matched either t or T followed by he followed by any ten characters. Great, now let’s say we want to pick sentences that begin with The or the. In this case, it will only be the third sentence.</p>
+<ul>
+<li>appending ^ to pattern inside [] will match all characters <em>excluding</em> those defined in the class.</li>
+</ul>
+<p><strong>^ to match the beginning of the string</strong></p>
+<p>If you want to match a pattern only at the beginning of the string, you would prepend your pattern with ^:</p>
+<pre class="r white"><code>str_extract(sent_five, &quot;^[Tt]he..........&quot;)
+#&gt; [1] NA              NA              &quot;The smell of &quot; NA             
+#&gt; [5] NA</code></pre>
+<p><strong>$ to match the end of the string</strong></p>
+<p>Append your pattern with $ to match it only at the end of the string:</p>
+<pre class="r white"><code>str_extract(sent_five, &quot;mouse$&quot;)
+#&gt; [1] NA NA NA NA NA</code></pre>
+<p>Hmm..it did not match our first string that we were hoping for. Aahhh, we missed the period (.). All strings are ending with a period so we have to include that too in our pattern, but remember that period already is a metacharacter. So how do we let regex engine know that we want the literal period. Well, we append our metacharacter with an <em>escape character</em>, \. One problem here is that \ is also used in our strings and regular expressions are string arguments to our functions. We we have to escape the escape character!</p>
+<blockquote>
+<p>To match regex’s metacharacter literally, append it with two escape charaters: \\</p>
+</blockquote>
+<pre class="r white"><code>str_extract(sent_five, &quot;mouse\\.$&quot;)
+#&gt; [1] &quot;mouse.&quot; NA       NA       NA       NA</code></pre>
+<p><strong>Use <code>writeLines</code> to check if your regex pattern is what you expected</strong></p>
+<p>Since these escape characters can cause confusion on what the regex engine is finally seeing, it is a good idea to feed our argument to <code>writeLines</code> first:</p>
+<pre class="r white"><code>writeLines(&quot;mouse\\.$&quot;)
+#&gt; mouse\.$</code></pre>
+<p><strong>Repeating Patterns</strong></p>
+<p>So far we have looked at single character matches. So if we want to match two capital letter in the following vector, we will define a character class and repeat it twice:</p>
+<pre class="r white"><code>states &lt;- c(&quot;AL&quot;, &quot;MI&quot;, &quot;Hawaii&quot;, &quot;ME&quot;, &quot;Illinois&quot; )
+str_extract(states, &quot;[A-Z][A-Z]&quot;)
+#&gt; [1] &quot;AL&quot; &quot;MI&quot; NA   &quot;ME&quot; NA</code></pre>
+<p>This can get messy quickly, say if we want to match five capital letters, or ten digits. It turns out <em>regex engine</em> has a very powerful feature of matching repetetive patterns.</p>
+<ul>
+<li>{n} match preceding character or group exactly <em>n</em> number of times:</li>
+</ul>
+<pre class="r white"><code>str_extract(states, &quot;[A-Z]{2}&quot;)
+#&gt; [1] &quot;AL&quot; &quot;MI&quot; NA   &quot;ME&quot; NA</code></pre>
+<ul>
+<li>{m,} match the preceding character or a group m or more number of times:</li>
+</ul>
+<pre class="r white"><code>str_extract(sent_five, &quot;l{2,}&quot;)
+#&gt; [1] NA   NA   &quot;ll&quot; NA   NA</code></pre>
+<ul>
+<li><p>similar concept applies for {,n} to match up to <em>n</em> times and {m,n} to match at least <em>m</em> times and at the most <em>n</em> times. There are shortcuts for some common repetitions:</p></li>
+<li><p>+ to match 1 or more times:</p></li>
+</ul>
+<pre class="r white"><code>money &lt;- c(&quot;$23&quot;, &quot;$ab&quot;, &quot;$4000&quot;)
+str_extract(money, &quot;\\$[0-9]+&quot;)
+#&gt; [1] &quot;$23&quot;   NA      &quot;$4000&quot;</code></pre>
+<ul>
+<li>* to match 0 to more times:</li>
+</ul>
+<pre class="r white"><code>str_extract(money, &quot;\\$[0-9]*&quot;)
+#&gt; [1] &quot;$23&quot;   &quot;$&quot;     &quot;$4000&quot;</code></pre>
+<ul>
+<li>? to match 0 or 1 times:</li>
+</ul>
+<pre class="r white"><code>days &lt;- c(&quot;sunday&quot;, &quot;mon&quot;, &quot;tue&quot;, &quot;wednesday&quot;)
+str_extract(days, &quot;((sun)|(mon)|(tue)|(wednes))(day)?&quot;)
+#&gt; [1] &quot;sunday&quot;    &quot;mon&quot;       &quot;tue&quot;       &quot;wednesday&quot;</code></pre>
+<p>Here we also quickly demonstrated the conecept of or, |, and groups using ()</p>
+<p><strong>More character classes</strong></p>
+<p>Earlier we learned a couple of examples of how to define a character class. Another example is [A-Za-z0-9] will match any letter or digit. There are shortcuts available however for commonly used classes. These when used with repetetion matches results in can result in flexible and powerful patterns:</p>
+<ul>
+<li>\d will match any single digit:</li>
+</ul>
+<pre class="r white"><code>str_extract(money, &quot;\\$\\d+&quot;)
+#&gt; [1] &quot;$23&quot;   NA      &quot;$4000&quot;</code></pre>
+<ul>
+<li>\D will match any single non-digit</li>
+</ul>
+<pre class="r white"><code>address &lt;- c(&quot;abc street&quot;, &quot;NY&quot;, &quot;US&quot;, &quot;54875&quot;)
+str_extract(address, &quot;\\D+&quot;)
+#&gt; [1] &quot;abc street&quot; &quot;NY&quot;         &quot;US&quot;         NA</code></pre>
+<ul>
+<li>\w will match any alphanumeric character including _. This is equivalent to [A-Za-z0-9_]</li>
+</ul>
+<pre class="r white"><code>some_txt &lt;- c(&quot;$$Name..&quot;, &quot;   $Class--&quot;, &quot;$$$Address$$   &quot;)
+str_extract(some_txt, &quot;\\w+&quot;)
+#&gt; [1] &quot;Name&quot;    &quot;Class&quot;   &quot;Address&quot;</code></pre>
+<ul>
+<li>\W will match any non-alphanumeric character</li>
+</ul>
+<pre class="r white"><code>str_extract(some_txt , &quot;\\W+&quot;)
+#&gt; [1] &quot;$$&quot;   &quot;   $&quot; &quot;$$$&quot;</code></pre>
+<ul>
+<li>\s will match any whitespace (space, tab, newline, carriage return)</li>
+</ul>
+<pre class="r white"><code>str_extract(some_txt , &quot;\\s+&quot;)
+#&gt; [1] NA    &quot;   &quot; &quot;   &quot;</code></pre>
+<ul>
+<li>\S will match any non-whitespace</li>
+</ul>
+<pre class="r white"><code>str_extract(some_txt , &quot;\\S+&quot;)
+#&gt; [1] &quot;$$Name..&quot;     &quot;$Class--&quot;     &quot;$$$Address$$&quot;</code></pre>
+<ul>
+<li>\b will match a word boundary (end of word)</li>
+</ul>
+<pre class="r white"><code>str_extract(sent_five, &quot;\\w+\\b&quot;)
+#&gt; [1] &quot;See&quot;   &quot;Drop&quot;  &quot;The&quot;   &quot;He&quot;    &quot;Green&quot;</code></pre>
+</div>
+<div id="stringr-tools" class="section level3">
+<h3>Stringr Tools</h3>
+<p>Ok, now that we are comfortable using regular expressions, we need to put these into use with the available tools in stringr. We have already used one - <code>str_extract</code> which extracts the matched pattern. There are few others that can be very useful.</p>
+<p><strong>Logical output if a match is found</strong></p>
+<pre class="r white"><code>str_detect(address, &quot;\\D+&quot;)
+#&gt; [1]  TRUE  TRUE  TRUE FALSE</code></pre>
+<p>Note that this approach can also be used to simplify regular expressions.</p>
+<p><strong>How many matches are there in the string</strong></p>
+<pre class="r white"><code>str_count(sent_five, &quot;the&quot;)
+#&gt; [1] 2 2 0 2 2</code></pre>
+<p><strong>Replace a match with new string</strong></p>
+<pre class="r white"><code>str_replace(sent_five, &quot;the&quot;, &quot;***&quot;)
+#&gt; [1] &quot;See *** cat glaring at the scared mouse.&quot;   
+#&gt; [2] &quot;Drop *** ashes on the worn old rug.&quot;        
+#&gt; [3] &quot;The smell of burned rags itches my nose.&quot;   
+#&gt; [4] &quot;He wheeled *** bike past. the winding road.&quot;
+#&gt; [5] &quot;Green moss grows on *** northern side.&quot;</code></pre>
+<p><strong>Split a string into pieces</strong></p>
+<pre class="r white"><code>str_split(sent_five[1], &quot; &quot;)
+#&gt; [[1]]
+#&gt; [1] &quot;See&quot;     &quot;the&quot;     &quot;cat&quot;     &quot;glaring&quot; &quot;at&quot;      &quot;the&quot;     &quot;scared&quot; 
+#&gt; [8] &quot;mouse.&quot;</code></pre>
+<p>Note that this gave us a <code>list</code> object, which we have not studied yet, but you can see the function of splitting a string here.</p>
+<p><strong>Not one but all matches</strong> All the tools that we have looked at so far will match and give you the <em>first</em> occurence in a string. All others are ignored. Above functions have equivalent <code>_all</code> commands that will apply to all matches. For example, <code>str_extract_all</code> will extract all matches. These will result in a data structure called <code>list</code>, which we have not studied yet but will look into in the future.</p>
+</div>
+<div id="factors---an-augmented-vector-type" class="section level3">
+<h3>Factors - an Augmented Vector Type</h3>
+<p>Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - <code>integer</code>.</p>
 </div>

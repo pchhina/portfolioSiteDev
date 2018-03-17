@@ -4,7 +4,7 @@ author: "Paramjot Singh"
 date: 2018-03-11T19:14:27-05:00
 draft: FALSE
 tags: ["R"]
-categories: ["Tools"]
+categories: ["Fundamentals"]
 output:
   blogdown::html_page:
     toc: true

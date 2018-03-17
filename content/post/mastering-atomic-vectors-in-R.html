@@ -4,7 +4,7 @@ author: "Paramjot Singh"
 date: 2018-03-11T19:14:27-05:00
 draft: FALSE
 tags: ["R"]
-categories: ["Tools"]
+categories: ["Fundamentals"]
 output:
   blogdown::html_page:
     toc: true
@@ -133,7 +133,7 @@ norm_unique &lt;- rnorm(25, mean = 10, sd = 5)</code></pre>
 <h3>Chaining of Functions</h3>
 <p>The output of one function can be used as an input to another function. Say we want to find standard deviation of 50 standard normals:</p>
 <pre class="r white"><code>sd(rnorm(50))
-#&gt; [1] 0.7480288</code></pre>
+#&gt; [1] 1.008501</code></pre>
 <p>You probably want to avoid more convoluted chains as it will be confusing to read.</p>
 </div>
 <div id="selecting-few-elements-of-a-vector-subsetting" class="section level3">
@@ -204,13 +204,13 @@ rep_times
 <h3>Pick Elements Randomly</h3>
 <p>So far we have looked at subsetting of vectors where we know which element we need either by their <em>index</em> or by <em>logical subsettin</em>. Sometimes we want to randomly select some elements, and <code>sample</code> function will come to our rescue here:</p>
 <pre class="r white"><code>sample(rep_times, 5)    # randomly select five elements from rep_times
-#&gt; [1] -65 -65   2  -8 -99</code></pre>
+#&gt; [1]  -8 -99 -99   2  15</code></pre>
 <p><strong>Select certain fraction of elements</strong></p>
 <pre class="r white"><code>sample(rep_times, 0.4 * length(rep_times))    # 40% of elements
-#&gt; [1]   2 -65 -99 -99</code></pre>
+#&gt; [1]  15 -99   2 -65</code></pre>
 <p><strong>A quick shortcut to shuffle integers</strong></p>
 <pre class="r white"><code>sample(10)
-#&gt;  [1]  4  9  6  8  1  7  5  3 10  2</code></pre>
+#&gt;  [1]  7  5  1  8  9 10  3  2  6  4</code></pre>
 </div>
 <div id="some-special-values" class="section level3">
 <h3>Some Special Values</h3>
@@ -220,7 +220,7 @@ rep_times
 <p>Let’s first randomly assign some values as NA to our vector:</p>
 <pre class="r white"><code>rep_times[sample(length(rep_times), 4)] &lt;- NA
 rep_times
-#&gt;  [1]  NA  15  -8  NA -65   2  NA  -8  NA -65</code></pre>
+#&gt;  [1]   2  NA  -8 -99  NA   2  15  -8  NA  NA</code></pre>
 <p>Now to find how many or what proportion of NAs we have, we could use <code>is.na</code> function:</p>
 <pre class="r white"><code>sum(is.na(rep_times))
 #&gt; [1] 4</code></pre>
@@ -233,9 +233,9 @@ rep_times
 #&gt; [1] NA</code></pre>
 <p>But R provides arguments in these functions, and others, to ignore NAs while computing these statistics:</p>
 <pre class="r white"><code>sum(rep_times, na.rm = TRUE)
-#&gt; [1] -129</code></pre>
+#&gt; [1] -96</code></pre>
 <pre class="r white"><code>mean(rep_times, na.rm = TRUE)
-#&gt; [1] -21.5</code></pre>
+#&gt; [1] -16</code></pre>
 <p><em>What to do with these NAs?</em></p>
 <p>There are two basic treatments we can do with vectors containing NAs.</p>
 <ol style="list-style-type: decimal">
@@ -243,14 +243,14 @@ rep_times
 </ol>
 <pre class="r white"><code>rep_times_na_removed &lt;- rep_times[!is.na(rep_times)]
 rep_times_na_removed
-#&gt; [1]  15  -8 -65   2  -8 -65</code></pre>
+#&gt; [1]   2  -8 -99   2  15  -8</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>We can replace NAs with the mean of rest of observations:</li>
 </ol>
 <pre class="r white"><code>rep_times_clean &lt;- rep_times
 rep_times_clean[is.na(rep_times_clean)] &lt;- mean(rep_times_clean, na.rm = TRUE)
 rep_times_clean
-#&gt;  [1] -21.5  15.0  -8.0 -21.5 -65.0   2.0 -21.5  -8.0 -21.5 -65.0</code></pre>
+#&gt;  [1]   2 -16  -8 -99 -16   2  15  -8 -16 -16</code></pre>
 <p><strong>Inf and NaN</strong></p>
 <p>Although not created intentionally, some chain of math operations in our code may lead to situations where we are dividing by 0. We want to avoid these situations since this will lead to errors and exceptions. So it is a good idea to check for these conditions on inputs before using the inputs in our functions. <code>is.infinite</code> and <code>is.nan</code> functions can be used to check these conditions:</p>
 <pre class="r white"><code>undesirable &lt;- c(0, 1) / 0
@@ -282,15 +282,15 @@ new_num
 <p><strong>Recenter around mean 0</strong></p>
 <pre class="r white"><code>data &lt;- sample(1:20, 10) * sample(10)
 data - mean(data)
-#&gt;  [1] -30.5 -34.5 -16.5   9.5 -47.5 -41.5  54.5  57.5  39.5   9.5</code></pre>
+#&gt;  [1]  34.2   1.2  23.2 -41.8 -57.8  64.2 -51.8 -31.8  18.2  42.2</code></pre>
 <p><strong>Recenter around mean 0 and standard deviation 1</strong></p>
 <pre class="r white"><code>(data - mean(data)) / sd(data)
-#&gt;  [1] -0.7628047 -0.8628446 -0.4126648  0.2375949 -1.1879745 -1.0379145
-#&gt;  [7]  1.3630444  1.4380743  0.9878946  0.2375949</code></pre>
+#&gt;  [1]  0.79333480  0.02783631  0.53816864 -0.96963143 -1.34078221
+#&gt;  [6]  1.48924253 -1.20160067 -0.73766219  0.42218402  0.97891020</code></pre>
 <p><strong>Rescale so all values are between 0 and 1</strong></p>
 <pre class="r white"><code>(data- min(data)) / (max(data) - min(data))
-#&gt;  [1] 0.16190476 0.12380952 0.29523810 0.54285714 0.00000000 0.05714286
-#&gt;  [7] 0.97142857 1.00000000 0.82857143 0.54285714</code></pre>
+#&gt;  [1] 0.75409836 0.48360656 0.66393443 0.13114754 0.00000000 1.00000000
+#&gt;  [7] 0.04918033 0.21311475 0.62295082 0.81967213</code></pre>
 </div>
 <div id="comparing-two-vectors" class="section level3">
 <h3>Comparing Two Vectors</h3>
@@ -347,15 +347,15 @@ greetings
 <p>We will use data set, <code>words</code> available in <em>stringr</em> for this exercise:</p>
 <pre class="r white"><code>word_sample &lt;- words[sample(length(words), 5)]
 word_sample
-#&gt; [1] &quot;flat&quot;   &quot;tie&quot;    &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;</code></pre>
+#&gt; [1] &quot;matter&quot; &quot;wish&quot;   &quot;some&quot;   &quot;hear&quot;   &quot;such&quot;</code></pre>
 <pre class="r white"><code>str_sort(word_sample, locale = &quot;en&quot;)
-#&gt; [1] &quot;flat&quot;   &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;   &quot;tie&quot;</code></pre>
+#&gt; [1] &quot;hear&quot;   &quot;matter&quot; &quot;some&quot;   &quot;such&quot;   &quot;wish&quot;</code></pre>
 <pre class="r white"><code>str_to_lower(word_sample)
-#&gt; [1] &quot;flat&quot;   &quot;tie&quot;    &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;</code></pre>
+#&gt; [1] &quot;matter&quot; &quot;wish&quot;   &quot;some&quot;   &quot;hear&quot;   &quot;such&quot;</code></pre>
 <pre class="r white"><code>str_to_upper(word_sample)
-#&gt; [1] &quot;FLAT&quot;   &quot;TIE&quot;    &quot;INDEED&quot; &quot;OLD&quot;    &quot;RISE&quot;</code></pre>
+#&gt; [1] &quot;MATTER&quot; &quot;WISH&quot;   &quot;SOME&quot;   &quot;HEAR&quot;   &quot;SUCH&quot;</code></pre>
 <pre class="r white"><code>str_to_title(word_sample)
-#&gt; [1] &quot;Flat&quot;   &quot;Tie&quot;    &quot;Indeed&quot; &quot;Old&quot;    &quot;Rise&quot;</code></pre>
+#&gt; [1] &quot;Matter&quot; &quot;Wish&quot;   &quot;Some&quot;   &quot;Hear&quot;   &quot;Such&quot;</code></pre>
 </div>
 <div id="pattern-matching-in-character-vectors-using-regular-expressions" class="section level3">
 <h3>Pattern Matching in Character Vectors using Regular Expressions</h3>

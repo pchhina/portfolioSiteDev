@@ -34,6 +34,7 @@ output:
 <li><a href="#pattern-matching-in-character-vectors-using-regular-expressions">Pattern Matching in Character Vectors using Regular Expressions</a></li>
 <li><a href="#stringr-tools">Stringr Tools</a></li>
 <li><a href="#factors---an-augmented-vector-type">Factors - an Augmented Vector Type</a></li>
+<li><a href="#summary">Summary</a></li>
 </ul>
 </div>
 
@@ -43,11 +44,11 @@ output:
 </blockquote>
 <div id="creating-our-first-atomic-vector" class="section level3">
 <h3>Creating Our First Atomic Vector</h3>
-<p>We are going to create and manipulate vectors using existing functions and the resulting vectors will be objects. To create the objects (atomic vectors in our case), we will use an assignment operator (&lt;-). So we create our first object (‘num_one’), and assign it a value of 3:</p>
+<p>We are going to create and manipulate vectors using existing functions and the resulting objects will be atomic vectors. To create the objects (atomic vectors in our case), we will use an assignment operator (&lt;-). So we create our first object (<em>num_one</em>), and assign it a value of 3:</p>
 <pre class="r white"><code>num_one &lt;- 3</code></pre>
 <p>Atomic vectors can only have one ‘type’ of data, and we start with <code>numeric</code> data type since this will be the most common one for our data analysis work. Our simple vector contains only one element (commonly called a scalar), but in all respects, it is a vector in R. <code>Expressions</code> on the right side are evaluated first and then assigned to the object name on the left. Let’s look at an expression evaluation:</p>
 <pre class="r white"><code>num_one_log &lt;- log(3)</code></pre>
-<p>log(3) is evaluated first and then assigned to an object named ‘num_one_log’. Let’s create a slightly longer vector:</p>
+<p>log(3) is evaluated first and then assigned to an object named <em>num_one_log</em>. Let’s create a slightly longer vector:</p>
 <pre class="r white"><code>num_five &lt;- c(2, 15, -8, 0, -65)</code></pre>
 <p>Now we have a vector containing five elements instead of one. Here we make use of a function, <code>c</code>, that ‘concatenates’ the objects that are fed to it as its <code>arguments</code>. A function is ‘called’ by typing its name (in this case its just <em>c</em>) followed by one or more arguments typed inside parenthesis.</p>
 </div>
@@ -86,21 +87,21 @@ rep_each &lt;- rep(num_five, each = 2)
 rep_times &lt;- rep(num_five, times = 2)
 norm_std &lt;- rnorm(25)
 norm_unique &lt;- rnorm(25, mean = 10, sd = 5)</code></pre>
-<p>First we created a simple sequence of whole numbers. Then we create a sequence with arbitrary start and end points and fixed interval between the elements. After that we created another one (seq_length) with desired number of elements between arbitrary start and end points. Then we created a vector by repeating each element twice and then by repeating the vector twice. In the end we created a vector (norm_std) with 25 elements from a standard normal distribution and then with non-standard normal distribution.</p>
+<p>First we created a simple sequence of whole numbers. Then we used <code>seq</code> function to create a sequence with arbitrary start and end points and fixed interval between the elements. After that we created another one (seq_length) with desired number of elements between arbitrary start and end points. Then using <code>rep</code> function, we created a vector by repeating each element twice and then by repeating the vector twice. In the end we created a vector (norm_std) with 25 elements from a standard normal distribution using <code>rnorm</code> and lastly created a vector with non-standard normal distribution.</p>
 </div>
 <div id="vector-operations" class="section level3">
 <h3>Vector Operations</h3>
-<p>Alright, now that we know how to create vector objects, let’s play with these objects a bit and see what kind of operations we can perform on our vectors. We will use one of the vectors we created earlier:</p>
+<p>Now that we know how to create vector objects, let’s play with these objects a bit and see what kind of operations we can perform on our vectors. We will use one of the vectors we created earlier:</p>
 <pre class="r white"><code>rep_times
 #&gt;  [1]   2  15  -8   0 -65   2  15  -8   0 -65</code></pre>
 <p><strong>Arithmatic Operations</strong></p>
-<p>Alright, we can do all kinds of math operations with our vectors. We are not going to store these in new objects but watch these <em>function calls</em> in action:</p>
+<p>We can do all kinds of math operations with our vectors. We are not going to store these in new objects but watch these <em>function calls</em> in action:</p>
 <pre class="r white"><code>rep_times ^ 2
 #&gt;  [1]    4  225   64    0 4225    4  225   64    0 4225</code></pre>
 <pre class="r white"><code>rep_times * 1 / 5
 #&gt;  [1]   0.4   3.0  -1.6   0.0 -13.0   0.4   3.0  -1.6   0.0 -13.0</code></pre>
 <p>Note that the way these operations are handled is slightly different than you might think. *, ^ and other operators are <em>vectorized</em> - so first the number 2, which is a vector of length one, is <em>recycled</em> to make it the same length as the larger vector (ten in this case). Then each element of first vector is operated upon with the corresponding element of the second vector.</p>
-<p>An interesting math operator is the modulo operator - to look at different parts of answer of division operation. If you divide two numbers, top number is called <em>divident</em> and bottom number is called <em>divisor</em>. The result will be a whole number (<em>quotient</em>), and whatever fraction is left out is <em>remainder</em>.</p>
+<p>There is an interesting math operator called <em>modulo operator</em> (<code>%%</code>) - which is used to get different parts of answer of division operation. If you divide two numbers, top number is called <em>dividend</em> and bottom number is called <em>divisor</em>. The result will be a whole number (called <em>quotient</em>), and whatever fraction is left out is <em>remainder</em>.</p>
 <pre class="r white"><code>rep_times %% 2      # get remainder of rep_times divided by 2.
 #&gt;  [1] 0 1 0 0 1 0 1 0 0 1</code></pre>
 <pre class="r white"><code>rep_times %/% 2     # get quotient of rep_times divided by 2.
@@ -132,14 +133,14 @@ norm_unique &lt;- rnorm(25, mean = 10, sd = 5)</code></pre>
 <h3>Chaining of Functions</h3>
 <p>The output of one function can be used as an input to another function. Say we want to find standard deviation of 50 standard normals:</p>
 <pre class="r white"><code>sd(rnorm(50))
-#&gt; [1] 1.042342</code></pre>
+#&gt; [1] 0.7480288</code></pre>
 <p>You probably want to avoid more convoluted chains as it will be confusing to read.</p>
 </div>
 <div id="selecting-few-elements-of-a-vector-subsetting" class="section level3">
 <h3>Selecting Few Elements of a Vector (Subsetting)</h3>
 <p>So far we have created vectors using a variety of functions. Now, if a vector is given to us and we are tasked with selecting certain elements from it, how do we do that. There are two useful ways to do that:</p>
 <p><strong>Subsetting using position</strong></p>
-<p>In R, elements of a vector are positioned(<em>indexed</em>) from 1 (many languages start at 0) to the length of the vector. So our <em>rep_times</em> vector has 10 elements, and say we want to extract first and last element, we can feed these(<em>index values</em>) as integer vector inside square brackets:</p>
+<p>In R, elements of a vector are positioned (<em>indexed</em>) from 1 (many languages start at 0) to the length of the vector. Our <em>rep_times</em> vector has 10 elements, and say we want to extract first and last element, we can feed these (<em>index values</em>) as integer vector inside square brackets:</p>
 <pre class="r white"><code>rep_times[c(1, length(rep_times))]
 #&gt; [1]   2 -65</code></pre>
 <p>If we want to select everything but the first and last element, you can put a ‘-’ sign before the vector:</p>
@@ -203,13 +204,13 @@ rep_times
 <h3>Pick Elements Randomly</h3>
 <p>So far we have looked at subsetting of vectors where we know which element we need either by their <em>index</em> or by <em>logical subsettin</em>. Sometimes we want to randomly select some elements, and <code>sample</code> function will come to our rescue here:</p>
 <pre class="r white"><code>sample(rep_times, 5)    # randomly select five elements from rep_times
-#&gt; [1]  -8   2 -99  15  -8</code></pre>
+#&gt; [1] -65 -65   2  -8 -99</code></pre>
 <p><strong>Select certain fraction of elements</strong></p>
 <pre class="r white"><code>sample(rep_times, 0.4 * length(rep_times))    # 40% of elements
-#&gt; [1]  -8 -99 -99   2</code></pre>
+#&gt; [1]   2 -65 -99 -99</code></pre>
 <p><strong>A quick shortcut to shuffle integers</strong></p>
 <pre class="r white"><code>sample(10)
-#&gt;  [1]  3  2  4  8  1 10  6  9  5  7</code></pre>
+#&gt;  [1]  4  9  6  8  1  7  5  3 10  2</code></pre>
 </div>
 <div id="some-special-values" class="section level3">
 <h3>Some Special Values</h3>
@@ -219,7 +220,7 @@ rep_times
 <p>Let’s first randomly assign some values as NA to our vector:</p>
 <pre class="r white"><code>rep_times[sample(length(rep_times), 4)] &lt;- NA
 rep_times
-#&gt;  [1]  NA  15  -8 -99  NA  NA  15  -8 -99  NA</code></pre>
+#&gt;  [1]  NA  15  -8  NA -65   2  NA  -8  NA -65</code></pre>
 <p>Now to find how many or what proportion of NAs we have, we could use <code>is.na</code> function:</p>
 <pre class="r white"><code>sum(is.na(rep_times))
 #&gt; [1] 4</code></pre>
@@ -232,9 +233,9 @@ rep_times
 #&gt; [1] NA</code></pre>
 <p>But R provides arguments in these functions, and others, to ignore NAs while computing these statistics:</p>
 <pre class="r white"><code>sum(rep_times, na.rm = TRUE)
-#&gt; [1] -184</code></pre>
+#&gt; [1] -129</code></pre>
 <pre class="r white"><code>mean(rep_times, na.rm = TRUE)
-#&gt; [1] -30.66667</code></pre>
+#&gt; [1] -21.5</code></pre>
 <p><em>What to do with these NAs?</em></p>
 <p>There are two basic treatments we can do with vectors containing NAs.</p>
 <ol style="list-style-type: decimal">
@@ -242,15 +243,14 @@ rep_times
 </ol>
 <pre class="r white"><code>rep_times_na_removed &lt;- rep_times[!is.na(rep_times)]
 rep_times_na_removed
-#&gt; [1]  15  -8 -99  15  -8 -99</code></pre>
+#&gt; [1]  15  -8 -65   2  -8 -65</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>We can replace NAs with the mean of rest of observations:</li>
 </ol>
 <pre class="r white"><code>rep_times_clean &lt;- rep_times
 rep_times_clean[is.na(rep_times_clean)] &lt;- mean(rep_times_clean, na.rm = TRUE)
 rep_times_clean
-#&gt;  [1] -30.66667  15.00000  -8.00000 -99.00000 -30.66667 -30.66667  15.00000
-#&gt;  [8]  -8.00000 -99.00000 -30.66667</code></pre>
+#&gt;  [1] -21.5  15.0  -8.0 -21.5 -65.0   2.0 -21.5  -8.0 -21.5 -65.0</code></pre>
 <p><strong>Inf and NaN</strong></p>
 <p>Although not created intentionally, some chain of math operations in our code may lead to situations where we are dividing by 0. We want to avoid these situations since this will lead to errors and exceptions. So it is a good idea to check for these conditions on inputs before using the inputs in our functions. <code>is.infinite</code> and <code>is.nan</code> functions can be used to check these conditions:</p>
 <pre class="r white"><code>undesirable &lt;- c(0, 1) / 0
@@ -282,14 +282,15 @@ new_num
 <p><strong>Recenter around mean 0</strong></p>
 <pre class="r white"><code>data &lt;- sample(1:20, 10) * sample(10)
 data - mean(data)
-#&gt;  [1] -19.3 -34.3  56.7 -34.3  26.7  -7.3  16.7  33.7  -3.3 -35.3</code></pre>
+#&gt;  [1] -30.5 -34.5 -16.5   9.5 -47.5 -41.5  54.5  57.5  39.5   9.5</code></pre>
 <p><strong>Recenter around mean 0 and standard deviation 1</strong></p>
 <pre class="r white"><code>(data - mean(data)) / sd(data)
-#&gt;  [1] -0.5978898 -1.0625710  1.7564949 -1.0625710  0.8271325 -0.2261448
-#&gt;  [7]  0.5173450  1.0439837 -0.1022299 -1.0935497</code></pre>
+#&gt;  [1] -0.7628047 -0.8628446 -0.4126648  0.2375949 -1.1879745 -1.0379145
+#&gt;  [7]  1.3630444  1.4380743  0.9878946  0.2375949</code></pre>
 <p><strong>Rescale so all values are between 0 and 1</strong></p>
-<pre class="r white"><code>(data- min(data)) / range(data)
-#&gt;  [1]  2.00  0.01 11.50  0.01  7.75  0.28  6.50  0.69  4.00  0.00</code></pre>
+<pre class="r white"><code>(data- min(data)) / (max(data) - min(data))
+#&gt;  [1] 0.16190476 0.12380952 0.29523810 0.54285714 0.00000000 0.05714286
+#&gt;  [7] 0.97142857 1.00000000 0.82857143 0.54285714</code></pre>
 </div>
 <div id="comparing-two-vectors" class="section level3">
 <h3>Comparing Two Vectors</h3>
@@ -304,7 +305,7 @@ all.equal(x1, y1)
 </div>
 <div id="third-type-of-atomic-vector" class="section level3">
 <h3>Third Type of Atomic Vector</h3>
-<p>Ok, the third and last type of atomic vector is <code>character</code> which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:</p>
+<p>The third and last type of atomic vector is <code>character</code> which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:</p>
 <pre class="r white"><code>x &lt;- typeof(rep_times)
 x
 #&gt; [1] &quot;double&quot;</code></pre>
@@ -333,11 +334,11 @@ greetings
 <pre class="r white"><code>str_length(greetings)
 #&gt; [1] 6 5</code></pre>
 <p><strong>Combining elements of a vector</strong></p>
-<p>If we want to combine the individual elements of a single character vector, we will use <code>str_c</code> function with <em>collapse</em> argument:</p>
+<p>If we want to combine the individual elements of a single character vector, we will use <code>str_c</code> function with <strong>collapse</strong> argument:</p>
 <pre class="r white"><code>str_c(greetings, collapse = &quot;&quot;)
 #&gt; [1] &quot;hello!world&quot;</code></pre>
 <p><strong>Combining elements of two vectors</strong></p>
-<p>If we want to combine two character vectors (element wise), we will use the same <code>str_c</code> function but with <em>sep</em> argument:</p>
+<p>If we want to combine two character vectors (element wise), we will use the same <code>str_c</code> function but with <strong>sep</strong> argument:</p>
 <pre class="r white"><code>str_c(greetings, &quot;!&quot;, sep = &quot;&quot;)
 #&gt; [1] &quot;hello!!&quot; &quot;world!&quot;</code></pre>
 </div>
@@ -346,15 +347,15 @@ greetings
 <p>We will use data set, <code>words</code> available in <em>stringr</em> for this exercise:</p>
 <pre class="r white"><code>word_sample &lt;- words[sample(length(words), 5)]
 word_sample
-#&gt; [1] &quot;condition&quot; &quot;part&quot;      &quot;single&quot;    &quot;film&quot;      &quot;doubt&quot;</code></pre>
+#&gt; [1] &quot;flat&quot;   &quot;tie&quot;    &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;</code></pre>
 <pre class="r white"><code>str_sort(word_sample, locale = &quot;en&quot;)
-#&gt; [1] &quot;condition&quot; &quot;doubt&quot;     &quot;film&quot;      &quot;part&quot;      &quot;single&quot;</code></pre>
+#&gt; [1] &quot;flat&quot;   &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;   &quot;tie&quot;</code></pre>
 <pre class="r white"><code>str_to_lower(word_sample)
-#&gt; [1] &quot;condition&quot; &quot;part&quot;      &quot;single&quot;    &quot;film&quot;      &quot;doubt&quot;</code></pre>
+#&gt; [1] &quot;flat&quot;   &quot;tie&quot;    &quot;indeed&quot; &quot;old&quot;    &quot;rise&quot;</code></pre>
 <pre class="r white"><code>str_to_upper(word_sample)
-#&gt; [1] &quot;CONDITION&quot; &quot;PART&quot;      &quot;SINGLE&quot;    &quot;FILM&quot;      &quot;DOUBT&quot;</code></pre>
+#&gt; [1] &quot;FLAT&quot;   &quot;TIE&quot;    &quot;INDEED&quot; &quot;OLD&quot;    &quot;RISE&quot;</code></pre>
 <pre class="r white"><code>str_to_title(word_sample)
-#&gt; [1] &quot;Condition&quot; &quot;Part&quot;      &quot;Single&quot;    &quot;Film&quot;      &quot;Doubt&quot;</code></pre>
+#&gt; [1] &quot;Flat&quot;   &quot;Tie&quot;    &quot;Indeed&quot; &quot;Old&quot;    &quot;Rise&quot;</code></pre>
 </div>
 <div id="pattern-matching-in-character-vectors-using-regular-expressions" class="section level3">
 <h3>Pattern Matching in Character Vectors using Regular Expressions</h3>
@@ -380,7 +381,7 @@ sent_five
 #&gt; [1] &quot;the cat glari&quot; &quot;the ashes on &quot; NA              &quot;the bike past&quot;
 #&gt; [5] &quot;the northern &quot;</code></pre>
 <p>It picked <em>the</em> and the following ten characters including spaces. Note that it did not pick <em>The</em> from third sentence because it starts with a capital T. If we want to disregard the case, there are multiple ways but let’s create a <em>character class</em> in this case to solve the problem.</p>
-<p><strong>Use character class [] to match one of the characters defined in the class</strong>:</p>
+<p><strong>Use character class [ ] to match one of the characters defined in the class</strong>:</p>
 <pre class="r white"><code>str_extract(sent_five, &quot;[Tt]he..........&quot;)
 #&gt; [1] &quot;the cat glari&quot; &quot;the ashes on &quot; &quot;The smell of &quot; &quot;the bike past&quot;
 #&gt; [5] &quot;the northern &quot;</code></pre>
@@ -423,9 +424,9 @@ str_extract(states, &quot;[A-Z][A-Z]&quot;)
 </ul>
 <pre class="r white"><code>str_extract(sent_five, &quot;l{2,}&quot;)
 #&gt; [1] NA   NA   &quot;ll&quot; NA   NA</code></pre>
+<p>Similar concept applies for {,n} to match up to <em>n</em> times and {m,n} to match at least <em>m</em> times and at the most <em>n</em> times. There are shortcuts for some common repetitions:</p>
 <ul>
-<li><p>similar concept applies for {,n} to match up to <em>n</em> times and {m,n} to match at least <em>m</em> times and at the most <em>n</em> times. There are shortcuts for some common repetitions:</p></li>
-<li><p>+ to match 1 or more times:</p></li>
+<li>+ to match 1 or more times:</li>
 </ul>
 <pre class="r white"><code>money &lt;- c(&quot;$23&quot;, &quot;$ab&quot;, &quot;$4000&quot;)
 str_extract(money, &quot;\\$[0-9]+&quot;)
@@ -505,9 +506,51 @@ str_extract(some_txt, &quot;\\w+&quot;)
 #&gt; [1] &quot;See&quot;     &quot;the&quot;     &quot;cat&quot;     &quot;glaring&quot; &quot;at&quot;      &quot;the&quot;     &quot;scared&quot; 
 #&gt; [8] &quot;mouse.&quot;</code></pre>
 <p>Note that this gave us a <code>list</code> object, which we have not studied yet, but you can see the function of splitting a string here.</p>
-<p><strong>Not one but all matches</strong> All the tools that we have looked at so far will match and give you the <em>first</em> occurence in a string. All others are ignored. Above functions have equivalent <code>_all</code> commands that will apply to all matches. For example, <code>str_extract_all</code> will extract all matches. These will result in a data structure called <code>list</code>, which we have not studied yet but will look into in the future.</p>
+<p><strong>Not one but all matches</strong></p>
+<p>All the tools that we have looked at so far will match and give you the <em>first</em> occurence in a string. All others are ignored. Above functions have equivalent <code>_all</code> commands that will apply to all matches. For example, <code>str_extract_all</code> will extract all matches. These will result in a data structure called <code>list</code>, which we have not studied yet but will look into in the future.</p>
 </div>
 <div id="factors---an-augmented-vector-type" class="section level3">
 <h3>Factors - an Augmented Vector Type</h3>
-<p>Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - <code>integer</code>.</p>
+<p>Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - <code>integer</code>. Often times in our data, we will see variables that are <code>categorical</code> in nature, meaning they have discrete categories. For example, sex, month name, color, class etc. These type of data are modeled with <code>factor</code>. Let’s create a simple factor vector:</p>
+<pre class="r white"><code>sex &lt;- c(&quot;M&quot;, &quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;F&quot;)
+sex_fac &lt;- factor(sex)
+sex_fac
+#&gt; [1] M M F M F
+#&gt; Levels: F M</code></pre>
+<pre class="r white"><code>is.factor(sex_fac)
+#&gt; [1] TRUE</code></pre>
+<p>R automatically assigns <code>levels</code> for the factor vector. This assignment will be alphabetical. If we don’t want that, we have to define the levels when creating the vector:</p>
+<pre class="r white"><code>sort(sex_fac)
+#&gt; [1] F F M M M
+#&gt; Levels: F M</code></pre>
+<pre class="r white"><code>sex_fac2 &lt;- factor(sex, levels = c(&quot;M&quot;, &quot;F&quot;))
+sort(sex_fac2)
+#&gt; [1] M M M F F
+#&gt; Levels: M F</code></pre>
+<p><strong>Recoding factor levels</strong></p>
+<p>In the above case, the levels are apparently clear due to clear object name. Sometimes, we may want to recode to make the levels more clear. We will use <code>fct_recode</code> function from the package <code>forcats</code>:</p>
+<pre class="r white"><code>library(forcats)
+levels(sex_fac2)
+#&gt; [1] &quot;M&quot; &quot;F&quot;</code></pre>
+<pre class="r white"><code>sex_fac2 &lt;- fct_recode(sex_fac2, 
+                       &quot;Male&quot; = &quot;M&quot;,
+                       &quot;Female&quot; = &quot;F&quot;)
+levels(sex_fac2)
+#&gt; [1] &quot;Male&quot;   &quot;Female&quot;</code></pre>
+<p><strong>Defining order where it matters</strong></p>
+<p>Some variables will have an implied order. For example, size of a clothing line. We can define the order while creating the vector with <code>ordered = TRUE</code> argument:</p>
+<pre class="r white"><code>size &lt;- factor(c(&quot;small&quot;, &quot;large&quot;, &quot;medium&quot;, &quot;small&quot;, &quot;medium&quot;),
+               levels = c(&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;),
+               ordered = TRUE)
+size[2] &gt; size[1]
+#&gt; [1] TRUE</code></pre>
+<p><strong>Sumamrize factors</strong></p>
+<p>We can use <code>summary</code> function used earlier with numeric vectors to get concise infor about the factor vector as well:</p>
+<pre class="r white"><code>summary(size)
+#&gt;  small medium  large 
+#&gt;      2      2      1</code></pre>
+</div>
+<div id="summary" class="section level3">
+<h3>Summary</h3>
+<p>Now we have with us the fundamental building blocks using which we can understand the existing higher level data structures as well as create some of our own! So this is really exciting. Next we will take a dive into learning some programming concepts using which we can do some more powerful things beyond the one liners that we have been using here.</p>
 </div>

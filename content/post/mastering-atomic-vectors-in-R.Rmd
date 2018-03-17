@@ -26,7 +26,7 @@ Atomic vectors in R are the fundamental data structures on which other more comp
 > Everything that exists in R is an `object` and anything that happens is a `function` call.
 
 ### Creating Our First Atomic Vector
-We are going to create and manipulate vectors using existing functions and the resulting vectors will be objects. To create the objects (atomic vectors in our case), we will use an assignment operator (<-). So we create our first object ('num_one'), and assign it a value of 3:
+We are going to create and manipulate vectors using existing functions and the resulting objects will be atomic vectors. To create the objects (atomic vectors in our case), we will use an assignment operator (<-). So we create our first object (*num_one*), and assign it a value of 3:
 
 ``` {r}
 num_one <- 3
@@ -37,7 +37,7 @@ Atomic vectors can only have one 'type' of data, and we start with `numeric` dat
 num_one_log <- log(3)
 ```
 
-log(3) is evaluated first and then assigned to an object named 'num_one_log'. Let's create a slightly longer vector:
+log(3) is evaluated first and then assigned to an object named *num_one_log*. Let's create a slightly longer vector:
 
 ``` {r}
 num_five <- c(2, 15, -8, 0, -65)
@@ -93,11 +93,11 @@ rep_times <- rep(num_five, times = 2)
 norm_std <- rnorm(25)
 norm_unique <- rnorm(25, mean = 10, sd = 5)
 ```
-First we created a simple sequence of whole numbers. Then we create a sequence with arbitrary start and end points and fixed interval between the elements. After that we created another one (seq_length) with desired number of elements between arbitrary start and end points. Then we created a vector by repeating each element twice and then by repeating the vector twice. In the end we created a vector (norm_std) with 25 elements from a standard normal distribution and then with non-standard normal distribution.
+First we created a simple sequence of whole numbers. Then we used `seq` function to create a sequence with arbitrary start and end points and fixed interval between the elements. After that we created another one (seq_length) with desired number of elements between arbitrary start and end points. Then using `rep` function, we created a vector by repeating each element twice and then by repeating the vector twice. In the end we created a vector (norm_std) with 25 elements from a standard normal distribution using `rnorm` and lastly created a vector with non-standard normal distribution.
 
 ### Vector Operations
 
-Alright, now that we know how to create vector objects, let's play with these objects a bit and see what kind of operations we can perform on our vectors. We will use one of the vectors we created earlier:
+Now that we know how to create vector objects, let's play with these objects a bit and see what kind of operations we can perform on our vectors. We will use one of the vectors we created earlier:
 
 ```{r}
 rep_times
@@ -105,7 +105,7 @@ rep_times
 
 **Arithmatic Operations**
 
-Alright, we can do all kinds of math operations with our vectors. We are not going to store these in new objects but watch these *function calls* in action:
+We can do all kinds of math operations with our vectors. We are not going to store these in new objects but watch these *function calls* in action:
 
 ```{r}
 rep_times ^ 2
@@ -114,7 +114,7 @@ rep_times * 1 / 5
 
 Note that the way these operations are handled is slightly different than you might think. \*, ^ and other operators are *vectorized* - so first the number 2, which is a vector of length one, is *recycled* to make it the same length as the larger vector (ten in this case). Then each element of first vector is operated upon with the corresponding element of the second vector.
 
-An interesting math operator is the modulo operator - to look at different parts of answer of division operation. If you divide two numbers, top number is called *divident* and bottom number is called *divisor*. The result will be a whole number (*quotient*), and whatever fraction is left out is *remainder*.
+There is an interesting math operator called *modulo operator* (`%%`) - which is used to get different parts of answer of division operation. If you divide two numbers, top number is called *dividend* and bottom number is called *divisor*. The result will be a whole number (called *quotient*), and whatever fraction is left out is *remainder*.
 
 ```{r}
 rep_times %% 2      # get remainder of rep_times divided by 2.
@@ -158,7 +158,7 @@ So far we have created vectors using a variety of functions. Now, if a vector is
 
 **Subsetting using position**
 
-In R, elements of a vector are positioned(*indexed*) from 1 (many languages start at 0) to the length of the vector. So our *rep_times* vector has 10 elements, and say we want to extract first and last element, we can feed these(*index values*) as integer vector inside square brackets:
+In R, elements of a vector are positioned (*indexed*) from 1 (many languages start at 0) to the length of the vector. Our *rep_times* vector has 10 elements, and say we want to extract first and last element, we can feed these (*index values*) as integer vector inside square brackets:
 
 ```{r}
 rep_times[c(1, length(rep_times))]
@@ -363,7 +363,7 @@ data - mean(data)
 **Rescale so all values are between 0 and 1**
 
 ```{r}
-(data- min(data)) / range(data)
+(data- min(data)) / (max(data) - min(data))
 ```
 
 ### Comparing Two Vectors
@@ -380,7 +380,7 @@ all.equal(x1, y2)
 
 ### Third Type of Atomic Vector
 
-Ok, the third and last type of atomic vector is `character` which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:
+The third and last type of atomic vector is `character` which is very powerful in data analysis as well as general programming. Although we have not created this type of vector so far explicitly, note that the output of some functions that we have used was a string of characters:
 
 ```{r}
 x <- typeof(rep_times)
@@ -417,14 +417,14 @@ str_length(greetings)
 ```
 **Combining elements of a vector**
 
-If we want to combine the individual elements of a single character vector, we will use `str_c` function with *collapse* argument:
+If we want to combine the individual elements of a single character vector, we will use `str_c` function with **collapse** argument:
 
 ```{r}
 str_c(greetings, collapse = "")
 ```
 **Combining elements of two vectors**
 
-If we want to combine two character vectors (element wise), we will use the same `str_c` function but with *sep* argument:
+If we want to combine two character vectors (element wise), we will use the same `str_c` function but with **sep** argument:
 
 ```{r}
 str_c(greetings, "!", sep = "")
@@ -472,7 +472,7 @@ str_extract(sent_five, "the..........")
 
 It picked *the* and the following ten characters including spaces. Note that it did not pick *The* from third sentence because it starts with a capital T. If we want to disregard the case, there are multiple ways but let's create a *character class* in this case to solve the problem.
 
-**Use character class [] to match one of the characters defined in the class**:
+**Use character class [ ] to match one of the characters defined in the class**:
 
 ```{r}
 str_extract(sent_five, "[Tt]he..........")
@@ -532,7 +532,7 @@ str_extract(states, "[A-Z]{2}")
 str_extract(sent_five, "l{2,}")
 ```
 
-- similar concept applies for {,n} to match up to *n* times and {m,n} to match at least *m* times and at the most *n* times. There are shortcuts for some common repetitions:
+Similar concept applies for {,n} to match up to *n* times and {m,n} to match at least *m* times and at the most *n* times. There are shortcuts for some common repetitions:
 
 - \+ to match 1 or more times:
 ```{r}
@@ -615,8 +615,59 @@ str_split(sent_five[1], " ")
 Note that this gave us a `list` object, which we have not studied yet, but you can see the function of splitting a string here.
 
 **Not one but all matches**
+
 All the tools that we have looked at so far will match and give you the *first* occurence in a string. All others are ignored. Above functions have equivalent `_all` commands that will apply to all matches. For example, `str_extract_all` will extract all matches. These will result in a data structure called `list`, which we have not studied yet but will look into in the future.
 
 ### Factors - an Augmented Vector Type
 
-Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - `integer`.
+Alright, we are going to look at one more vector type, which is not an atomic vector by definition but it occurs so frequently in our data analysis that our vector discussion will be incomplete without it. It is an augmented vector because it is built on top of one of the atomic vectors - `integer`. Often times in our data, we will see variables that are `categorical` in nature, meaning they have discrete categories. For example, sex, month name, color, class etc. These type of data are modeled with `factor`. Let's create a simple factor vector:
+
+```{r}
+sex <- c("M", "M", "F", "M", "F")
+sex_fac <- factor(sex)
+sex_fac
+is.factor(sex_fac)
+```
+R automatically assigns `levels` for the factor vector. This assignment will be alphabetical. If we don't want that, we have to define the levels when creating the vector:
+
+```{r}
+sort(sex_fac)
+sex_fac2 <- factor(sex, levels = c("M", "F"))
+sort(sex_fac2)
+```
+
+**Recoding factor levels**
+
+In the above case, the levels are apparently clear due to clear object name. Sometimes, we may want to recode to make the levels more clear. We will use `fct_recode` function from the package `forcats`:
+
+```{r}
+library(forcats)
+levels(sex_fac2)
+sex_fac2 <- fct_recode(sex_fac2, 
+                       "Male" = "M",
+                       "Female" = "F")
+levels(sex_fac2)
+```
+
+**Defining order where it matters**
+
+Some variables will have an implied order. For example, size of a clothing line. We can define the order while creating the vector with `ordered = TRUE` argument:
+
+```{r}
+size <- factor(c("small", "large", "medium", "small", "medium"),
+               levels = c("small", "medium", "large"),
+               ordered = TRUE)
+size[2] > size[1]
+```
+**Sumamrize factors**
+
+We can use `summary` function used earlier with numeric vectors to get concise infor about the factor vector as well:
+
+```{r}
+summary(size)
+```
+
+### Summary
+Now we have with us the fundamental building blocks using which we can understand the existing higher level data structures as well as create some of our own! So this is really exciting. Next we will take a dive into learning some programming concepts using which we can do some more powerful things beyond the one liners that we have been using here.
+
+

@@ -1,0 +1,168 @@
+---
+title: "Mastering R Programming"
+author: "Paramjot Singh"
+date: 2018-03-17T07:13:42-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Fundamentals"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center'
+)
+```
+
+In an earlier [post](../mastering-atomic-vectors-in-r) we learned a key ingredient needed for creating any data product - *atomic vectors*. If you were a chef, atomic vectors will be your main ingredient for creating the dish - rice, chicken, potatoes, eggs etc. Now we will gather the necessary tools - the pots and pans, knives, heat source etc. In our case, *R programming concepts* will provide us those tools. And just as a good chef does not need tons of tools to create a good recipe, a good data scientist should rely on minimum set of necessary tools to build a good data product. So here we are going to learn those necessary tools to get started. We will add more to our 'data kitchen' as the need arise.
+
+### Functions
+Imagine it's christmas time and your daughter wanted your help to bake some gingerbread man shaped cookies. The only problem is you are not good at baking and especially at making good clean shapes with a cookie dough. But you generally like solving problems so you agree to help and get down to work right away. You find out a drawing of gingerbread man from internet and start cutting the shapes. Some are acceptable but some do not even look like any human shape whatsoever, leave aside the gingerbread man. You start to sweat. Then your wife enters the kitchen and looks at you. To releive your suffering, she takes out a plastic bag from one of the closets and hand over to you. You open it up and look at the thin strips of metal shaped like gingerbread man and many other fancy shapes. These shapes are called *cookie cutters*. She takes the shape and presses it over the rolled cookie dough and voila!, out comes a perfectly shaped gingerbread man ready to be baked to perfection while you look in amazement! Now you cut a dozen cookies in a few minutes and feel like a proud dad.
+
+In our case, **functions** will serve as *cookie cutters* for our data recipes. These will help speed up our work while avoiding variation and mistakes in our *shapes* that we will try to cut. Just like the cookie cutter needed a rolled cookie dough to work on, our functions will take R objects as inputs. And just like a specific cookie cutter cuts a specific shape, a function will serve to solve a unique problem. 
+
+
+### In-built Functions
+We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside `R packages`. We are loosely going to call all of those functions as 'in-built' and the ones that we create ourselves as 'user-defined'. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of !
+
+### User-Defined Functions
+As an example, in our earlier [post](../mastering-atomic-vectors-in-r) on atomic vectors, we did a vector transformation to 'normalize' a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let's create that function now:
+
+```{r}
+normalize <- function(x) {
+    (x - mean(x)) / sd(x)
+}
+```
+Remember that anytime we need to 'do anything' in R, we need to make a *function call*. Above we make a call to the function `function`. We assign our function a name - 'normalize'. Parenthesis contains any *arguments* that our function can take, in this case, it is only one argument - 'x'. Whatever we want to do with x goes inside curly braces. The last line inside the curly braces is what is returned when we call the function. In this case there is only one line that normalizes our input vector.
+
+Now we can call this function on any vector:
+
+```{r}
+v1 <- rnorm(50, 5, 15)
+mean(v1)
+sd(v1)
+v1_norm <- normalize(v1)
+mean(v1_norm)
+sd(v1_norm)
+```
+Cool, now we have just created a custom function that normalizes the numeric vector passed to it. But what if we feed a non-numeric vector to our function:
+
+```{r, error = TRUE}
+v2 <- rep(c("hello", "world"), each = 2)
+normalize(v2)
+```
+Hmm... that did not work. This is expected but the error message is not clear. It is pointing to a code inside the function. Most often, we will not be familiar with the *source code* (either we don't remember or we are using a function that someone else wrote). In addition, we want to catch these 'bad inputs' before starting to do any computations to keep the overall code more efficient.
+
+### Validating Function Inputs using Conditionals
+The solution to the above problem is to use *conditionals* at the start to validate the input before moving on with the actual calculations. This can be accomplished using `if` statement: 
+
+```{r, error = TRUE}
+normalize <- function(x) {
+    if (!is_numeric(x)) {
+        stop("Input vector must be numeric")
+    }
+    (x - mean(x)) / sd(x)
+}
+
+normalize(v2)
+```
+Parenthesis following *if* must contain a logical expression and if that evaluates to *TRUE* then the code inside the following curly braces will be executed. In our case, we tested if the input vector is not numeric, and if so, it will stop the execution of the function at that point using call to `stop`.  
+
+### Repeating a Calculation Many Times
+
+Let's say we are tasked with finding cumulative sum of a numeric vector. So resulting vector will be of the same length as the original vector. The first element will be same as the first element of original vector. The second element will be the sum of the first and the second element and so on. This type of problems where we have to repeat calculations many times (in this case it is sum), we will use `for` loops:
+
+```{r}
+vec <- c(1:5)
+sum <- 0
+vec_cumsum <- vector("numeric", length(vec))
+for (i in seq_along(vec)) {
+    vec_cumsum[i] <- sum + vec[i]
+    sum <- vec_cumsum[i]
+}
+vec_cumsum
+```
+In the above case, there exists a function that does this for us - `cumsum` but now we know how to build tools using `for` iteration.
+
+```{r}
+cumsum(vec)
+```
+Alright, let's put our function to one more test, this time passing a numeric vector but containing an NA.
+
+```{r}
+v_na <- c(1:10, NA)
+normalize(v_na)
+```
+
+This was expected since we are using *mean* function inside *normalize* function. We know that we can get around this problem by passing *na.rm = TRUE* to *mean* but how do we pass this argument to *mean* through our user-defined function.
+
+### Passing Arguments to a Function used inside User-Defined Function
+The solution to above problem is to use **ellipsis** operator (...) also conveniently called *dot-dot-dot* operator. This is a way of telling R that our function can take additional arguments that are not explicitly defined. You will also need to add the ellipsis inside the functions that may use the arguments passed to it through our user-defined function (in this case *mean* and *sd*). So let's modify our function to deal with the NA problem:
+
+```{r, error = TRUE}
+normalize <- function(x, ...) {
+    if (!is_numeric(x)) {
+        stop("Input vector must be numeric")
+    }
+    (x - mean(x, ...)) / sd(x, ...)
+}
+
+normalize(v_na, na.rm = TRUE)
+```
+
+### Peeking into a Function
+Just like we have tools(*str, length, typeof*) to look into vector objects, there are functions to look into our *function objects*. We can print the function using the function name without parenthesis:
+
+```{r}
+normalize
+```
+The argument names in the function definition are called `formal arguments` and can be seen using `formals`. The content inside curly braces is called the *body* of the function and can be seen using `body`:
+
+```{r}
+formals(normalize)
+body(normalize)
+```
+
+### Where do these Functions and Objects live?
+So far, we have been creating R vector objects and function objects and also using in-built function objects. But where do all these objects live. When we start R, it creates a fresh `global environment` and starts to populate it with stuff that we create during our analysis.
+
+```{r}
+environment()
+```
+
+We can see what is in the global environment at any time using `ls`:
+
+```{r}
+ls()
+```
+
+So think of the global environment as your 'slate' or 'whiteboard'. Since it is a good idea to start your analysis with a 'clean' slate, you either want to restart R session or by removing everything from your global environment using `rm` with a list argument containing an output of *ls()*:
+
+```{r, eval = FALSE}
+rm(list = ls())
+```
+**How large are my object?**
+Sometimes we want to check the size of our objects. `object_size` can be used from `pryr` package:
+
+```{r}
+library(pryr)
+object_size(v_na)
+```
+
+### How Fast (or Slow) my Code Runs?
+
+Sometimes we want to evaluate how long our expressions or pieces of code are taking to run. For a quick test, an expression can be wrapped inside a call to `system.time`:
+```{r}
+system.time(normalize(v_na, na.rm = TRUE))
+```
+
+
+

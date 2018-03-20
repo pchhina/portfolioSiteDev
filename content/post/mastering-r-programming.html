@@ -1,0 +1,158 @@
+---
+title: "Mastering R Programming"
+author: "Paramjot Singh"
+date: 2018-03-17T07:13:42-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Fundamentals"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#in-built-functions">In-built Functions</a></li>
+<li><a href="#user-defined-functions">User-Defined Functions</a></li>
+<li><a href="#validating-function-inputs-using-conditionals">Validating Function Inputs using Conditionals</a></li>
+<li><a href="#repeating-a-calculation-many-times">Repeating a Calculation Many Times</a></li>
+<li><a href="#passing-arguments-to-a-function-used-inside-user-defined-function">Passing Arguments to a Function used inside User-Defined Function</a></li>
+<li><a href="#peeking-into-a-function">Peeking into a Function</a></li>
+<li><a href="#where-do-these-functions-and-objects-live">Where do these Functions and Objects live?</a></li>
+<li><a href="#how-fast-or-slow-my-code-runs">How Fast (or Slow) my Code Runs?</a></li>
+</ul>
+</div>
+
+<p>In an earlier <a href="../mastering-atomic-vectors-in-r">post</a> we learned a key ingredient needed for creating any data product - <em>atomic vectors</em>. If you were a chef, atomic vectors will be your main ingredient for creating the dish - rice, chicken, potatoes, eggs etc. Now we will gather the necessary tools - the pots and pans, knives, heat source etc. In our case, <em>R programming concepts</em> will provide us those tools. And just as a good chef does not need tons of tools to create a good recipe, a good data scientist should rely on minimum set of necessary tools to build a good data product. So here we are going to learn those necessary tools to get started. We will add more to our ‘data kitchen’ as the need arise.</p>
+<div id="functions" class="section level3">
+<h3>Functions</h3>
+<p>Imagine it’s christmas time and your daughter wanted your help to bake some gingerbread man shaped cookies. The only problem is you are not good at baking and especially at making good clean shapes with a cookie dough. But you generally like solving problems so you agree to help and get down to work right away. You find out a drawing of gingerbread man from internet and start cutting the shapes. Some are acceptable but some do not even look like any human shape whatsoever, leave aside the gingerbread man. You start to sweat. Then your wife enters the kitchen and looks at you. To releive your suffering, she takes out a plastic bag from one of the closets and hand over to you. You open it up and look at the thin strips of metal shaped like gingerbread man and many other fancy shapes. These shapes are called <em>cookie cutters</em>. She takes the shape and presses it over the rolled cookie dough and voila!, out comes a perfectly shaped gingerbread man ready to be baked to perfection while you look in amazement! Now you cut a dozen cookies in a few minutes and feel like a proud dad.</p>
+<p>In our case, <strong>functions</strong> will serve as <em>cookie cutters</em> for our data recipes. These will help speed up our work while avoiding variation and mistakes in our <em>shapes</em> that we will try to cut. Just like the cookie cutter needed a rolled cookie dough to work on, our functions will take R objects as inputs. And just like a specific cookie cutter cuts a specific shape, a function will serve to solve a unique problem.</p>
+</div>
+<div id="in-built-functions" class="section level3">
+<h3>In-built Functions</h3>
+<p>We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside <code>R packages</code>. We are loosely going to call all of those functions as ‘in-built’ and the ones that we create ourselves as ‘user-defined’. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of !</p>
+</div>
+<div id="user-defined-functions" class="section level3">
+<h3>User-Defined Functions</h3>
+<p>As an example, in our earlier <a href="../mastering-atomic-vectors-in-r">post</a> on atomic vectors, we did a vector transformation to ‘normalize’ a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let’s create that function now:</p>
+<pre class="r white"><code>normalize &lt;- function(x) {
+    (x - mean(x)) / sd(x)
+}</code></pre>
+<p>Remember that anytime we need to ‘do anything’ in R, we need to make a <em>function call</em>. Above we make a call to the function <code>function</code>. We assign our function a name - ‘normalize’. Parenthesis contains any <em>arguments</em> that our function can take, in this case, it is only one argument - ‘x’. Whatever we want to do with x goes inside curly braces. The last line inside the curly braces is what is returned when we call the function. In this case there is only one line that normalizes our input vector.</p>
+<p>Now we can call this function on any vector:</p>
+<pre class="r white"><code>v1 &lt;- rnorm(50, 5, 15)
+mean(v1)
+#&gt; [1] 5.43081</code></pre>
+<pre class="r white"><code>sd(v1)
+#&gt; [1] 14.99209</code></pre>
+<pre class="r white"><code>v1_norm &lt;- normalize(v1)
+mean(v1_norm)
+#&gt; [1] 4.667707e-17</code></pre>
+<pre class="r white"><code>sd(v1_norm)
+#&gt; [1] 1</code></pre>
+<p>Cool, now we have just created a custom function that normalizes the numeric vector passed to it. But what if we feed a non-numeric vector to our function:</p>
+<pre class="r white"><code>v2 &lt;- rep(c(&quot;hello&quot;, &quot;world&quot;), each = 2)
+normalize(v2)
+#&gt; Error in x - mean(x): non-numeric argument to binary operator</code></pre>
+<p>Hmm… that did not work. This is expected but the error message is not clear. It is pointing to a code inside the function. Most often, we will not be familiar with the <em>source code</em> (either we don’t remember or we are using a function that someone else wrote). In addition, we want to catch these ‘bad inputs’ before starting to do any computations to keep the overall code more efficient.</p>
+</div>
+<div id="validating-function-inputs-using-conditionals" class="section level3">
+<h3>Validating Function Inputs using Conditionals</h3>
+<p>The solution to the above problem is to use <em>conditionals</em> at the start to validate the input before moving on with the actual calculations. This can be accomplished using <code>if</code> statement:</p>
+<pre class="r white"><code>normalize &lt;- function(x) {
+    if (!is_numeric(x)) {
+        stop(&quot;Input vector must be numeric&quot;)
+    }
+    (x - mean(x)) / sd(x)
+}
+
+normalize(v2)
+#&gt; Error in normalize(v2): Input vector must be numeric</code></pre>
+<p>Parenthesis following <em>if</em> must contain a logical expression and if that evaluates to <em>TRUE</em> then the code inside the following curly braces will be executed. In our case, we tested if the input vector is not numeric, and if so, it will stop the execution of the function at that point using call to <code>stop</code>.</p>
+</div>
+<div id="repeating-a-calculation-many-times" class="section level3">
+<h3>Repeating a Calculation Many Times</h3>
+<p>Let’s say we are tasked with finding cumulative sum of a numeric vector. So resulting vector will be of the same length as the original vector. The first element will be same as the first element of original vector. The second element will be the sum of the first and the second element and so on. This type of problems where we have to repeat calculations many times (in this case it is sum), we will use <code>for</code> loops:</p>
+<pre class="r white"><code>vec &lt;- c(1:5)
+sum &lt;- 0
+vec_cumsum &lt;- vector(&quot;numeric&quot;, length(vec))
+for (i in seq_along(vec)) {
+    vec_cumsum[i] &lt;- sum + vec[i]
+    sum &lt;- vec_cumsum[i]
+}
+vec_cumsum
+#&gt; [1]  1  3  6 10 15</code></pre>
+<p>In the above case, there exists a function that does this for us - <code>cumsum</code> but now we know how to build tools using <code>for</code> iteration.</p>
+<pre class="r white"><code>cumsum(vec)
+#&gt; [1]  1  3  6 10 15</code></pre>
+<p>Alright, let’s put our function to one more test, this time passing a numeric vector but containing an NA.</p>
+<pre class="r white"><code>v_na &lt;- c(1:10, NA)
+normalize(v_na)
+#&gt;  [1] NA NA NA NA NA NA NA NA NA NA NA</code></pre>
+<p>This was expected since we are using <em>mean</em> function inside <em>normalize</em> function. We know that we can get around this problem by passing <em>na.rm = TRUE</em> to <em>mean</em> but how do we pass this argument to <em>mean</em> through our user-defined function.</p>
+</div>
+<div id="passing-arguments-to-a-function-used-inside-user-defined-function" class="section level3">
+<h3>Passing Arguments to a Function used inside User-Defined Function</h3>
+<p>The solution to above problem is to use <strong>ellipsis</strong> operator (…) also conveniently called <em>dot-dot-dot</em> operator. This is a way of telling R that our function can take additional arguments that are not explicitly defined. You will also need to add the ellipsis inside the functions that may use the arguments passed to it through our user-defined function (in this case <em>mean</em> and <em>sd</em>). So let’s modify our function to deal with the NA problem:</p>
+<pre class="r white"><code>normalize &lt;- function(x, ...) {
+    if (!is_numeric(x)) {
+        stop(&quot;Input vector must be numeric&quot;)
+    }
+    (x - mean(x, ...)) / sd(x, ...)
+}
+
+normalize(v_na, na.rm = TRUE)
+#&gt;  [1] -1.4863011 -1.1560120 -0.8257228 -0.4954337 -0.1651446  0.1651446
+#&gt;  [7]  0.4954337  0.8257228  1.1560120  1.4863011         NA</code></pre>
+</div>
+<div id="peeking-into-a-function" class="section level3">
+<h3>Peeking into a Function</h3>
+<p>Just like we have tools(<em>str, length, typeof</em>) to look into vector objects, there are functions to look into our <em>function objects</em>. We can print the function using the function name without parenthesis:</p>
+<pre class="r white"><code>normalize
+#&gt; function(x, ...) {
+#&gt;     if (!is_numeric(x)) {
+#&gt;         stop(&quot;Input vector must be numeric&quot;)
+#&gt;     }
+#&gt;     (x - mean(x, ...)) / sd(x, ...)
+#&gt; }</code></pre>
+<p>The argument names in the function definition are called <code>formal arguments</code> and can be seen using <code>formals</code>. The content inside curly braces is called the <em>body</em> of the function and can be seen using <code>body</code>:</p>
+<pre class="r white"><code>formals(normalize)
+#&gt; $x
+#&gt; 
+#&gt; 
+#&gt; $...</code></pre>
+<pre class="r white"><code>body(normalize)
+#&gt; {
+#&gt;     if (!is_numeric(x)) {
+#&gt;         stop(&quot;Input vector must be numeric&quot;)
+#&gt;     }
+#&gt;     (x - mean(x, ...))/sd(x, ...)
+#&gt; }</code></pre>
+</div>
+<div id="where-do-these-functions-and-objects-live" class="section level3">
+<h3>Where do these Functions and Objects live?</h3>
+<p>So far, we have been creating R vector objects and function objects and also using in-built function objects. But where do all these objects live. When we start R, it creates a fresh <code>global environment</code> and starts to populate it with stuff that we create during our analysis.</p>
+<pre class="r white"><code>environment()
+#&gt; &lt;environment: R_GlobalEnv&gt;</code></pre>
+<p>We can see what is in the global environment at any time using <code>ls</code>:</p>
+<pre class="r white"><code>ls()
+#&gt; [1] &quot;i&quot;          &quot;normalize&quot;  &quot;sum&quot;        &quot;v1&quot;         &quot;v1_norm&quot;   
+#&gt; [6] &quot;v2&quot;         &quot;vec&quot;        &quot;vec_cumsum&quot; &quot;v_na&quot;</code></pre>
+<p>So think of the global environment as your ‘slate’ or ‘whiteboard’. Since it is a good idea to start your analysis with a ‘clean’ slate, you either want to restart R session or by removing everything from your global environment using <code>rm</code> with a list argument containing an output of <em>ls()</em>:</p>
+<pre class="r white"><code>rm(list = ls())</code></pre>
+<p><strong>How large are my object?</strong> Sometimes we want to check the size of our objects. <code>object_size</code> can be used from <code>pryr</code> package:</p>
+<pre class="r white"><code>library(pryr)
+object_size(v_na)
+#&gt; 88 B</code></pre>
+</div>
+<div id="how-fast-or-slow-my-code-runs" class="section level3">
+<h3>How Fast (or Slow) my Code Runs?</h3>
+<p>Sometimes we want to evaluate how long our expressions or pieces of code are taking to run. For a quick test, an expression can be wrapped inside a call to <code>system.time</code>:</p>
+<pre class="r white"><code>system.time(normalize(v_na, na.rm = TRUE))
+#&gt;    user  system elapsed 
+#&gt;   0.004   0.000   0.004</code></pre>
+</div>

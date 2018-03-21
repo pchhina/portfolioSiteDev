@@ -30,10 +30,10 @@ Imagine it's christmas time and your daughter wanted your help to bake some ging
 In our case, **functions** will serve as *cookie cutters* for our data recipes. These will help speed up our work while avoiding variation and mistakes in our *shapes* that we will try to cut. Just like the cookie cutter needed a rolled cookie dough to work on, our functions will take R objects as inputs. And just like a specific cookie cutter cuts a specific shape, a function will serve to solve a unique problem. 
 
 
-### In-built Functions
-We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside `R packages`. We are loosely going to call all of those functions as 'in-built' and the ones that we create ourselves as 'user-defined'. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of !
+**In-built Functions**
+We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside `R packages`. We are loosely going to call all of those functions as 'in-built' and the ones that we create ourselves as 'user-defined'. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of!
 
-### User-Defined Functions
+**User-Defined Functions**
 As an example, in our earlier [post](../mastering-atomic-vectors-in-r) on atomic vectors, we did a vector transformation to 'normalize' a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let's create that function now:
 
 ```{r}
@@ -105,7 +105,7 @@ normalize(v_na)
 This was expected since we are using *mean* function inside *normalize* function. We know that we can get around this problem by passing *na.rm = TRUE* to *mean* but how do we pass this argument to *mean* through our user-defined function.
 
 ### Passing Arguments to a Function used inside User-Defined Function
-The solution to above problem is to use **ellipsis** operator (...) also conveniently called *dot-dot-dot* operator. This is a way of telling R that our function can take additional arguments that are not explicitly defined. You will also need to add the ellipsis inside the functions that may use the arguments passed to it through our user-defined function (in this case *mean* and *sd*). So let's modify our function to deal with the NA problem:
+The solution to above problem is to use **ellipsis** argument (...) also conveniently called *dot-dot-dot* operator. This is a way of telling R that our function can take additional arguments that are not explicitly defined. You will also need to add the ellipsis inside the functions that may use the arguments passed to it through our user-defined function (in this case *mean* and *sd*). So let's modify our function to deal with the NA problem:
 
 ```{r, error = TRUE}
 normalize <- function(x, ...) {
@@ -119,7 +119,7 @@ normalize(v_na, na.rm = TRUE)
 ```
 
 ### Peeking into a Function
-Just like we have tools(*str, length, typeof*) to look into vector objects, there are functions to look into our *function objects*. We can print the function using the function name without parenthesis:
+Just like we have tools (*str, length, typeof*) to look into vector objects, there are functions to look into our *function objects*. We can print the function using the function name without parenthesis:
 
 ```{r}
 normalize
@@ -149,12 +149,19 @@ So think of the global environment as your 'slate' or 'whiteboard'. Since it is 
 ```{r, eval = FALSE}
 rm(list = ls())
 ```
-**How large are my object?**
+**How large are my objects?**
+
 Sometimes we want to check the size of our objects. `object_size` can be used from `pryr` package:
 
 ```{r}
 library(pryr)
 object_size(v_na)
+```
+### Loading Objects in R Environment from R Scripts
+We hardly write these functions in R console. Instead functions and related R code for data analysis work is written and saved in a text file with .R extension (\<myscript>.R). When we open a new R session, we simply 'load' our script using `source` function:
+
+```{r, eval = FALSE}
+source("<myscript>.R")
 ```
 
 ### How Fast (or Slow) my Code Runs?
@@ -162,7 +169,61 @@ object_size(v_na)
 Sometimes we want to evaluate how long our expressions or pieces of code are taking to run. For a quick test, an expression can be wrapped inside a call to `system.time`:
 ```{r}
 system.time(normalize(v_na, na.rm = TRUE))
+system.time(cumsum(rep(2.6, times = 1e8)))
+```
+The output (seconds) is split into three parts: *user* is the time that R process took to run and *system* is the time that OS took on behalf of running the R process, for example, input/output, opening files etc. *elapsed* is just the sum of user and system times.
+
+Another set of useful functions are `tic` and `toc` from `tictoc` library. You can use these as timing markers in various parts of your code:
+```{r}
+library(tictoc)
+tic("faster function")
+invisible(normalize(v_na, na.rm = TRUE))
+toc()
+tic("slower function")
+invisible(cumsum(rep(3.6, times = 1e8)))
+toc()
+```
+Here `invisible` is used to suppress the output to avoid cluttering the console.
+
+### Quick Introduction to Tibbles (and Dataframes)
+Tibbles and dataframes are very similar in structure so we will focus only on tibbles here. We will discuss these data structures in more detail later but for now we just need to have some basic understanding so we can use these to read in data from external sources and datasets available in R libraries. 
+
+Tibbles are 2-dimensional data structures where each column is a vector of equal length but can hold data of different types. This makes tibble an extremely useful data structure for data analysis. In the context of data analysis, each column of a tibble represents a *variable* (or *feature vector*) and each row is called an *observation*.
+
+At this time, we just need enough knowledge to extract the data from tibbles as vectors so we can use it to learn next important part of data analysis - *Statistical Inference*. We will exploit the full power of tibbles when we venture into *Regression Modeling* and *Machine Learning* concepts.
+
+### Exploring Built-In Datasets
+R has a variety of data sets that are bundled together with packages. Base R has a package called `datasets` that contain many real data sets from different fields. In addition, almost all packages that you would install will contain some data to experiment the functionality of the package with. This means that instead of creating dummy data, we will use these data sets to learn our analysis tools. All of the data sets are either in the form of tibbles or dataframes. We first need tools to explore which data sets are available to us.
+
+**Datasets in loaded packages**
+
+To see which datasets are available in loaded packages, we will simply call `data()` with no arguments. We will wrap the call inside `head` to restrict the output to first 6 entries. In addition, the output to *data* is another data structure that we have not studied yet - *list*. Lists can contain different data types as well as structures inside it. We are *subsetting* the 'results' element here using *$* operator:
+
+```{r}
+head(data()$results)
 ```
 
+**Datasets in all installed packages**
 
+To see which datasets are available in all installed packages we will pass the argument `package = .packages(all.availabe = TRUE)` in the call to *data*:
 
+```{r}
+dim(data(package = .packages(all.available = TRUE))$results)
+data(package = .packages(all.available = TRUE))$results[sample(5), -2]
+```
+
+**Datasets in a specific package**
+
+To see datasets available in a specific package, you would pass the package name as a character string to *package* argument:
+
+```{r}
+data(package =  "ggplot2")
+```
+
+**More information on a particular data set**
+
+If the description of the data set sounds interesting to us, we can learn more about that data using `?`:
+
+```{r, eval = FALSE}
+?mpg
+```

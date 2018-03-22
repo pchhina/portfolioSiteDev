@@ -1,0 +1,64 @@
+---
+title: "Statistical Inference Using R"
+author: "Paramjot Singh"
+date: 2018-03-22T03:40:34-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Fundamentals"]
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center'
+)
+```
+Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friends suggests to buy a 4-cylinder car instead of 6or 8 cylinders since larger engine size ususally translates to worse fuel economy. You are a data scientist so you just don't take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this `mpg` dataset in one of the R packages, `ggplot2` and start to look at it to answer your question:
+
+> Do 4-cylinder cars have better fuel economy than 6-cylinder cars?
+
+This is a kind of question that statistical inference will help us answer. In this post, we will learn the fundamental concepts related to inference. As usual, we will keep the focus tight on the minimum set of tools needed to start applying the concepts to data at hand. We will add more tools as we start to play with different types of data.
+
+### Everything Varies
+Variation is inherent to all phenomenon and processes. Otherwise our job is done. Our objective is to understand the variation in data so we can make an informed decision. So we want to 'quantify' the variation in our data. Just looking at the raw data is not going to cut it. Let's try:
+
+```{r}
+library(tidyverse)
+hwy_4 <- mpg %>% 
+    filter(cyl == 4) %>% 
+    select(hwy)
+hwy_6 <- mpg %>% 
+    filter(cyl == 6) %>% 
+    select(hwy)
+hwy_4
+hwy_6
+```
+
+It is not a bad idea to look at the raw data but it is difficult to conclude anything. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 70 data points for each set for too long. Sometimes we have to work with many more observations. One tool to ease out that pain is plots. Let's look at the histogram of each set:
+
+```{r}
+library(themeSimple)
+ggplot(hwy_4, aes(hwy)) +
+    histogram() +
+    theme_simple()
+ggplot(hwy_6, aes(hwy)) +
+    histogram() +
+    theme_simple()
+```
+
+### Mean - One Measure of Centeral Tendency
+A better approach is to look at the mean:
+
+```{r}
+mpg %>% 
+    group_by(cyl) %>% 
+    summarize(mean_hwy = mean(hwy))
+```
+

@@ -1,0 +1,90 @@
+---
+title: "Statistical Inference Using R"
+author: "Paramjot Singh"
+date: 2018-03-22T03:40:34-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Fundamentals"]
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#everything-varies">Everything Varies</a></li>
+<li><a href="#mean---one-measure-of-centeral-tendency">Mean - One Measure of Centeral Tendency</a></li>
+</ul>
+</div>
+
+<p>Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friends suggests to buy a 4-cylinder car instead of 6or 8 cylinders since larger engine size ususally translates to worse fuel economy. You are a data scientist so you just don’t take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this <code>mpg</code> dataset in one of the R packages, <code>ggplot2</code> and start to look at it to answer your question:</p>
+<blockquote>
+<p>Do 4-cylinder cars have better fuel economy than 6-cylinder cars?</p>
+</blockquote>
+<p>This is a kind of question that statistical inference will help us answer. In this post, we will learn the fundamental concepts related to inference. As usual, we will keep the focus tight on the minimum set of tools needed to start applying the concepts to data at hand. We will add more tools as we start to play with different types of data.</p>
+<div id="everything-varies" class="section level3">
+<h3>Everything Varies</h3>
+<p>Variation is inherent to all phenomenon and processes. Otherwise our job is done. Our objective is to understand the variation in data so we can make an informed decision. So we want to ‘quantify’ the variation in our data. Just looking at the raw data is not going to cut it. Let’s try:</p>
+<pre class="r white"><code>library(tidyverse)
+hwy_4 &lt;- mpg %&gt;% 
+    filter(cyl == 4) %&gt;% 
+    select(hwy)
+hwy_6 &lt;- mpg %&gt;% 
+    filter(cyl == 6) %&gt;% 
+    select(hwy)
+hwy_4
+#&gt; # A tibble: 81 x 1
+#&gt;      hwy
+#&gt;    &lt;int&gt;
+#&gt;  1    29
+#&gt;  2    29
+#&gt;  3    31
+#&gt;  4    30
+#&gt;  5    26
+#&gt;  6    25
+#&gt;  7    28
+#&gt;  8    27
+#&gt;  9    27
+#&gt; 10    30
+#&gt; # ... with 71 more rows</code></pre>
+<pre class="r white"><code>hwy_6
+#&gt; # A tibble: 79 x 1
+#&gt;      hwy
+#&gt;    &lt;int&gt;
+#&gt;  1    26
+#&gt;  2    26
+#&gt;  3    27
+#&gt;  4    25
+#&gt;  5    25
+#&gt;  6    25
+#&gt;  7    25
+#&gt;  8    24
+#&gt;  9    25
+#&gt; 10    26
+#&gt; # ... with 69 more rows</code></pre>
+<p>It is not a bad idea to look at the raw data but it is difficult to conclude anything. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 70 data points for each set for too long. Sometimes we have to work with many more observations. One tool to ease out that pain is plots. Let’s look at the histogram of each set:</p>
+<pre class="r white"><code>library(themeSimple)
+ggplot(hwy_4, aes(hwy)) +
+    histogram() +
+    theme_simple()</code></pre>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r white"><code>ggplot(hwy_6, aes(hwy)) +
+    histogram() +
+    theme_simple()</code></pre>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="mean---one-measure-of-centeral-tendency" class="section level3">
+<h3>Mean - One Measure of Centeral Tendency</h3>
+<p>A better approach is to look at the mean:</p>
+<pre class="r white"><code>mpg %&gt;% 
+    group_by(cyl) %&gt;% 
+    summarize(mean_hwy = mean(hwy))
+#&gt; # A tibble: 4 x 2
+#&gt;     cyl mean_hwy
+#&gt;   &lt;int&gt;    &lt;dbl&gt;
+#&gt; 1     4     28.8
+#&gt; 2     5     28.8
+#&gt; 3     6     22.8
+#&gt; 4     8     17.6</code></pre>
+</div>

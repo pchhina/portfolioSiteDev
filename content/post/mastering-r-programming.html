@@ -24,6 +24,9 @@ output:
 <li><a href="#how-fast-or-slow-my-code-runs">How Fast (or Slow) my Code Runs?</a></li>
 <li><a href="#quick-introduction-to-tibbles-and-dataframes">Quick Introduction to Tibbles (and Dataframes)</a></li>
 <li><a href="#exploring-built-in-datasets">Exploring Built-In Datasets</a></li>
+<li><a href="#extracting-atomic-vectors-from-a-tibble">Extracting Atomic Vectors from a Tibble</a></li>
+<li><a href="#where-am-i">Where am I?</a></li>
+<li><a href="#summary">Summary</a></li>
 </ul>
 </div>
 
@@ -32,8 +35,10 @@ output:
 <h3>Functions</h3>
 <p>Imagine it’s christmas time and your daughter wanted your help to bake some gingerbread man shaped cookies. The only problem is you are not good at baking and especially at making good clean shapes with a cookie dough. But you generally like solving problems so you agree to help and get down to work right away. You find out a drawing of gingerbread man from internet and start cutting the shapes. Some are acceptable but some do not even look like any human shape whatsoever, leave aside the gingerbread man. You start to sweat. Then your wife enters the kitchen and looks at you. To releive your suffering, she takes out a plastic bag from one of the closets and hand over to you. You open it up and look at the thin strips of metal shaped like gingerbread man and many other fancy shapes. These shapes are called <em>cookie cutters</em>. She takes the shape and presses it over the rolled cookie dough and voila!, out comes a perfectly shaped gingerbread man ready to be baked to perfection while you look in amazement! Now you cut a dozen cookies in a few minutes and feel like a proud dad.</p>
 <p>In our case, <strong>functions</strong> will serve as <em>cookie cutters</em> for our data recipes. These will help speed up our work while avoiding variation and mistakes in our <em>shapes</em> that we will try to cut. Just like the cookie cutter needed a rolled cookie dough to work on, our functions will take R objects as inputs. And just like a specific cookie cutter cuts a specific shape, a function will serve to solve a unique problem.</p>
-<p><strong>In-built Functions</strong> We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside <code>R packages</code>. We are loosely going to call all of those functions as ‘in-built’ and the ones that we create ourselves as ‘user-defined’. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of!</p>
-<p><strong>User-Defined Functions</strong> As an example, in our earlier <a href="../mastering-atomic-vectors-in-r">post</a> on atomic vectors, we did a vector transformation to ‘normalize’ a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let’s create that function now:</p>
+<p><strong>In-built Functions</strong></p>
+<p>We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside <code>R packages</code>. We are loosely going to call all of those functions as ‘in-built’ and the ones that we create ourselves as ‘user-defined’. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of!</p>
+<p><strong>User-Defined Functions</strong></p>
+<p>As an example, in our earlier <a href="../mastering-atomic-vectors-in-r">post</a> on atomic vectors, we did a vector transformation to ‘normalize’ a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let’s create that function now:</p>
 <pre class="r white"><code>normalize &lt;- function(x) {
     (x - mean(x)) / sd(x)
 }</code></pre>
@@ -41,12 +46,12 @@ output:
 <p>Now we can call this function on any vector:</p>
 <pre class="r white"><code>v1 &lt;- rnorm(50, 5, 15)
 mean(v1)
-#&gt; [1] 3.580254</code></pre>
+#&gt; [1] 6.052794</code></pre>
 <pre class="r white"><code>sd(v1)
-#&gt; [1] 17.32723</code></pre>
+#&gt; [1] 19.89795</code></pre>
 <pre class="r white"><code>v1_norm &lt;- normalize(v1)
 mean(v1_norm)
-#&gt; [1] 4.903846e-18</code></pre>
+#&gt; [1] 1.474515e-17</code></pre>
 <pre class="r white"><code>sd(v1_norm)
 #&gt; [1] 1</code></pre>
 <p>Cool, now we have just created a custom function that normalizes the numeric vector passed to it. But what if we feed a non-numeric vector to our function:</p>
@@ -127,6 +132,16 @@ normalize(v_na, na.rm = TRUE)
 #&gt;     }
 #&gt;     (x - mean(x, ...))/sd(x, ...)
 #&gt; }</code></pre>
+<p><strong>Example of function usage</strong></p>
+<p>A useful way to learn about new function is to look at examples. For functions available in installed packages, you can see the example code with <code>example</code> function:</p>
+<pre class="r white"><code>example(mean)
+#&gt; 
+#&gt; mean&gt; x &lt;- c(0:10, 50)
+#&gt; 
+#&gt; mean&gt; xm &lt;- mean(x)
+#&gt; 
+#&gt; mean&gt; c(xm, mean(x, trim = 0.10))
+#&gt; [1] 8.75 5.50</code></pre>
 </div>
 <div id="where-do-these-functions-and-objects-live" class="section level3">
 <h3>Where do these Functions and Objects live?</h3>
@@ -135,8 +150,9 @@ normalize(v_na, na.rm = TRUE)
 #&gt; &lt;environment: R_GlobalEnv&gt;</code></pre>
 <p>We can see what is in the global environment at any time using <code>ls</code>:</p>
 <pre class="r white"><code>ls()
-#&gt; [1] &quot;i&quot;          &quot;normalize&quot;  &quot;sum&quot;        &quot;v1&quot;         &quot;v1_norm&quot;   
-#&gt; [6] &quot;v2&quot;         &quot;vec&quot;        &quot;vec_cumsum&quot; &quot;v_na&quot;</code></pre>
+#&gt;  [1] &quot;i&quot;          &quot;normalize&quot;  &quot;sum&quot;        &quot;v1&quot;         &quot;v1_norm&quot;   
+#&gt;  [6] &quot;v2&quot;         &quot;vec&quot;        &quot;vec_cumsum&quot; &quot;v_na&quot;       &quot;x&quot;         
+#&gt; [11] &quot;xm&quot;</code></pre>
 <p>So think of the global environment as your ‘slate’ or ‘whiteboard’. Since it is a good idea to start your analysis with a ‘clean’ slate, you either want to restart R session or by removing everything from your global environment using <code>rm</code> with a list argument containing an output of <em>ls()</em>:</p>
 <pre class="r white"><code>rm(list = ls())</code></pre>
 <p><strong>How large are my objects?</strong></p>
@@ -155,10 +171,10 @@ object_size(v_na)
 <p>Sometimes we want to evaluate how long our expressions or pieces of code are taking to run. For a quick test, an expression can be wrapped inside a call to <code>system.time</code>:</p>
 <pre class="r white"><code>system.time(normalize(v_na, na.rm = TRUE))
 #&gt;    user  system elapsed 
-#&gt;   0.004   0.000   0.005</code></pre>
+#&gt;   0.005   0.000   0.005</code></pre>
 <pre class="r white"><code>system.time(cumsum(rep(2.6, times = 1e8)))
 #&gt;    user  system elapsed 
-#&gt;   0.380   0.269   0.649</code></pre>
+#&gt;   0.372   0.284   0.656</code></pre>
 <p>The output (seconds) is split into three parts: <em>user</em> is the time that R process took to run and <em>system</em> is the time that OS took on behalf of running the R process, for example, input/output, opening files etc. <em>elapsed</em> is just the sum of user and system times.</p>
 <p>Another set of useful functions are <code>tic</code> and <code>toc</code> from <code>tictoc</code> library. You can use these as timing markers in various parts of your code:</p>
 <pre class="r white"><code>library(tictoc)
@@ -169,7 +185,7 @@ toc()
 <pre class="r white"><code>tic(&quot;slower function&quot;)
 invisible(cumsum(rep(3.6, times = 1e8)))
 toc()
-#&gt; slower function: 0.649 sec elapsed</code></pre>
+#&gt; slower function: 0.656 sec elapsed</code></pre>
 <p>Here <code>invisible</code> is used to suppress the output to avoid cluttering the console.</p>
 </div>
 <div id="quick-introduction-to-tibbles-and-dataframes" class="section level3">
@@ -205,14 +221,62 @@ toc()
 <pre class="r white"><code>data(package = .packages(all.available = TRUE))$results[sample(5), -2]
 #&gt;      Package Item                Title                      
 #&gt; [1,] &quot;dplyr&quot; &quot;band_instruments&quot;  &quot;Band membership&quot;          
-#&gt; [2,] &quot;dplyr&quot; &quot;nasa&quot;              &quot;NASA spatio-temporal data&quot;
-#&gt; [3,] &quot;dplyr&quot; &quot;band_members&quot;      &quot;Band membership&quot;          
+#&gt; [2,] &quot;dplyr&quot; &quot;band_members&quot;      &quot;Band membership&quot;          
+#&gt; [3,] &quot;dplyr&quot; &quot;band_instruments2&quot; &quot;Band membership&quot;          
 #&gt; [4,] &quot;dplyr&quot; &quot;starwars&quot;          &quot;Starwars characters&quot;      
-#&gt; [5,] &quot;dplyr&quot; &quot;band_instruments2&quot; &quot;Band membership&quot;</code></pre>
+#&gt; [5,] &quot;dplyr&quot; &quot;nasa&quot;              &quot;NASA spatio-temporal data&quot;</code></pre>
 <p><strong>Datasets in a specific package</strong></p>
-<p>To see datasets available in a specific package, you would pass the package name as a character string to <em>package</em> argument:</p>
-<pre class="r white"><code>data(package =  &quot;ggplot2&quot;)</code></pre>
+<p>To see datasets available in a specific package, you would pass the package name as a character string to <em>package</em> argument: <code>data(package = &quot;ggplot2&quot;)</code></p>
 <p><strong>More information on a particular data set</strong></p>
-<p>If the description of the data set sounds interesting to us, we can learn more about that data using <code>?</code>:</p>
-<pre class="r white"><code>?mpg</code></pre>
+<p>If the description of the data set sounds interesting to us, we can learn more about that data using <code>?&lt;data name&gt;</code>. Now let’s look at one of the datasets, <code>mpg</code> available in the package <code>ggplot2</code> in a bit more detail.</p>
+</div>
+<div id="extracting-atomic-vectors-from-a-tibble" class="section level3">
+<h3>Extracting Atomic Vectors from a Tibble</h3>
+<p>To see the data we can simply print it after loading <em>ggplot2</em>:</p>
+<pre class="r white"><code>library(ggplot2)
+mpg
+#&gt; # A tibble: 234 x 11
+#&gt;    manufac… model   displ  year   cyl trans  drv     cty   hwy fl    class
+#&gt;    &lt;chr&gt;    &lt;chr&gt;   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt;  1 audi     a4       1.80  1999     4 auto(… f        18    29 p     comp…
+#&gt;  2 audi     a4       1.80  1999     4 manua… f        21    29 p     comp…
+#&gt;  3 audi     a4       2.00  2008     4 manua… f        20    31 p     comp…
+#&gt;  4 audi     a4       2.00  2008     4 auto(… f        21    30 p     comp…
+#&gt;  5 audi     a4       2.80  1999     6 auto(… f        16    26 p     comp…
+#&gt;  6 audi     a4       2.80  1999     6 manua… f        18    26 p     comp…
+#&gt;  7 audi     a4       3.10  2008     6 auto(… f        18    27 p     comp…
+#&gt;  8 audi     a4 qua…  1.80  1999     4 manua… 4        18    26 p     comp…
+#&gt;  9 audi     a4 qua…  1.80  1999     4 auto(… 4        16    25 p     comp…
+#&gt; 10 audi     a4 qua…  2.00  2008     4 manua… 4        20    28 p     comp…
+#&gt; # ... with 224 more rows</code></pre>
+<p>So we have 234 <em>observations</em> and 11 <em>variables</em> in this dataset. Important thing to note at this point is that the columns (variables) are essentially <em>atomic vectors</em> of different types but same length. We will generally be working with tibbles as a whole most of the time although we may narrow down the variables and observtions to our needs. We will learn all tools needed to work directly with tibbles before learning <em>regression</em>. For <em>inference</em> however, we just need to know how to extract individual vectors so we can use our knowledge of atomic vectors directly.</p>
+<p><strong>Subsetting a tibble column with [[ operator</strong></p>
+<p>Let’s say we only want to look at the displacement (<em>displ</em>):</p>
+<pre class="r white"><code>displacement &lt;- mpg[[&quot;displ&quot;]]
+str(displacement)
+#&gt;  num [1:234] 1.8 1.8 2 2 2.8 2.8 3.1 1.8 1.8 2 ...</code></pre>
+<pre class="r white"><code>summary(displacement)
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   1.600   2.400   3.300   3.472   4.600   7.000</code></pre>
+<p><strong>Subsetting a tibble column using pull</strong></p>
+<p>We can directly use <code>dplyr</code> package’s <code>pull</code> function to do the same operation. Let’s try to extract <code>manufacturer</code> column:</p>
+<pre class="r white"><code>maker &lt;- pull(mpg, &quot;manufacturer&quot;)
+str(maker)
+#&gt;  chr [1:234] &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; ...</code></pre>
+<pre class="r white"><code>unique(maker)
+#&gt;  [1] &quot;audi&quot;       &quot;chevrolet&quot;  &quot;dodge&quot;      &quot;ford&quot;       &quot;honda&quot;     
+#&gt;  [6] &quot;hyundai&quot;    &quot;jeep&quot;       &quot;land rover&quot; &quot;lincoln&quot;    &quot;mercury&quot;   
+#&gt; [11] &quot;nissan&quot;     &quot;pontiac&quot;    &quot;subaru&quot;     &quot;toyota&quot;     &quot;volkswagen&quot;</code></pre>
+</div>
+<div id="where-am-i" class="section level3">
+<h3>Where am I?</h3>
+<ul>
+<li><code>getwd()</code> to see your current working directory.</li>
+<li><code>setwd(&quot;&lt;new directory to set&gt;&quot;)</code> to set a different directory as your working directory.</li>
+<li><code>list.files()</code> to see what files are there in your current working directory.</li>
+</ul>
+</div>
+<div id="summary" class="section level3">
+<h3>Summary</h3>
+<p>Here we discussed the fundamental concepts of programming in R. We also learned how to access built-in datasets so we can use those to play with. Now we have the necessary tools as well as the ingredients to work with. So let’s get cooking starting with <em>Statistical Inference</em>.</p>
 </div>

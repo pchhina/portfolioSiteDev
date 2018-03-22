@@ -31,9 +31,11 @@ In our case, **functions** will serve as *cookie cutters* for our data recipes. 
 
 
 **In-built Functions**
+
 We have been using functions all along while playing with our atomic vectors. We did not have to create any of those functions. Some smart minds created those and shared with us by packaging these inside `R packages`. We are loosely going to call all of those functions as 'in-built' and the ones that we create ourselves as 'user-defined'. In the context of our cookie cutter problem, in-built functions are the cookie cutters that you can get from store or borrow from your friend while the user-defined are the ones you create by cutting the metal strips into the shapes you dream of!
 
 **User-Defined Functions**
+
 As an example, in our earlier [post](../mastering-atomic-vectors-in-r) on atomic vectors, we did a vector transformation to 'normalize' a numeric vector where the resulting vector had a mean 0 and standard deviation of 1. What if we have to redo (very likely) that calculation on another vector? Instead of copy and paste the entire code block and then replacing the input vector with a new vector (a rather inefficient and error prone technique), an efficient alternative is to create a function. Each time we have a new vector, we will simply feed the new vector into our function. Let's create that function now:
 
 ```{r}
@@ -130,7 +132,13 @@ The argument names in the function definition are called `formal arguments` and 
 formals(normalize)
 body(normalize)
 ```
+**Example of function usage**
 
+A useful way to learn about new function is to look at examples. For functions available in installed packages, you can see the example code with `example` function:
+
+```{r}
+example(mean)
+```
 ### Where do these Functions and Objects live?
 So far, we have been creating R vector objects and function objects and also using in-built function objects. But where do all these objects live. When we start R, it creates a fresh `global environment` and starts to populate it with stuff that we create during our analysis.
 
@@ -214,16 +222,46 @@ data(package = .packages(all.available = TRUE))$results[sample(5), -2]
 
 **Datasets in a specific package**
 
-To see datasets available in a specific package, you would pass the package name as a character string to *package* argument:
-
-```{r}
-data(package =  "ggplot2")
-```
+To see datasets available in a specific package, you would pass the package name as a character string to *package* argument: `data(package = "ggplot2")`
 
 **More information on a particular data set**
 
-If the description of the data set sounds interesting to us, we can learn more about that data using `?`:
+If the description of the data set sounds interesting to us, we can learn more about that data using `?<data name>`. Now let's look at one of the datasets, `mpg` available in the package `ggplot2` in a bit more detail.
 
-```{r, eval = FALSE}
-?mpg
+### Extracting Atomic Vectors from a Tibble
+To see the data we can simply print it after loading *ggplot2*:
+
+```{r}
+library(ggplot2)
+mpg
 ```
+So we have 234 *observations* and 11 *variables* in this dataset. Important thing to note at this point is that the columns (variables) are essentially *atomic vectors* of different types but same length. We will generally be working with tibbles as a whole most of the time although we may narrow down the variables and observtions to our needs. We will learn all tools needed to work directly with tibbles before learning *regression*. For *inference* however, we just need to know how to extract individual vectors so we can use our knowledge of atomic vectors directly. 
+
+**Subsetting a tibble column with [[ operator**
+
+Let's say we only want to look at the displacement (*displ*):
+
+```{r}
+displacement <- mpg[["displ"]]
+str(displacement)
+summary(displacement)
+```
+
+**Subsetting a tibble column using pull**
+
+We can directly use `dplyr` package's `pull` function to do the same operation. Let's try to extract `manufacturer` column:
+
+```{r}
+maker <- pull(mpg, "manufacturer")
+str(maker)
+unique(maker)
+```
+
+### Where am I?
+
+* `getwd()` to see your current working directory.
+* `setwd("<new directory to set>")` to set a different directory as your working directory.
+* `list.files()` to see what files are there in your current working directory.
+
+### Summary
+Here we discussed the fundamental concepts of programming in R. We also learned how to access built-in datasets so we can use those to play with. Now we have the necessary tools as well as the ingredients to work with. So let's get cooking starting with *Statistical Inference*.

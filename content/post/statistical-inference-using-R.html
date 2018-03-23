@@ -14,15 +14,22 @@ output:
 <div id="TOC">
 <ul>
 <li><a href="#everything-varies">Everything Varies</a></li>
-<li><a href="#mean---one-measure-of-centeral-tendency">Mean - One Measure of Centeral Tendency</a></li>
+<li><a href="#mean---one-measure-of-central-tendency">Mean - One Measure of Central Tendency</a></li>
+<li><a href="#sample-vs-population">Sample vs Population</a></li>
+<li><a href="#estimating-a-population-parameter-from-a-sample-quantity">Estimating a Population Parameter from a Sample Quantity</a></li>
+<li><a href="#variance---a-measure-of-spread">Variance - A Measure of Spread</a></li>
+<li><a href="#what-is-the-variance-in-estimate-of-mean">What is the Variance in Estimate of Mean</a></li>
+<li><a href="#central-limit-theorem">Central Limit Theorem</a></li>
+<li><a href="#key-facts-about-normal-distribution">Key Facts about Normal Distribution</a></li>
+<li><a href="#confidence-intervals-for-the-estimate-of-mean">Confidence Intervals for the Estimate of Mean</a></li>
 </ul>
 </div>
 
-<p>Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friends suggests to buy a 4-cylinder car instead of 6or 8 cylinders since larger engine size ususally translates to worse fuel economy. You are a data scientist so you just don’t take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this <code>mpg</code> dataset in one of the R packages, <code>ggplot2</code> and start to look at it to answer your question:</p>
+<p>Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friend suggests to buy a 4-cylinder car instead of 6 or 8 cylinders since larger engine size ususally translates to worse fuel economy. You are a data scientist so you just don’t take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this <code>mpg</code> dataset in one of the R packages, <code>ggplot2</code> and start to look at it to answer your question:</p>
 <blockquote>
 <p>Do 4-cylinder cars have better fuel economy than 6-cylinder cars?</p>
 </blockquote>
-<p>This is a kind of question that statistical inference will help us answer. In this post, we will learn the fundamental concepts related to inference. As usual, we will keep the focus tight on the minimum set of tools needed to start applying the concepts to data at hand. We will add more tools as we start to play with different types of data.</p>
+<p>This is a type of question that statistical inference will help us answer. In this post, we will learn the fundamental concepts related to inference. As usual, we will keep the focus tight on the minimum set of tools needed to start applying the concepts to data at hand. We will add more tools as we start to play with different types of data.</p>
 <div id="everything-varies" class="section level3">
 <h3>Everything Varies</h3>
 <p>Variation is inherent to all phenomenon and processes. Otherwise our job is done. Our objective is to understand the variation in data so we can make an informed decision. So we want to ‘quantify’ the variation in our data. Just looking at the raw data is not going to cut it. Let’s try:</p>
@@ -63,28 +70,104 @@ hwy_4
 #&gt;  9    25
 #&gt; 10    26
 #&gt; # ... with 69 more rows</code></pre>
-<p>It is not a bad idea to look at the raw data but it is difficult to conclude anything. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 70 data points for each set for too long. Sometimes we have to work with many more observations. One tool to ease out that pain is plots. Let’s look at the histogram of each set:</p>
+<p>It is not a bad idea to look at the raw data but it is difficult to conclude anything. Surprisingly, the fuel economy numbers are rounded to 2 significant figures (and thus of type <em>integer</em>). Generally, mpg numbers are provided with 3 decimal places. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 80 data points for each set for too long. And sometimes we may have to work with many more observations. One tool to ease out that pain is plots. Let’s look at the histogram of each set:</p>
 <pre class="r white"><code>library(themeSimple)
 ggplot(hwy_4, aes(hwy)) +
-    histogram() +
+    histogram(binwidth = 3) + 
+    xlim(15, 45) +
     theme_simple()</code></pre>
 <p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r white"><code>ggplot(hwy_6, aes(hwy)) +
-    histogram() +
+<pre class="r white"><code>
+ggplot(hwy_6, aes(hwy)) +
+    histogram(binwidth = 3) +
+    xlim(15, 45) +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /> I kept the x-axis scale same in both plots so we can compare the two easily. It is apparent that the mean of 4-cylinder vehicles is centered aroung 30 mpg (miles per gallon) while it is around 25 mpg for 6-cylinder vehicles. So should you conclude that 4-cylinder cars are better? Well, let’s wait until we get some quantifiable differences.</p>
 </div>
-<div id="mean---one-measure-of-centeral-tendency" class="section level3">
-<h3>Mean - One Measure of Centeral Tendency</h3>
-<p>A better approach is to look at the mean:</p>
+<div id="mean---one-measure-of-central-tendency" class="section level3">
+<h3>Mean - One Measure of Central Tendency</h3>
+<p>To quantify the difference, one measure we can consider is <em>mean</em>, which is a measure of central tendency of the data:</p>
 <pre class="r white"><code>mpg %&gt;% 
-    group_by(cyl) %&gt;% 
+    group_by(cyl) %&gt;%
+    filter(cyl == 4 | cyl == 6) %&gt;%
     summarize(mean_hwy = mean(hwy))
-#&gt; # A tibble: 4 x 2
+#&gt; # A tibble: 2 x 2
 #&gt;     cyl mean_hwy
 #&gt;   &lt;int&gt;    &lt;dbl&gt;
 #&gt; 1     4     28.8
-#&gt; 2     5     28.8
-#&gt; 3     6     22.8
-#&gt; 4     8     17.6</code></pre>
+#&gt; 2     6     22.8</code></pre>
+<p>So the mean fuel economy of 4-cylinder cars is greater than 6-cylinder cars by 6 mpg! That’s quite a bit. And now we have quantified the difference. Can we conclude now that 4-cylinder cars are better than 6-cylinders? Well not so fast!</p>
+</div>
+<div id="sample-vs-population" class="section level3">
+<h3>Sample vs Population</h3>
+<p>One thing is clear that your friend is not going to pick up one of the cars used to generate this data. For one, the latest model (2008) in the data set is 10 years old. The data we have with us is called <em>sample</em> and the mean we have calculated is called <em>sample mean</em>. This sample comes from <em>population</em> that in this case consists of all the 4 and 6 cylinder cars manufactured in US from year 1999 to 2008. What we really want to know is <em>population mean</em>. But there is no way to exactly know the population mean (unless you are ready to measure mpg for all the cars, which is a costly proposition!). The only option we have is to <em>estimate</em> population mean from sample mean.</p>
+</div>
+<div id="estimating-a-population-parameter-from-a-sample-quantity" class="section level3">
+<h3>Estimating a Population Parameter from a Sample Quantity</h3>
+<p><strong>How do we estimate population mean from sample mean?</strong></p>
+<p>The answer is quite simple here.</p>
+<blockquote>
+<p>Sample mean is an <em>unbiased estimator</em> of population mean.</p>
+</blockquote>
+<p>Sample mean is an <em>unbiased</em> estimator of population mean so we don’t have to worry too much about the estimate here. What we need to answer is <em>how confident</em> are we in our estimate? It is likely that if we collect another sample, the mean of that sample is not going to be exactly same as the first. This is because since the individual observations are <em>random numbers</em>, anything that we calculate from those will also be a random number. To understand the variability in mean, we need to know a bit about <em>variance</em>.</p>
+</div>
+<div id="variance---a-measure-of-spread" class="section level3">
+<h3>Variance - A Measure of Spread</h3>
+<p>While mean gives you central tendency of a population, <em>variance</em> represents the spread or distribution of observations around the mean. We typically think of variance in terms of <em>standard deviation</em> which is just the square root of variance. This is because the units of standard deviation matches with the data we are analyzing. So in short, a data with standard deviation of 5 will be more spread out compared to a data with standard deviation of 1. Let’s look at the histogram of these two sets:</p>
+<pre class="r white"><code>low_var &lt;- rnorm(1000)
+high_var &lt;- rnorm(1000, mean = 0, sd = 5)
+data &lt;- tibble(id = rep(c(&quot;low&quot;, &quot;high&quot;), each = 1000), 
+               obs = c(low_var, high_var))
+ggplot(data, aes(x = obs)) +
+    histogram(data = filter(data, id == &quot;high&quot;), 
+              fill = &#39;darkorange&#39;, 
+              alpha = 0.8) +
+    histogram(data = filter(data, id == &quot;low&quot;), 
+              alpha = 0.8) +
+    theme_simple()</code></pre>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="what-is-the-variance-in-estimate-of-mean" class="section level3">
+<h3>What is the Variance in Estimate of Mean</h3>
+<p>Now that we know what variance is, we need to find what is the variance in our estimate of mean. It turns out that the variance in the estimate of mean is simply the variance of the sample divided by the number of observations in the sample. It follows then that the standard deviation of estimate of our mean (also known as the <em>standard error of mean</em>) is the standard deviation of the sample divided by the square root of the number of observations. Thus, as our sample size increases, the standard error of mean decreases increasing our confidence in the estimate of mean.</p>
+<blockquote>
+<p><em>Standard error of mean is equal to standard deviation of the sample divided by the square root of the number of observations</em></p>
+</blockquote>
+<p>Let’s calculate <em>SE of mean</em> of our two samples:</p>
+<pre class="r white"><code>semean_hwy_4 &lt;- signif(sd(pull(hwy_4, hwy)) / sqrt(length(pull(hwy_4, hwy))), 3)
+semean_hwy_4
+#&gt; [1] 0.502</code></pre>
+<pre class="r white"><code>semean_hwy_6 &lt;- signif(sd(pull(hwy_6, hwy)) / sqrt(length(pull(hwy_6, hwy))), 3)
+semean_hwy_6
+#&gt; [1] 0.415</code></pre>
+<p>This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer is the mighty <em>Central Limit Theorem</em>.</p>
+</div>
+<div id="central-limit-theorem" class="section level3">
+<h3>Central Limit Theorem</h3>
+<p>Central Limit Theorem (CLT) says that regrdless of what the distribution of individual observations of a certain population looks like, the distribution of sample means gets closer and closer to <em>normal distribution</em> as the number of observations increase.</p>
+<blockquote>
+<p><em>Distribution of averages of a random variable samples gets closer and closer to normal distribution as the sample size increases.</em></p>
+</blockquote>
+</div>
+<div id="key-facts-about-normal-distribution" class="section level3">
+<h3>Key Facts about Normal Distribution</h3>
+<p>Now that we know that the distribution of averages follows normal distribution, it will help to know a little bit about this normal distribution. Normal distribution has a <em>bell shape</em> and is also referred to as <em>Gaussian Distribution</em>. Due to the bell shape, more observations are concentrated at the center (mean) and the density decreases as we move away from the center in either direction.</p>
+<ul>
+<li>A normal distrubution with a mean of 0 and standard deviation of 1 is known as <em>standard normal distribution</em>.</li>
+<li>68%, 95% and 99% of the normal density lies within approximately 1, 2 and 3 standard deviations from the mean.</li>
+<li>-1.96, -1.645, 1.645, 1.96 are the 2.5th, 5th, 95th and 97.5th percentiles of the standard normal distribution.</li>
+</ul>
+<p>These facts allow us to build confidence intervals for any estimate that follows a normal distribution.</p>
+</div>
+<div id="confidence-intervals-for-the-estimate-of-mean" class="section level3">
+<h3>Confidence Intervals for the Estimate of Mean</h3>
+<p>Now we have the knowledge to create confidence intervals for our estimate of mean. For example, since the mean follow normal distribution (per CLT), 95% of the means will lie within <em>+/- 2 x SE</em>:</p>
+<pre class="r white"><code>CI_4 &lt;- mean(pull(hwy_4)) + c(-2, 2) * semean_hwy_4
+signif(CI_4, 3)
+#&gt; [1] 27.8 29.8</code></pre>
+<pre class="r white"><code>CI_6 &lt;- mean(pull(hwy_6)) + c(-2, 2) * semean_hwy_6
+signif(CI_6, 3)
+#&gt; [1] 22.0 23.7</code></pre>
+<p><strong>What does these confidence intervals mean?</strong></p>
+<p>One interpretation of confidence interval is that there is 95% chance that the population mean will lie within 27.8 and 29.8 mpg for 4-cylinder cars. In other words, these confidence intervals mean that if we take 100 4-cylinder samples, 95 of those means will contain the population mean.</p>
 </div>

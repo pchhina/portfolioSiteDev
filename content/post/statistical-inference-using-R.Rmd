@@ -111,7 +111,7 @@ semean_hwy_6 <- signif(sd(pull(hwy_6, hwy)) / sqrt(length(pull(hwy_6, hwy))), 3)
 semean_hwy_6
 ```
 
-This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands  of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer is the mighty *Central Limit Theorem*.
+This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands  of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer comes from the mighty *Central Limit Theorem*.
 
 ### Central Limit Theorem
 Central Limit Theorem (CLT) says that regrdless of what the distribution of individual observations of a certain population looks like, the distribution of sample means gets closer and closer to *normal distribution* as the number of observations increase. 
@@ -138,4 +138,144 @@ signif(CI_6, 3)
 ```
 **What does these confidence intervals mean?**
 
-One interpretation of confidence interval is that there is 95% chance that the population mean will lie within 27.8 and 29.8 mpg for 4-cylinder cars. In other words, these confidence intervals mean that if we take 100 4-cylinder samples, 95 of those means will contain the population mean. 
+The above interval means that we are 95% confident that the population lies in this interval. Another way to think is that if we take 100 4-cylinder samples, and construct confidence intervals using the above calculated values, approximately 95 of those intervals will contain the population mean. 
+
+### Calculation of Confidence Intervals using R Functions
+We can directly use R functions (`pnorm` and `qnorm`) to calculate quantities for normal distributions.
+
+**The mean SAT score is 1083 with a standard deviation of 194. What is the probability that a randomly drawn student from this population has a score of 800 or less?**
+
+Notice here that we are directly given the population parameters. We don't have a single sample. So assuming this population is normally distributed, we are asked to find the area bounded by the curve representing this distribution, x-axis and the left of the vertical line drawn at 800 x-axis point. This can be computed by:
+
+```{r}
+pnorm(800, 1083, 194)
+```
+So we can say that there is less than 8% chance of randomly picking a student with a SAT score of 800 or less from this population.
+
+**What is the probability that a randomly drawn student from this population has a score of 1150 or more?**
+
+Now we need the area to the *right* of vertical line drawn at 1150. So we will use the argument **lower.tail = FALSE** to answer this question:
+
+```{r}
+pnorm(1150, 1083, 194, lower.tail = FALSE)
+```
+
+So there is about 36% chance of picking a student with a score of 1150 or more. Now let's ask the opposite question.
+
+**What range of scores cover 95% of the population?**
+
+In order to cover 95% of the population, we have to leave 2.5% area on either side of the curve. This means we have to compute 2 quantiles given two probabilities - .025 and .975
+
+```{r}
+qnorm(c(.025, .975), 1083, 194)
+```
+Now let's apply the same calculation to our 4-cylinder data:
+
+```{r}
+signif(qnorm(c(.025, .975), 28.8, semean_hwy_4), 3)
+```
+
+This is pretty close to the calculation we did earlier using the fact the 95% of the range is covered by approximately 2 standard deviations around the mean.
+
+### Hypothesis Testing - A Systematic Approach to Compare Sample Data
+
+**Simpler case - given a population mean and a sample data**
+
+*Question: Did the sample came from the same population?*
+
+In this situation, a population is known and we want to compare our sample and infer if the sample came from the same population or a different one. Let's assume for the sake of argument here that population mean for all 4 cylinder cars is 27 mpg. The question is how likely is that our sample came from this population. This and similar type if questions can be tested more systematically using *hypthesis testing* framework. The basic idea is we create two hypotheses:
+
+* **Null Hypothesis (Ho)**: The sample came from same population. This is the status quo. 
+* **Alternate Hypothesis (Ha)**: The sample came from a different population.
+* Then we assume Ho to be true. 
+* Then we look at the sample data and try to see if there is *enough evidence to reject Ho*. We do this by calulating probabilty of getting the mean as or more extreme as we did in our sample.
+* If the probability is less than a certain threshold value, we say that it is unlikely to get a mean as or more extreme as we did in our sample and thus reject the null hypothesis. 
+* If the probability is not less than the threshold we chose, then we say we *fail to reject null*.
+
+In our fuel economy sample, Ho is that population mean from which the sample is drawn is 27 mpg. Ha is that the population mean from which sample is drawn is *not* 27 mpg. Let's find the probability of obtaining a mean as extreme or more than 28.8 mpg given that population mean is 27 mpg. 
+
+```{r}
+2 * pnorm(28.8, 27, semean_hwy_4, lower.tail = FALSE)
+```
+
+We multiplied by 2 to calculate *two-sided* probability since Ha that we are evaluating states *not equal* to 27 mpg. If Ha was defined to be *more* or *less* than 27 mpg, then we would have used *one-sided* probability. So there is 0.03% chance that we would observe the mean that we did assuming Ho to be true. A typical threshold is 5%, considering which we reject the null and say that the sample is extremely unlikely to have come from the population with a mean of 27 mpg.
+
+**What is a *p-value* ?**
+
+What we just computed above (.03%) is called a p-value. The threshold is called *alpha*. In these terms, we reject Ho if p-value is less than alpha and fail to reject if it is equal to or greater than alpha. Can I ever run into a situation where I incorrectly reject (or fail to reject) Ho? We are never 100% certain of our conclusions so, yes, you can!
+
+### Potholes in Hypothesis Testing
+
+Now what if my p-value is less than 0.05 and I reject Ho but in reality Ho was true? In that case, we made an error which in statistical circles is commonly known as **Type 1 Error**. This can happen because we always choose a non-zero value of alpha, which controls the Type 1 error rate. Alpha = 0.05 means that there will be about 5% cases where I will incorrectly reject Ho.
+
+Since I want to keep Type 1 error as small as possible, I want to keep the value of alpha as small as I can. What is the smallest I can go on alpha? Theoretically, you can go as low as 0 giving you a Type 1 error rate of 0. But this would lead to a problem. Since p-value is the probability and thus cannot go negative, we will never reject Ho in this case, no matter how far my observed mean is from Ho! Now we will run into another problem when Ha is true and we are committing another error known as **Type 2 Error** - the probability of failing to reject Ho when in fact Ho is false.
+
+Ideally, we want to minimize both Type 1 and 2 errors. Type 2 error is called *Beta*. But we ususally don't think in terms of Beta. Instead we think in terms of *Power*. 
+
+### What is Power?
+
+*Power* is the probability of rejecting Ho when it is false. This is *1 - Beta*. To calculate power we need to know what the distribution under Ha looks like. Now this is sort of 'hypothetical problem' (this is because Ha is not defined precisely, but rather in terms of inequality). Recall that Ha is stated as *less than/not equal to/greater than* so we don't know what the mean is under Ha. 
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/power_hypothesis.png")
+```
+
+Power instead is used to design experiments. We first ask ourselves, what effect size do we want to measure? For example, average price of books from one seller is \$50.00 and we want to compare if another seller has a price difference of \$0.50, \$1.00 or \$5.00. This results in an interplay between:
+
+* **Effect size**: The larger the size, the more power you have (easier to identify the effect)
+* **Sample size**: Recall that SE of mean is inversally proportional to square root of sample size. So larger the sample size, more squeezed will be the distribution of means towards the center. This will result in less overlap between Ho and Ha distribution (for the same effect size) and thus more power.
+* **Alpha**: Since power is the probability of rejecting Ho when it is false, it is the area under the Ha curve beyond the alpha value. So as we decrease alpha (in an effort to reduce type 1 error rate), we also decrease the area under Ha, thus decreasing the power.
+
+### Small Sample?
+So far we have been assuming that our sample size is reasonably large (typically greater than 30) for CLT to be valid. We may come across problems where sample size is not sufficiently large. In those cases, we simply switch from assuming a normal distribution for our data to assuming a **Student t Distribution**. *t-distribution* takes only one parameter, *degrees of freedom* (n-1) and we replace our *pnorm* and *qnorm* functions with `pt` and `qt` for calculating the probabilities and quantiles.
+
+```{r}
+CI_4_t <- mean(pull(hwy_4)) + qt(c(.025, .975), 80) * semean_hwy_4
+CI_4_t
+```
+Note that there is no direct function to input mean and se inside *qt* function so we first calculate the vector of relevant quantiles from *df*, then multiply it by SE of estimate and then add this to the mean of the sample. Also note that in this particular case, sample size is fairly large, and thus the confidence interval predicted by t-distribution is pretty close to those computed from the normal distribution assumption.
+
+Since t-distribution works well for both small and large samples, a general rule of thumb is to assume t-distribution instead of normal. Let's try to layout the steps and methods to solve different types of problems using the t-distrubution.
+
+### Problems
+
+Here we identify typical questions/problems, go through the steps needed to solve the problem and finally use `t.test` function for a more compact form of our solution method.
+
+**Given a vector of random numbers (also called a *single sample*), what is the 95% confidence interval for mean?**
+
+*Using systematic calculation steps*
+
+* Step 1: Compute sample mean
+* Step 2: Compute sample standard deviation
+* Step 3: Compute standard error of mean
+* Step 4: Compute degrees of freedom
+* Step 5: Compute t-statistic
+* Step 6: Compute confidence interval
+* Step 7: State your finding
+
+Let's apply this method to our 4-cylinder data:
+
+```{r}
+hwy_4 <- pull(hwy_4)    # convert tibble to vector
+s_mean <- mean(hwy_4)
+s_sd <- sd(hwy_4)
+se_mean_4 <- s_sd / sqrt(length(hwy_4))
+df_4 <- length(hwy_4) - 1
+ts_4 <- qt(0.025, df_4)
+ci_4 <- s_mean + c(1, -1) * ts_4 * se_mean_4
+ci_4
+```
+*Using `t.test`*
+
+Since the output of a single sample `t.test` includes confidence interval, we can directly use that:
+
+```{r}
+t.test(hwy_4)
+```
+
+And if we just want confidence interval, we can exract that with **conf.int**:
+
+```{r}
+t.test(hwy_4)$conf.int
+```
+

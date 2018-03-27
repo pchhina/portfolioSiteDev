@@ -22,6 +22,12 @@ output:
 <li><a href="#central-limit-theorem">Central Limit Theorem</a></li>
 <li><a href="#key-facts-about-normal-distribution">Key Facts about Normal Distribution</a></li>
 <li><a href="#confidence-intervals-for-the-estimate-of-mean">Confidence Intervals for the Estimate of Mean</a></li>
+<li><a href="#calculation-of-confidence-intervals-using-r-functions">Calculation of Confidence Intervals using R Functions</a></li>
+<li><a href="#hypothesis-testing---a-systematic-approach-to-compare-sample-data">Hypothesis Testing - A Systematic Approach to Compare Sample Data</a></li>
+<li><a href="#potholes-in-hypothesis-testing">Potholes in Hypothesis Testing</a></li>
+<li><a href="#what-is-power">What is Power?</a></li>
+<li><a href="#small-sample">Small Sample?</a></li>
+<li><a href="#problems">Problems</a></li>
 </ul>
 </div>
 
@@ -140,7 +146,7 @@ semean_hwy_4
 <pre class="r white"><code>semean_hwy_6 &lt;- signif(sd(pull(hwy_6, hwy)) / sqrt(length(pull(hwy_6, hwy))), 3)
 semean_hwy_6
 #&gt; [1] 0.415</code></pre>
-<p>This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer is the mighty <em>Central Limit Theorem</em>.</p>
+<p>This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer comes from the mighty <em>Central Limit Theorem</em>.</p>
 </div>
 <div id="central-limit-theorem" class="section level3">
 <h3>Central Limit Theorem</h3>
@@ -169,5 +175,117 @@ signif(CI_4, 3)
 signif(CI_6, 3)
 #&gt; [1] 22.0 23.7</code></pre>
 <p><strong>What does these confidence intervals mean?</strong></p>
-<p>One interpretation of confidence interval is that there is 95% chance that the population mean will lie within 27.8 and 29.8 mpg for 4-cylinder cars. In other words, these confidence intervals mean that if we take 100 4-cylinder samples, 95 of those means will contain the population mean.</p>
+<p>The above interval means that we are 95% confident that the population lies in this interval. Another way to think is that if we take 100 4-cylinder samples, and construct confidence intervals using the above calculated values, approximately 95 of those intervals will contain the population mean.</p>
+</div>
+<div id="calculation-of-confidence-intervals-using-r-functions" class="section level3">
+<h3>Calculation of Confidence Intervals using R Functions</h3>
+<p>We can directly use R functions (<code>pnorm</code> and <code>qnorm</code>) to calculate quantities for normal distributions.</p>
+<p><strong>The mean SAT score is 1083 with a standard deviation of 194. What is the probability that a randomly drawn student from this population has a score of 800 or less?</strong></p>
+<p>Notice here that we are directly given the population parameters. We don’t have a single sample. So assuming this population is normally distributed, we are asked to find the area bounded by the curve representing this distribution, x-axis and the left of the vertical line drawn at 800 x-axis point. This can be computed by:</p>
+<pre class="r white"><code>pnorm(800, 1083, 194)
+#&gt; [1] 0.07231519</code></pre>
+<p>So we can say that there is less than 8% chance of randomly picking a student with a SAT score of 800 or less from this population.</p>
+<p><strong>What is the probability that a randomly drawn student from this population has a score of 1150 or more?</strong></p>
+<p>Now we need the area to the <em>right</em> of vertical line drawn at 1150. So we will use the argument <strong>lower.tail = FALSE</strong> to answer this question:</p>
+<pre class="r white"><code>pnorm(1150, 1083, 194, lower.tail = FALSE)
+#&gt; [1] 0.3649116</code></pre>
+<p>So there is about 36% chance of picking a student with a score of 1150 or more. Now let’s ask the opposite question.</p>
+<p><strong>What range of scores cover 95% of the population?</strong></p>
+<p>In order to cover 95% of the population, we have to leave 2.5% area on either side of the curve. This means we have to compute 2 quantiles given two probabilities - .025 and .975</p>
+<pre class="r white"><code>qnorm(c(.025, .975), 1083, 194)
+#&gt; [1]  702.767 1463.233</code></pre>
+<p>Now let’s apply the same calculation to our 4-cylinder data:</p>
+<pre class="r white"><code>signif(qnorm(c(.025, .975), 28.8, semean_hwy_4), 3)
+#&gt; [1] 27.8 29.8</code></pre>
+<p>This is pretty close to the calculation we did earlier using the fact the 95% of the range is covered by approximately 2 standard deviations around the mean.</p>
+</div>
+<div id="hypothesis-testing---a-systematic-approach-to-compare-sample-data" class="section level3">
+<h3>Hypothesis Testing - A Systematic Approach to Compare Sample Data</h3>
+<p><strong>Simpler case - given a population mean and a sample data</strong></p>
+<p><em>Question: Did the sample came from the same population?</em></p>
+<p>In this situation, a population is known and we want to compare our sample and infer if the sample came from the same population or a different one. Let’s assume for the sake of argument here that population mean for all 4 cylinder cars is 27 mpg. The question is how likely is that our sample came from this population. This and similar type if questions can be tested more systematically using <em>hypthesis testing</em> framework. The basic idea is we create two hypotheses:</p>
+<ul>
+<li><strong>Null Hypothesis (Ho)</strong>: The sample came from same population. This is the status quo.</li>
+<li><strong>Alternate Hypothesis (Ha)</strong>: The sample came from a different population.</li>
+<li>Then we assume Ho to be true.</li>
+<li>Then we look at the sample data and try to see if there is <em>enough evidence to reject Ho</em>. We do this by calulating probabilty of getting the mean as or more extreme as we did in our sample.</li>
+<li>If the probability is less than a certain threshold value, we say that it is unlikely to get a mean as or more extreme as we did in our sample and thus reject the null hypothesis.</li>
+<li>If the probability is not less than the threshold we chose, then we say we <em>fail to reject null</em>.</li>
+</ul>
+<p>In our fuel economy sample, Ho is that population mean from which the sample is drawn is 27 mpg. Ha is that the population mean from which sample is drawn is <em>not</em> 27 mpg. Let’s find the probability of obtaining a mean as extreme or more than 28.8 mpg given that population mean is 27 mpg.</p>
+<pre class="r white"><code>2 * pnorm(28.8, 27, semean_hwy_4, lower.tail = FALSE)
+#&gt; [1] 0.0003362302</code></pre>
+<p>We multiplied by 2 to calculate <em>two-sided</em> probability since Ha that we are evaluating states <em>not equal</em> to 27 mpg. If Ha was defined to be <em>more</em> or <em>less</em> than 27 mpg, then we would have used <em>one-sided</em> probability. So there is 0.03% chance that we would observe the mean that we did assuming Ho to be true. A typical threshold is 5%, considering which we reject the null and say that the sample is extremely unlikely to have come from the population with a mean of 27 mpg.</p>
+<p><strong>What is a <em>p-value</em> ?</strong></p>
+<p>What we just computed above (.03%) is called a p-value. The threshold is called <em>alpha</em>. In these terms, we reject Ho if p-value is less than alpha and fail to reject if it is equal to or greater than alpha. Can I ever run into a situation where I incorrectly reject (or fail to reject) Ho? We are never 100% certain of our conclusions so, yes, you can!</p>
+</div>
+<div id="potholes-in-hypothesis-testing" class="section level3">
+<h3>Potholes in Hypothesis Testing</h3>
+<p>Now what if my p-value is less than 0.05 and I reject Ho but in reality Ho was true? In that case, we made an error which in statistical circles is commonly known as <strong>Type 1 Error</strong>. This can happen because we always choose a non-zero value of alpha, which controls the Type 1 error rate. Alpha = 0.05 means that there will be about 5% cases where I will incorrectly reject Ho.</p>
+<p>Since I want to keep Type 1 error as small as possible, I want to keep the value of alpha as small as I can. What is the smallest I can go on alpha? Theoretically, you can go as low as 0 giving you a Type 1 error rate of 0. But this would lead to a problem. Since p-value is the probability and thus cannot go negative, we will never reject Ho in this case, no matter how far my observed mean is from Ho! Now we will run into another problem when Ha is true and we are committing another error known as <strong>Type 2 Error</strong> - the probability of failing to reject Ho when in fact Ho is false.</p>
+<p>Ideally, we want to minimize both Type 1 and 2 errors. Type 2 error is called <em>Beta</em>. But we ususally don’t think in terms of Beta. Instead we think in terms of <em>Power</em>.</p>
+</div>
+<div id="what-is-power" class="section level3">
+<h3>What is Power?</h3>
+<p><em>Power</em> is the probability of rejecting Ho when it is false. This is <em>1 - Beta</em>. To calculate power we need to know what the distribution under Ha looks like. Now this is sort of ‘hypothetical problem’ (this is because Ha is not defined precisely, but rather in terms of inequality). Recall that Ha is stated as <em>less than/not equal to/greater than</em> so we don’t know what the mean is under Ha.</p>
+<p><img src="../images/power_hypothesis.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Power instead is used to design experiments. We first ask ourselves, what effect size do we want to measure? For example, average price of books from one seller is $50.00 and we want to compare if another seller has a price difference of $0.50, $1.00 or $5.00. This results in an interplay between:</p>
+<ul>
+<li><strong>Effect size</strong>: The larger the size, the more power you have (easier to identify the effect)</li>
+<li><strong>Sample size</strong>: Recall that SE of mean is inversally proportional to square root of sample size. So larger the sample size, more squeezed will be the distribution of means towards the center. This will result in less overlap between Ho and Ha distribution (for the same effect size) and thus more power.</li>
+<li><strong>Alpha</strong>: Since power is the probability of rejecting Ho when it is false, it is the area under the Ha curve beyond the alpha value. So as we decrease alpha (in an effort to reduce type 1 error rate), we also decrease the area under Ha, thus decreasing the power.</li>
+</ul>
+</div>
+<div id="small-sample" class="section level3">
+<h3>Small Sample?</h3>
+<p>So far we have been assuming that our sample size is reasonably large (typically greater than 30) for CLT to be valid. We may come across problems where sample size is not sufficiently large. In those cases, we simply switch from assuming a normal distribution for our data to assuming a <strong>Student t Distribution</strong>. <em>t-distribution</em> takes only one parameter, <em>degrees of freedom</em> (n-1) and we replace our <em>pnorm</em> and <em>qnorm</em> functions with <code>pt</code> and <code>qt</code> for calculating the probabilities and quantiles.</p>
+<pre class="r white"><code>CI_4_t &lt;- mean(pull(hwy_4)) + qt(c(.025, .975), 80) * semean_hwy_4
+CI_4_t
+#&gt; [1] 27.80346 29.80148</code></pre>
+<p>Note that there is no direct function to input mean and se inside <em>qt</em> function so we first calculate the vector of relevant quantiles from <em>df</em>, then multiply it by SE of estimate and then add this to the mean of the sample. Also note that in this particular case, sample size is fairly large, and thus the confidence interval predicted by t-distribution is pretty close to those computed from the normal distribution assumption.</p>
+<p>Since t-distribution works well for both small and large samples, a general rule of thumb is to assume t-distribution instead of normal. Let’s try to layout the steps and methods to solve different types of problems using the t-distrubution.</p>
+</div>
+<div id="problems" class="section level3">
+<h3>Problems</h3>
+<p>Here we identify typical questions/problems, go through the steps needed to solve the problem and finally use <code>t.test</code> function for a more compact form of our solution method.</p>
+<p><strong>Given a vector of random numbers (also called a <em>single sample</em>), what is the 95% confidence interval for mean?</strong></p>
+<p><em>Using systematic calculation steps</em></p>
+<ul>
+<li>Step 1: Compute sample mean</li>
+<li>Step 2: Compute sample standard deviation</li>
+<li>Step 3: Compute standard error of mean</li>
+<li>Step 4: Compute degrees of freedom</li>
+<li>Step 5: Compute t-statistic</li>
+<li>Step 6: Compute confidence interval</li>
+<li>Step 7: State your finding</li>
+</ul>
+<p>Let’s apply this method to our 4-cylinder data:</p>
+<pre class="r white"><code>hwy_4 &lt;- pull(hwy_4)    # convert tibble to vector
+s_mean &lt;- mean(hwy_4)
+s_sd &lt;- sd(hwy_4)
+se_mean_4 &lt;- s_sd / sqrt(length(hwy_4))
+df_4 &lt;- length(hwy_4) - 1
+ts_4 &lt;- qt(0.025, df_4)
+ci_4 &lt;- s_mean + c(1, -1) * ts_4 * se_mean_4
+ci_4
+#&gt; [1] 27.80411 29.80082</code></pre>
+<p><em>Using <code>t.test</code></em></p>
+<p>Since the output of a single sample <code>t.test</code> includes confidence interval, we can directly use that:</p>
+<pre class="r white"><code>t.test(hwy_4)
+#&gt; 
+#&gt;  One Sample t-test
+#&gt; 
+#&gt; data:  hwy_4
+#&gt; t = 57.413, df = 80, p-value &lt; 2.2e-16
+#&gt; alternative hypothesis: true mean is not equal to 0
+#&gt; 95 percent confidence interval:
+#&gt;  27.80411 29.80082
+#&gt; sample estimates:
+#&gt; mean of x 
+#&gt;  28.80247</code></pre>
+<p>And if we just want confidence interval, we can exract that with <strong>conf.int</strong>:</p>
+<pre class="r white"><code>t.test(hwy_4)$conf.int
+#&gt; [1] 27.80411 29.80082
+#&gt; attr(,&quot;conf.level&quot;)
+#&gt; [1] 0.95</code></pre>
 </div>

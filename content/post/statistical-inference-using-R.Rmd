@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   fig.align = 'center'
 )
 ```
-Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friend suggests to buy a 4-cylinder car instead of 6 or 8 cylinders since larger engine size ususally translates to worse fuel economy. You are a data scientist so you just don't take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this `mpg` dataset in one of the R packages, `ggplot2` and start to look at it to answer your question:
+Imagine you were in the market for a new car. You care about running cost of the car and thus one of the buying criteria you have in mind is better fuel economy. One of your friend suggests to buy a 4-cylinder car instead of 6 or 8 cylinders since larger engine size usually translates to worse fuel economy. You are a data scientist so you just don't take his word but want to look at some concrete data before you narrow down your search to 4-cylinder vehicles. You find this `mpg` dataset in one of the R packages, `ggplot2` and start to look at it to answer your question:
 
 > Do 4-cylinder cars have better fuel economy than 6-cylinder cars?
 
@@ -43,7 +43,7 @@ hwy_6
 
 It is not a bad idea to look at the raw data but it is difficult to conclude anything. Surprisingly, the fuel economy numbers are rounded to 2 significant figures (and thus of type *integer*). Generally, mpg numbers are provided with 3 decimal places. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 80 data points for each set for too long. And sometimes we may have to work with many more observations. One tool to ease out that pain is plots. Let's look at the histogram of each set:
 
-```{r}
+```{r, fig_width = "80%"}
 library(themeSimple)
 ggplot(hwy_4, aes(hwy)) +
     histogram(binwidth = 3) + 
@@ -226,6 +226,8 @@ Power instead is used to design experiments. We first ask ourselves, what effect
 * **Sample size**: Recall that SE of mean is inversally proportional to square root of sample size. So larger the sample size, more squeezed will be the distribution of means towards the center. This will result in less overlap between Ho and Ha distribution (for the same effect size) and thus more power.
 * **Alpha**: Since power is the probability of rejecting Ho when it is false, it is the area under the Ha curve beyond the alpha value. So as we decrease alpha (in an effort to reduce type 1 error rate), we also decrease the area under Ha, thus decreasing the power.
 
+We will perform these calculations assuming *t-distribution* which is discussed next.
+
 ### Small Sample?
 So far we have been assuming that our sample size is reasonably large (typically greater than 30) for CLT to be valid. We may come across problems where sample size is not sufficiently large. In those cases, we simply switch from assuming a normal distribution for our data to assuming a **Student t Distribution**. *t-distribution* takes only one parameter, *degrees of freedom* (n-1) and we replace our *pnorm* and *qnorm* functions with `pt` and `qt` for calculating the probabilities and quantiles.
 
@@ -278,4 +280,139 @@ And if we just want confidence interval, we can exract that with **conf.int**:
 ```{r}
 t.test(hwy_4)$conf.int
 ```
+*Conclusion*: We are 95% confident that our sample mean lies between 27.8 and 29.8 mpg.
+
+**Given a random vector, what is the chance that it came from a population with mean muo?**
+
+*Using systematic calculation steps*
+
+* Step 1: Define hypothesis:
+  Ho: mean = muo
+  Ha: mean != muo
+* Step 2: Compute sample mean, sample standard deviation, standard error of mean and degrees of freedom
+* Step 3: Find T-Score = (sample mean - muo) / SEmean
+* Step 4: Find p-value
+    (a) if T +ve, 2 * pt(T-score, df, lower.tail = FALSE)
+    (b) if T -ve, 2 * pt(T-score, df)
+* Step 5: Decide
+    (a) if p-value < alpha, reject Ho in favor of Ha
+    (b) if p-value > alpha, fail to reject Ho
+
+Let's apply this method to our 4-cylinder data using muo as 27 mpg:
+
+```{r}
+T_score_4 <- (s_mean - 27) / se_mean_4
+T_score_4
+p_val_4 <- 2 * pt(T_score_4, df_4, lower.tail = FALSE)
+p_val_4
+```
+
+*Using `t.test`*
+```{r}
+t.test(hwy_4 - 27)
+```
+*Conclusion*: Since p-value is less than 0.05 (alpha), we reject Ho in favor of Ha concluding that there is significant difference between our sample and Ho mean of 27 mpg. Also note that in this case also results of our systematic steps match with p-value from t.test validating our steps.
+
+**Given two samples, where the data from the two samples is *independant*, is there a statistical difference between the two?**
+
+In this case the calculation of the confidence interval gets messy, even if variance between the two samples is assumed equal. It is even more complicated if you don't assume that the variance is equal. That means you will solve a problem once and then easily forget it. Instead, `t.test` can rescue us again:
+
+```{r}
+hwy_6 <- pull(hwy_6)    # convert tibble to vector
+t.test(hwy_4, hwy_6)
+```
+By default, *t.test* assumes unequal variance. You can set `var.equal = TRUE` if needed.
+
+*Conclusion*: Since p-value is extremely small, we reject the null hypothesis and say that the two samples are not equal. In addition, we are 95% confident that the difference between means of the 4-cylinder vehicles and 6-cylinder vehicles is between 4.7 and 7.3 mpg.
+
+**Given two samples where the data in the two samples is *paired*, is there a statistical difference between tht two?**
+
+For this problem, let's use `sleep` data available in R from Gosset's Biometrika paper. It shows number of hours of sleep for 10 patients on two separate drugs.
+
+```{r}
+data(sleep)
+str(sleep)
+group1 <- sleep %>%
+    filter(group == 1) %>%
+    select(extra) %>%
+    pull()
+group2 <- sleep %>%
+    filter(group == 2) %>%
+    select(extra) %>%
+    pull()
+t.test(group2, group1, paired = TRUE)
+```
+
+*Conclusion*: Since the 95% confidence interval does not include 0, we can say that there is a significant difference between the two drugs.
+
+**The average fuel economy of a 4-cylinder car is 28 mpg. It is claimed that with the introduction of a new technology, the fuel economy increased to 29 mpg. How many observations should we take to study this claim to get a power of 80% from our test? Assume that the standard deviation in mean mpg is 0.5 mpg and we need 95% confidence interval.**
+
+This can be answered using `power.t.test` function which will compute either power, sample size, change that we are interested in measuring or the standard deviation given the rest. Let's use this to compute sample size in our case:
+
+```{r}
+power.t.test(power = 0.8, delta = 1, sd = 0.5, alt = "one.sided", type = "one.sample")
+```
+So I need 4 samples to distinguish this difference.
+
+**What is the maximum difference I can detect at 80% power level with sample size of 50 and standard deviation of 1?**
+
+```{r}
+power.t.test(power = 0.8, sd = 1, n = 50)
+```
+
+So I can detect a maximum delta of 0.56.
+
+### What if I Want to Study a Test Statistic Other than Mean?
+
+The confidence intervals that we have generated for our hypothesis testing has revolved around means where CLT has helped us a lot. But the CLT does not say anything about a different statistic, for example, median or variance. Sometimes I may be interested in looking at the differences in medians instead. How can I create a confidence interval of median and other statistics? Here, fundamentally we are saying what if my statistic does not follow a normal or a t-distribution. In this regard, it is also applicable to mean if there is a skew in its distribution (becaues assumptions of t-distribution are also violated in the presence of skew).
+
+Here, the *bootstrap technique* (also known as *resampling technique*) will come to our rescue.
+
+**How does it work?**
+
+So we have one sample staring at us. What do we do? Imagine we put all those numbers in a sack. Then we randomly pick one number out, note it down, and *put it back* in the sack. We shuffle the contents of our sack and pick another number, note it down and put it back in the sack again. In statistical circles, this is called *sampling with replacement*. Note that in this experiment, we can get the same number again during our second pick. Now we can have virtually endless supply of numbers, which are coming from the sample, and thus represents the distribution of our sample. This way we can 'create' thousands of samples giving us thousands of any test statistic that we want. We then just need to look at the distribution of our test statistic to create confidence intervals.
+
+**How do we do this in R?**
+
+We will use `sample` function with `replace = TRUE` to generate the number of samples we want. We will then arrange the resulting vector into a  matrix and use the `apply` function to compute our test statistic for all samples. Finally we employ `quantile` function to pick any quantile from our test statistic distribution. Let's use this to calculate 95% CI for mean and then median for our 4-cylinder mpg data:
+
+```{r}
+n <- length(hwy_4)
+N <- 10000
+resamps_hwy_4 <- sample(hwy_4, n * N, replace = TRUE)
+resamps_hwy_4_mat <- matrix(resamps_hwy_4, N)
+resamp_mean <- apply(resamps_hwy_4_mat, 1, mean)
+resamp_median <- apply(resamps_hwy_4_mat, 1, median)
+quantile(resamp_mean, c(0.025, 0.975))
+quantile(resamp_median, c(0.025, 0.975))
+```
+
+Note that our 95% CI for mean agrees very well with our earlier calculations using CLT! But the best part is this is a general technique that can be applied to any statistic that we are interested in. Finally it is a good idea to look at the histogram of both:
+
+```{r, fig_width = "80%"}
+resamp_mean %>%
+    as.tibble() %>%
+    ggplot(aes(value)) +
+    histogram() +
+    theme_simple()
+
+resamp_median %>%
+    as.tibble() %>%
+    ggplot(aes(value)) +
+    histogram() +
+    theme_simple()
+```
+
+### Permutation Testing - A Different Way of Hypothesis Testing
+
+Permutation testing is a very interesting idea to test if two groups are different. 
+
+**How does it work?**
+
+You start with the hypothesis that the two groups are same (come from the same population). In other words, this means that the 'labels' identifying the two groups are irrelevent. So we compute our test statistic from the original groups. Then we shuffle the labels to create a 'second sample' and calculate our test statistic again. This way we can continue to shuffle and recompute test statistic as many times as we want. This allows us to create a distribution. We can then use this distribution to find what proportion of our test statistic is as or more extreme than our original group. If this is less than a certain threshold, we reject the null hypotesis and say that the two groups are different.
+
+**How do we do this in R?**
+
+
+
 

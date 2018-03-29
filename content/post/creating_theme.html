@@ -22,7 +22,7 @@ tags: ["R"]
 <p>Instead of rewriting properties of all elements, it is more efficient to pick a theme that is closer to what you want and make some adjustments. In my case, I like the <code>theme_bw</code> so I will use that as a starting point. A scatter plot on this theme looks like this:</p>
 <pre class="r white"><code>theme_set(theme_bw())
 ggplot(mpg, aes(displ, hwy)) + geom_point()</code></pre>
-<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-1-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="new-theme" class="section level3">
 <h3>New Theme</h3>
@@ -42,7 +42,7 @@ ggplot(mpg, aes(displ, hwy)) + geom_point()</code></pre>
 <p>Notice that I have created a new function for this theme instead of just storing it in an object. This makes it flexible since now it can be sourced in any project and used. Let’s see how our plot looks now with the new theme.</p>
 <pre class="r white"><code>theme_set(theme_simple())
 ggplot(mpg, aes(displ, hwy)) + geom_point()</code></pre>
-<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/post/creating_theme_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>It looks more clear now bringing more attention to the data instead of theme or plot elements. You can find what else can be changed by <code>?theme</code>.</p>
 </div>
 <div id="further-reading" class="section level3">

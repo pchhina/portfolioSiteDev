@@ -30,6 +30,7 @@ output:
 <li><a href="#problems">Problems</a></li>
 <li><a href="#what-if-i-want-to-study-a-test-statistic-other-than-mean">What if I Want to Study a Test Statistic Other than Mean?</a></li>
 <li><a href="#permutation-testing---a-different-way-of-hypothesis-testing">Permutation Testing - A Different Way of Hypothesis Testing</a></li>
+<li><a href="#summary">Summary</a></li>
 </ul>
 </div>
 
@@ -78,19 +79,19 @@ hwy_4
 #&gt;  9    25
 #&gt; 10    26
 #&gt; # ... with 69 more rows</code></pre>
-<p>It is not a bad idea to look at the raw data but it is difficult to conclude anything. Surprisingly, the fuel economy numbers are rounded to 2 significant figures (and thus of type <em>integer</em>). Generally, mpg numbers are provided with 3 decimal places. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 80 data points for each set for too long. And sometimes we may have to work with many more observations. One tool to ease out that pain is plots. Let’s look at the histogram of each set:</p>
+<p>It is not a bad idea to look at the raw data but it is difficult to conclude anything. Surprisingly, the fuel economy numbers are rounded to 2 significant figures (and also of type <em>integer</em>). Generally, mpg numbers are provided with 3 significant figures. It appears that 4-cylinder vehicles have slightly better fuel economy but there is some overlap too. Moreover, our brain will start to complain if we stare at 80 data points for each set for too long. And sometimes we may have to work with many more observations. One tool to ease out that pain is plots. Let’s look at the histogram of each set:</p>
 <pre class="r white"><code>library(themeSimple)
 ggplot(hwy_4, aes(hwy)) +
     histogram(binwidth = 3) + 
     xlim(15, 45) +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <pre class="r white"><code>
 ggplot(hwy_6, aes(hwy)) +
     histogram(binwidth = 3) +
     xlim(15, 45) +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /> I kept the x-axis scale same in both plots so we can compare the two easily. It is apparent that the mean of 4-cylinder vehicles is centered aroung 30 mpg (miles per gallon) while it is around 25 mpg for 6-cylinder vehicles. So should you conclude that 4-cylinder cars are better? Well, let’s wait until we get some quantifiable differences.</p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-2-2.png" width="80%" style="display: block; margin: auto;" /> I kept the x-axis scale same in both plots so we can compare the two easily. It is apparent that the mean of 4-cylinder vehicles is centered aroung 30 mpg (miles per gallon) while it is around 25 mpg for 6-cylinder vehicles. So should you conclude that 4-cylinder cars are better? Well, let’s wait until we get some quantifiable differences.</p>
 </div>
 <div id="mean---one-measure-of-central-tendency" class="section level3">
 <h3>Mean - One Measure of Central Tendency</h3>
@@ -108,7 +109,7 @@ ggplot(hwy_6, aes(hwy)) +
 </div>
 <div id="sample-vs-population" class="section level3">
 <h3>Sample vs Population</h3>
-<p>One thing is clear that your friend is not going to pick up one of the cars used to generate this data. For one, the latest model (2008) in the data set is 10 years old. The data we have with us is called <em>sample</em> and the mean we have calculated is called <em>sample mean</em>. This sample comes from <em>population</em> that in this case consists of all the 4 and 6 cylinder cars manufactured in US from year 1999 to 2008. What we really want to know is <em>population mean</em>. But there is no way to exactly know the population mean (unless you are ready to measure mpg for all the cars, which is a costly proposition!). The only option we have is to <em>estimate</em> population mean from sample mean.</p>
+<p>One thing is clear that you are not going to pick up one of the cars used to generate this data. For one, the latest model (2008) in the data set is 10 years old. The data we have with us is called <em>sample</em> and the mean we have calculated is called <em>sample mean</em>. This sample comes from <em>population</em> that in this case consists of all the 4 and 6 cylinder cars sold in US from year 1999 to 2008. What we really want to know is <em>population mean</em>. But there is no way to exactly know the population mean (unless you are ready to measure mpg for all the cars, which is a costly proposition!). The only option we have is to <em>estimate</em> population mean from sample mean. Any sample quantity used to estimate the corresponding population parameter is called a <em>point estimate</em>.</p>
 </div>
 <div id="estimating-a-population-parameter-from-a-sample-quantity" class="section level3">
 <h3>Estimating a Population Parameter from a Sample Quantity</h3>
@@ -121,19 +122,19 @@ ggplot(hwy_6, aes(hwy)) +
 </div>
 <div id="variance---a-measure-of-spread" class="section level3">
 <h3>Variance - A Measure of Spread</h3>
-<p>While mean gives you central tendency of a population, <em>variance</em> represents the spread or distribution of observations around the mean. We typically think of variance in terms of <em>standard deviation</em> which is just the square root of variance. This is because the units of standard deviation matches with the data we are analyzing. So in short, a data with standard deviation of 5 will be more spread out compared to a data with standard deviation of 1. Let’s look at the histogram of these two sets:</p>
+<p>While mean gives you central tendency of a population, <em>variance</em> represents the spread or distribution of observations around the mean. We typically think of variance in terms of <em>standard deviation</em> which is just the square root of variance. This is because the units of standard deviation matches with the data we are analyzing which makes it easy to compare/interpret. So in short, a data with standard deviation of 5 will be more spread out compared to a data with standard deviation of 1. Let’s look at the histogram of these two sets:</p>
 <pre class="r white"><code>low_var &lt;- rnorm(1000)
 high_var &lt;- rnorm(1000, mean = 0, sd = 5)
 data &lt;- tibble(id = rep(c(&quot;low&quot;, &quot;high&quot;), each = 1000), 
                obs = c(low_var, high_var))
 ggplot(data, aes(x = obs)) +
     histogram(data = filter(data, id == &quot;high&quot;), 
-              fill = &#39;darkorange&#39;, 
+              fill = &quot;darkorange&quot;,
               alpha = 0.8) +
     histogram(data = filter(data, id == &quot;low&quot;), 
               alpha = 0.8) +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-4-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="what-is-the-variance-in-estimate-of-mean" class="section level3">
 <h3>What is the Variance in Estimate of Mean</h3>
@@ -148,7 +149,7 @@ semean_hwy_4
 <pre class="r white"><code>semean_hwy_6 &lt;- signif(sd(pull(hwy_6, hwy)) / sqrt(length(pull(hwy_6, hwy))), 3)
 semean_hwy_6
 #&gt; [1] 0.415</code></pre>
-<p>This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could not take just one sample, but 10, 100 or thousands of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer comes from the mighty <em>Central Limit Theorem</em>.</p>
+<p>This is interesting. From a single sample of data, we know the estimate of population mean and the variance in this estimate. Is it possible to know more about what this population of sample means look like. In other words, if I could take not just one but 10 or 100 or thousands of samples, calculate mean of each sample and plot a histogram, what would the distribution of those means look like? The answer comes from the mighty <em>Central Limit Theorem</em>.</p>
 </div>
 <div id="central-limit-theorem" class="section level3">
 <h3>Central Limit Theorem</h3>
@@ -169,7 +170,7 @@ semean_hwy_6
 </div>
 <div id="confidence-intervals-for-the-estimate-of-mean" class="section level3">
 <h3>Confidence Intervals for the Estimate of Mean</h3>
-<p>Now we have the knowledge to create confidence intervals for our estimate of mean. For example, since the mean follow normal distribution (per CLT), 95% of the means will lie within <em>+/- 2 x SE</em>:</p>
+<p>Now we have the knowledge to create confidence intervals for our estimate of mean. For example, since the mean follow normal distribution (per CLT), 95% of the means will lie within approximately <em>+/- 2 x SE</em>:</p>
 <pre class="r white"><code>CI_4 &lt;- mean(pull(hwy_4)) + c(-2, 2) * semean_hwy_4
 signif(CI_4, 3)
 #&gt; [1] 27.8 29.8</code></pre>
@@ -177,11 +178,11 @@ signif(CI_4, 3)
 signif(CI_6, 3)
 #&gt; [1] 22.0 23.7</code></pre>
 <p><strong>What does these confidence intervals mean?</strong></p>
-<p>The above interval means that we are 95% confident that the population lies in this interval. Another way to think is that if we take 100 4-cylinder samples, and construct confidence intervals using the above calculated values, approximately 95 of those intervals will contain the population mean.</p>
+<p>One way to interpret the confidence interval is that we are 95% confident that the population lies in this interval. But more fundamental way to think is that if we take 100 4-cylinder samples, and construct confidence intervals using the above calculated values, approximately 95 of those intervals will contain the population mean.</p>
 </div>
 <div id="calculation-of-confidence-intervals-using-r-functions" class="section level3">
 <h3>Calculation of Confidence Intervals using R Functions</h3>
-<p>We can directly use R functions (<code>pnorm</code> and <code>qnorm</code>) to calculate quantities for normal distributions.</p>
+<p>We can directly use R functions (<code>pnorm</code> and <code>qnorm</code>) to calculate quantities for normal distributions. Let’s look at some examples:</p>
 <p><strong>The mean SAT score is 1083 with a standard deviation of 194. What is the probability that a randomly drawn student from this population has a score of 800 or less?</strong></p>
 <p>Notice here that we are directly given the population parameters. We don’t have a single sample. So assuming this population is normally distributed, we are asked to find the area bounded by the curve representing this distribution, x-axis and the left of the vertical line drawn at 800 x-axis point. This can be computed by:</p>
 <pre class="r white"><code>pnorm(800, 1083, 194)
@@ -203,9 +204,9 @@ signif(CI_6, 3)
 </div>
 <div id="hypothesis-testing---a-systematic-approach-to-compare-sample-data" class="section level3">
 <h3>Hypothesis Testing - A Systematic Approach to Compare Sample Data</h3>
-<p><strong>Simpler case - given a population mean and a sample data</strong></p>
-<p><em>Question: Did the sample came from the same population?</em></p>
-<p>In this situation, a population is known and we want to compare our sample and infer if the sample came from the same population or a different one. Let’s assume for the sake of argument here that population mean for all 4 cylinder cars is 27 mpg. The question is how likely is that our sample came from this population. This and similar type if questions can be tested more systematically using <em>hypthesis testing</em> framework. The basic idea is we create two hypotheses:</p>
+<p>Now that we know how to find confidence intervals, we need a formal testing procedure to evaluate if a sample is really different from some assumed population or not. Let’s pose a simple question:</p>
+<p><em>Did the sample came from the same population?</em></p>
+<p>In this situation, a population is known and we want to compare our sample and infer if the sample came from the same population or a different one. Let’s assume for the sake of argument here that population mean for all 4 cylinder cars is 27 mpg. The question is how likely is that our sample came from this population. This and similar type if questions can be tested more systematically using <em>hypothesis testing</em> framework. The basic idea is we create two hypotheses:</p>
 <ul>
 <li><strong>Null Hypothesis (Ho)</strong>: The sample came from same population. This is the status quo.</li>
 <li><strong>Alternate Hypothesis (Ha)</strong>: The sample came from a different population.</li>
@@ -291,7 +292,7 @@ ci_4
 #&gt; [1] 27.80411 29.80082
 #&gt; attr(,&quot;conf.level&quot;)
 #&gt; [1] 0.95</code></pre>
-<p><em>Conclusion</em>: We are 95% confident that our sample mean lies between 27.8 and 29.8 mpg.</p>
+<p><em>Conclusion: We are 95% confident that our sample mean lies between 27.8 and 29.8 mpg.</em></p>
 <p><strong>Given a random vector, what is the chance that it came from a population with mean muo?</strong></p>
 <p><em>Using systematic calculation steps</em></p>
 <ul>
@@ -329,7 +330,7 @@ p_val_4
 #&gt; sample estimates:
 #&gt; mean of x 
 #&gt;  1.802469</code></pre>
-<p><em>Conclusion</em>: Since p-value is less than 0.05 (alpha), we reject Ho in favor of Ha concluding that there is significant difference between our sample and Ho mean of 27 mpg. Also note that in this case also results of our systematic steps match with p-value from t.test validating our steps.</p>
+<p><em>Conclusion: Since p-value is less than 0.05 (alpha), we reject Ho in favor of Ha concluding that there is significant difference between our sample and Ho mean of 27 mpg. Also note that in this case also results of our systematic steps match with p-value from t.test validating our steps.</em></p>
 <p><strong>Given two samples, where the data from the two samples is <em>independant</em>, is there a statistical difference between the two?</strong></p>
 <p>In this case the calculation of the confidence interval gets messy, even if variance between the two samples is assumed equal. It is even more complicated if you don’t assume that the variance is equal. That means you will solve a problem once and then easily forget it. Instead, <code>t.test</code> can rescue us again:</p>
 <pre class="r white"><code>hwy_6 &lt;- pull(hwy_6)    # convert tibble to vector
@@ -346,7 +347,7 @@ t.test(hwy_4, hwy_6)
 #&gt; mean of x mean of y 
 #&gt;  28.80247  22.82278</code></pre>
 <p>By default, <em>t.test</em> assumes unequal variance. You can set <code>var.equal = TRUE</code> if needed.</p>
-<p><em>Conclusion</em>: Since p-value is extremely small, we reject the null hypothesis and say that the two samples are not equal. In addition, we are 95% confident that the difference between means of the 4-cylinder vehicles and 6-cylinder vehicles is between 4.7 and 7.3 mpg.</p>
+<p><em>Conclusion: Since p-value is extremely small, we reject the null hypothesis and say that the two samples are not equal. In addition, we are 95% confident that the difference between means of the 4-cylinder vehicles and 6-cylinder vehicles is between 4.7 and 7.3 mpg.</em></p>
 <p><strong>Given two samples where the data in the two samples is <em>paired</em>, is there a statistical difference between tht two?</strong></p>
 <p>For this problem, let’s use <code>sleep</code> data available in R from Gosset’s Biometrika paper. It shows number of hours of sleep for 10 patients on two separate drugs.</p>
 <pre class="r white"><code>data(sleep)
@@ -375,7 +376,7 @@ t.test(group2, group1, paired = TRUE)
 #&gt; sample estimates:
 #&gt; mean of the differences 
 #&gt;                    1.58</code></pre>
-<p><em>Conclusion</em>: Since the 95% confidence interval does not include 0, we can say that there is a significant difference between the two drugs.</p>
+<p><em>Conclusion: Since the 95% confidence interval does not include 0, we can say that there is a significant difference between the two drugs.</em></p>
 <p><strong>The average fuel economy of a 4-cylinder car is 28 mpg. It is claimed that with the introduction of a new technology, the fuel economy increased to 29 mpg. How many observations should we take to study this claim to get a power of 80% from our test? Assume that the standard deviation in mean mpg is 0.5 mpg and we need 95% confidence interval.</strong></p>
 <p>This can be answered using <code>power.t.test</code> function which will compute either power, sample size, change that we are interested in measuring or the standard deviation given the rest. Let’s use this to compute sample size in our case:</p>
 <pre class="r white"><code>power.t.test(power = 0.8, delta = 1, sd = 0.5, alt = &quot;one.sided&quot;, type = &quot;one.sample&quot;)
@@ -388,7 +389,7 @@ t.test(group2, group1, paired = TRUE)
 #&gt;       sig.level = 0.05
 #&gt;           power = 0.8
 #&gt;     alternative = one.sided</code></pre>
-<p>So I need 4 samples to distinguish this difference.</p>
+<p><em>Conclusion: I need 4 samples to distinguish this difference.</em></p>
 <p><strong>What is the maximum difference I can detect at 80% power level with sample size of 50 and standard deviation of 1?</strong></p>
 <pre class="r white"><code>power.t.test(power = 0.8, sd = 1, n = 50)
 #&gt; 
@@ -402,7 +403,7 @@ t.test(group2, group1, paired = TRUE)
 #&gt;     alternative = two.sided
 #&gt; 
 #&gt; NOTE: n is number in *each* group</code></pre>
-<p>So I can detect a maximum delta of 0.56.</p>
+<p><em>Conclusion: I can detect a maximum delta of 0.56.</em></p>
 </div>
 <div id="what-if-i-want-to-study-a-test-statistic-other-than-mean" class="section level3">
 <h3>What if I Want to Study a Test Statistic Other than Mean?</h3>
@@ -420,7 +421,7 @@ resamp_mean &lt;- apply(resamps_hwy_4_mat, 1, mean)
 resamp_median &lt;- apply(resamps_hwy_4_mat, 1, median)
 quantile(resamp_mean, c(0.025, 0.975))
 #&gt;     2.5%    97.5% 
-#&gt; 27.85185 29.81481</code></pre>
+#&gt; 27.86420 29.81481</code></pre>
 <pre class="r white"><code>quantile(resamp_median, c(0.025, 0.975))
 #&gt;  2.5% 97.5% 
 #&gt;    27    29</code></pre>
@@ -430,14 +431,14 @@ quantile(resamp_mean, c(0.025, 0.975))
     ggplot(aes(value)) +
     histogram() +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <pre class="r white"><code>
 resamp_median %&gt;%
     as.tibble() %&gt;%
     ggplot(aes(value)) +
     histogram() +
     theme_simple()</code></pre>
-<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-24-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-24-2.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="permutation-testing---a-different-way-of-hypothesis-testing" class="section level3">
 <h3>Permutation Testing - A Different Way of Hypothesis Testing</h3>
@@ -445,4 +446,25 @@ resamp_median %&gt;%
 <p><strong>How does it work?</strong></p>
 <p>You start with the hypothesis that the two groups are same (come from the same population). In other words, this means that the ‘labels’ identifying the two groups are irrelevent. So we compute our test statistic from the original groups. Then we shuffle the labels to create a ‘second sample’ and calculate our test statistic again. This way we can continue to shuffle and recompute test statistic as many times as we want. This allows us to create a distribution. We can then use this distribution to find what proportion of our test statistic is as or more extreme than our original group. If this is less than a certain threshold, we reject the null hypotesis and say that the two groups are different.</p>
 <p><strong>How do we do this in R?</strong></p>
+<p>Let’s apply permutation testing to find if 4-cyl data is different from 6-cyl data. We first generate the label vector (cyl). Then a function is created that does the subsetting based on the label and calcuated difference in means of the two groups. Labels are then permuted using <code>sample</code> and custom function is applied 10,000 times. Finally the fraction of the permutation that are greater than the acutal difference is calculated.</p>
+<pre class="r white"><code>hwy_mpg &lt;- c(hwy_4, hwy_6)
+cyl &lt;- c(rep(&quot;4-cyl&quot;, length(hwy_4)), rep(&quot;6-cyl&quot;, length(hwy_6)))
+delta &lt;- function(x, y) mean(x[y == &quot;4-cyl&quot;]) - mean(x[y == &quot;6-cyl&quot;])
+actual_diff &lt;- delta(hwy_mpg, cyl)
+actual_diff
+#&gt; [1] 5.979684</code></pre>
+<pre class="r white"><code>permute_diff &lt;- sapply(1: 10000, function(i) delta(hwy_mpg, sample(cyl)))
+mean(permute_diff &gt; actual_diff)
+#&gt; [1] 0</code></pre>
+<pre class="r white"><code>permute_diff %&gt;%
+    as.tibble() %&gt;%
+    ggplot(aes(value)) +
+    histogram() +
+    theme_simple()</code></pre>
+<p><img src="/post/statistical-inference-using-R_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>It is clear that the permuted difference has a mean of around 0 whereas the actual difference is close to 6 mpg. Since the proportion of permuted differences that are as extreme or more than observed value is 0, we can reject the null hypothesis that the two groups are identical in favor of the alternative that the groups are different.</p>
+</div>
+<div id="summary" class="section level3">
+<h3>Summary</h3>
+<p>We have covered a good amount of ground by going through fundamental concepts of inference. We have consciously kept the focus only on numerical vectors here to avoid getting distracted by although similar ideas but different distributions for categorical outputs. But extending the concepts we have learned here to categorical variables should be fairly straightforward.</p>
 </div>

@@ -30,47 +30,41 @@ The trouble started when I started to learn the brackets and math symbols. For s
 Anyways, I ordered the kit from [Phil](http://atreus.technomancy.us/), the designer of the keyboard. I also ordered a [soldering kit](https://www.adafruit.com/product/136) and few cheap breadboards from microcenter to learn soldering before starting the real project. The kit arrived and I immediately started working on it following the instructions that came along with the kit.
 
 Here is the picture with half of the diodes(those little brown sprinkles on the right side of the board) soldered in.
-<br>
-<center>
-![](../images/half-diodes.png)
-</center>
-<br><br>
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/half-diodes.png")
+```
 
 Here I have finished soldering all the diodes.
-<br>
-<center>
-![](../images/all-diodes.png)
-</center>
-<br><br>
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/all-diodes.png")
+```
 
 Here the A-star microcontroller is being installed.
-<br>
-<center>
-![](../images/micro.png)
-</center>
-<br><br>
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/micro.png")
+```
 
 Here, the microcontroller is soldered onto the board.
-<br>
-<center>
-![](../images/micro2.png)
-</center>
-<br><br>
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/micro2.png")
+```
 
 Here, all the switches are installed. The woodwork to sand, lacquer and polish repeatedly was also an interesting experience.
-<br>
-<center>
-![](../images/almost-done.png)
-</center>
-<br><br>
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/almost-done.png")
+```
 
 ### Final Product
-Here is the finished product. You cannot go without admiring its design. I made few changes to the base key mappings (swapping SHIFT and BACKSPACE, FUNCTION and SPACE). I have been using it for couple months now and have got a good hang of it. You would notice that the key layout is column-wise instead of row-wise(common among most keyboards) which I found is easier on your fingers. There is no looking back now!
-<br>
-<center>
-![](../images/finished.png)
-</center>
-<br><br>
+Here is the finished product. Its hard to ignore the simplicity and elegance of the design. I made few changes to the base key mappings (swapping SHIFT and BACKSPACE, FUNCTION and SPACE). I have been using it for couple months now and have got a good hang of it. You would notice that the key layout is column-wise instead of row-wise(common among most keyboards) which I found is easier on your fingers. There is no looking back now!
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics("../images/finished.png")
+```
 
 ### If you are interested..
 I recommend to watch this [Vim Meetup Talk](https://www.youtube.com/watch?v=NbVOEKKcLgU) by Loren Rogers. This talk was what inspired me to take the dive. 

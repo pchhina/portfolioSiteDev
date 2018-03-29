@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 )
 library(ggplot2)
 library(gridExtra)
+library(themeSimple)
 ```
 In this post, I describe the importance of persistent plots while carrying out a analysis. A case is made for simpler and persistent plots and the process to create the plots is demonstrated with an example. Finally, a package is created to stitch things together in a coherent fashion.
 
@@ -42,7 +43,7 @@ This part is mostly driven by personal workflow since here we choose certain typ
 
 1. Scatter plot: To show relationship between two continuous variables.
 
-```{r scatter}
+```{r scatter, out.width = "80%"}
 
 s1 <- ggplot(mpg, aes(displ, hwy)) +
     geom_point() +
@@ -56,7 +57,7 @@ grid.arrange(s1, s2, nrow = 1)
 ```
 2. Scatter plot with linear trendline: To show how the linear model fit looks like for a given set of continuous variables.
 
-```{r fit_linear}
+```{r fit_linear, out.width = "80%"}
 
 fl1 <- ggplot(mpg, aes(displ, hwy)) +
     geom_point() +
@@ -72,7 +73,7 @@ grid.arrange(fl1, fl2, nrow = 1)
 ```
 3. Scatter plot with smooth trendline: To show how the non-linear model fit looks like for a given set of continuous variables.
 
-```{r fit_nonlinear}
+```{r fit_nonlinear, out.width = "80%"}
 
 fn1 <- ggplot(mpg, aes(displ, hwy)) +
     geom_point() +
@@ -89,7 +90,7 @@ grid.arrange(fn1, fn2, nrow = 1)
 
 4. Histogram: To show frequency distribution of a single continuous variable.
 
-```{r histogram}
+```{r histogram, out.width = "80%"}
 
 h1 <- ggplot(mpg, aes(hwy)) +
     geom_histogram() +
@@ -104,7 +105,7 @@ grid.arrange(h1, h2, nrow = 1)
 
 5. Barplot: To show frequency distribution of a single discrete variable.
 
-```{r bar}
+```{r bar, out.width = "80%"}
 
 b1 <- ggplot(mpg, aes(as.factor(cyl))) +
     geom_bar() +
@@ -119,7 +120,7 @@ grid.arrange(b1, b2, nrow = 1)
 
 6. Boxplot: To show relationship between a continuous and discrete variable.
 
-```{r box}
+```{r box, out.width = "80%"}
 
 x1 <- ggplot(mpg, aes(as.factor(cyl), hwy)) +
     geom_boxplot() +

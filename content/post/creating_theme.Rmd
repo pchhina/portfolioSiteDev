@@ -10,9 +10,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   warning = FALSE,
   message = FALSE,
+  fig.align = 'center',
   comment = "#>",
   class.source = 'white'
 )
+library(ggplot2)
 ```
 
 This post introduces simple steps on how to create your own ggplot2 theme. Of course, it will not go into details of changing all the aspects. Instead, it will highlight the process using few useful elements.
@@ -29,7 +31,7 @@ Theme is basically a set of pre-defined(default) values for elements that make u
 Instead of rewriting properties of all elements, it is more efficient to pick a theme that is closer to what you want and make some adjustments. In my case, I like the `theme_bw` so I will use that as a starting point. A scatter plot on this theme looks like this:
 
 
-```{r}
+```{r, out.width = "80%"}
 theme_set(theme_bw())
 ggplot(mpg, aes(displ, hwy)) + geom_point()
 ```
@@ -56,7 +58,7 @@ theme_simple <- function() {
 Notice that I have created a new function for this theme instead of just storing it in an object. This makes it flexible since now it can be sourced in any project and used. Let's see how our plot looks now with the new theme.
 
 
-```{r}
+```{r, out.width = "80%"}
 theme_set(theme_simple())
 ggplot(mpg, aes(displ, hwy)) + geom_point()
 ```

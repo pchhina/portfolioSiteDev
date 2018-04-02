@@ -1,0 +1,169 @@
+---
+title: "Predicting a Numerical Outcome With Linear Models"
+author: "Paramjot Singh"
+date: 2018-03-30T20:53:08-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Fundamentals", "Machine Learning"]
+---
+
+
+
+<p>In an earlier post, we learned a little bit about inference and some interesting tools that we can employ to make informed decisions based on our data instead of just guessing. Next you show your analysis to your friend who suggested to look for small engine cars to get better fuel economy. He is extremely impressed by the power of statistics and asks you another question.</p>
+<blockquote>
+<p>Can we use the data we have to <em>predict</em> the fuel economy of any car from that population that we want?</p>
+</blockquote>
+<p>This and related type of questions fall under the subject of <em>prediction</em> which is the subject of this blog. After you answer yes to your friend, he gets really excited and starts to ask a number of questions to which you really don’t know the answer to. So you start to explore the subject to get a good understanding yourself first. You immediately realize that the subject is vast, and once again to stay focused, you narrow your work to only <em>numerical</em> outcomes and <em>linear</em> models.</p>
+<blockquote>
+<p>It’s tough to make predictions, especially about the future. - Yogi Berra</p>
+</blockquote>
+<div id="a-constant-output-machine" class="section level3">
+<h3>A Constant Output Machine</h3>
+<p>Imagine you are tasked to come up with a solution to predict the highway fuel economy of a car. Although we have a full data set (<code>mpg</code> from <code>ggplot2</code> package), let’s pretend for a second that the only information I have is the highway fuel economy of a sample:</p>
+<pre class="r white"><code>library(tidyverse)
+mpg %&gt;% select(hwy)  
+#&gt; # A tibble: 234 x 1
+#&gt;      hwy
+#&gt;    &lt;int&gt;
+#&gt;  1    29
+#&gt;  2    29
+#&gt;  3    31
+#&gt;  4    30
+#&gt;  5    26
+#&gt;  6    26
+#&gt;  7    27
+#&gt;  8    26
+#&gt;  9    25
+#&gt; 10    28
+#&gt; # ... with 224 more rows</code></pre>
+<p>The simplest machine that we can conceive is a <em>constant output machine</em> having the following form:</p>
+<p><span class="math display">\[
+ Y \approx C_0
+\]</span></p>
+<p>Here, <span class="math inline">\(Y\)</span> is the actual output and <span class="math inline">\(C_0\)</span> is the constant answer. Note that we are approximating our output with this constant answer as the actual output cannot be described with a <em>deterministic</em> relationship.</p>
+<p>So we have 234 <em>observations</em> in all. Without any other information available to us, what constant output can we come up with? We know the best way to describe the entire data is with <em>mean</em> which we can estimate by averaging the highway fuel economy data.</p>
+<pre class="r white"><code>mpg %&gt;% select(hwy) %&gt;%
+    summarize(mean = mean(hwy))
+#&gt; # A tibble: 1 x 1
+#&gt;    mean
+#&gt;   &lt;dbl&gt;
+#&gt; 1  23.4</code></pre>
+<p>In addition, we also know that what we have just computed is the sample mean which is only an estimate of poulation mean. Let’s identify this estimate of the constant and the <em>predicted</em> value of <span class="math inline">\(Y\)</span> by a hat symbol on top of each.</p>
+<p><span class="math display">\[
+\hat y = \hat C_0
+\]</span> Let’s also calculate the confidence intervals for the estimate.</p>
+<pre class="r white"><code>mpg %&gt;% select(hwy) %&gt;%
+    pull() %&gt;%
+    t.test() 
+#&gt; 
+#&gt;  One Sample t-test
+#&gt; 
+#&gt; data:  .
+#&gt; t = 60.216, df = 233, p-value &lt; 2.2e-16
+#&gt; alternative hypothesis: true mean is not equal to 0
+#&gt; 95 percent confidence interval:
+#&gt;  22.67324 24.20710
+#&gt; sample estimates:
+#&gt; mean of x 
+#&gt;  23.44017</code></pre>
+<p>So we are 95% confidence that the population mean is between 22.7 and 24.2 mpg. It is instructive to draw a picture of what we have built. Let’s say you have actually built a machine that takes an information (model, make, year, etc.) as <em>inputs</em> (<span class="math inline">\(x\)</span>) and gives predicted fuel economy as <em>output</em> (<span class="math inline">\(\hat y\)</span>). Our current version of the machine gives only constant output.</p>
+<p><img src="../images/mpg_1.png" width="80%" style="display: block; margin: auto;" /> Alright, so we have our first answer: 23.4 mpg. While the answer is a good first guess, it’s probably not very accurate. So the next logical is…</p>
+</div>
+<div id="how-accurate-is-our-prediction" class="section level3">
+<h3>How Accurate is our Prediction?</h3>
+<p>One way to assess the accuracy is to look at the difference between the actual and predicted value of the output. This difference is referred to as <em>residuals</em>.</p>
+<pre class="r white"><code>library(themeSimple)
+theme_set(theme_simple())
+mpg %&gt;% mutate(err_hwy = hwy - mean(hwy)) %&gt;%
+    ggplot(aes(hwy, err_hwy)) +
+    scatter() +
+    geom_hline(yintercept = 0, 
+               color = &quot;firebrick&quot;, 
+               linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /> We can also add the square of all residuals to get a single number to represent the overall error. Let’s call this number conveniently as <em>residual sum of squares</em> (RSS).</p>
+<pre class="r white"><code>mpg %&gt;% mutate(err_hwy = hwy - mean(hwy)) %&gt;%
+    summarize(rss = sum(err_hwy^2))
+#&gt; # A tibble: 1 x 1
+#&gt;     rss
+#&gt;   &lt;dbl&gt;
+#&gt; 1  8262</code></pre>
+<p>We are as far off as 20 mpg! This is not unexpected since our prediction machine is really simple with one constant output. Since we have some additional variables in the data, we start to look into whether any of these are related to highway fuel economy. If we find that some variables are related to the output, we may be able to make improvements to our prediction machine. Let’s look at our variables:</p>
+<pre class="r white"><code>mpg %&gt;% select(hwy, displ, year, cyl) %&gt;% 
+    pairs()</code></pre>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /> The top row of pair plots show highway fuel economy on the y-axis and displacement, year and cylinder on x-axis respectively. We learn a few things looking at these plots:</p>
+<ul>
+<li>As displacement increases, fuel economy decreases.</li>
+<li>There is no clear difference in fuel economy between 1999 and 2008 model year vehicles.</li>
+<li>More number of cylinders are generally associated with lower fuel economy.</li>
+</ul>
+<p>Because of these relationships, there is a chance that we can improve our prediction machine if we find some way of including the effect of these inputs. A simpler (and thus common) approach is to use a technique called <em>linear regression</em>. If the linear regression uses only <em>one input</em> then we call this method as <em>simple linear regression</em>. It is easy to build a simple linear regression machine but let’s first try to look at its form.</p>
+</div>
+<div id="a-simple-linear-regression-machine" class="section level3">
+<h3>A Simple Linear Regression Machine</h3>
+<p>Since there is a relationship between fuel economy and displacement, let’s see if we can use this information to build a simple linear regression machine which takes the form:</p>
+<p><span class="math display">\[
+Y \approx C_0 + C_1X
+\]</span></p>
+<p>In our case <span class="math inline">\(X\)</span> is displacement.</p>
+<pre class="r white"><code>mpg %&gt;% ggplot(aes(displ, hwy)) +
+    scatter()</code></pre>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /> The problem of building a simple linear regression machine then boils down to <em>estimating</em> two constants (instead of one in our constant output machine). Once we have estimated these two constants, we can make predictions using:</p>
+<p><span class="math display">\[
+\hat y = \hat C_0 + \hat C_1 X
+\]</span></p>
+<p>Let’s estimate these coefficients using <code>lm</code> function:</p>
+<pre class="r white"><code>mdl_slr &lt;- lm(hwy ~ displ, data = mpg)
+mdl_slr
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = hwy ~ displ, data = mpg)
+#&gt; 
+#&gt; Coefficients:
+#&gt; (Intercept)        displ  
+#&gt;      35.698       -3.531</code></pre>
+<p><strong>What did <em>lm</em> function do to estimate the constants?</strong></p>
+<p><code>lm</code> function is simply trying to <em>minimize the RSS</em> to estimate these constants.</p>
+<p><strong>How good are these estimates?</strong></p>
+<p>Well, behind the scenes, <em>lm</em> is doing the hypothesis testing assuming t-distribution for these constants. Thus, lm also provides the values of <em>standard error</em>, <em>t-statistic</em> as well as <em>p-value</em> associated with hypothesis test for each constant. This let’s us evaluate whether the constants are significant or not. Let’s look at this information for our model using <code>summary</code> function:</p>
+<pre class="r white"><code>summary(mdl_slr)
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = hwy ~ displ, data = mpg)
+#&gt; 
+#&gt; Residuals:
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -7.1039 -2.1646 -0.2242  2.0589 15.0105 
+#&gt; 
+#&gt; Coefficients:
+#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)  35.6977     0.7204   49.55   &lt;2e-16 ***
+#&gt; displ        -3.5306     0.1945  -18.15   &lt;2e-16 ***
+#&gt; ---
+#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+#&gt; 
+#&gt; Residual standard error: 3.836 on 232 degrees of freedom
+#&gt; Multiple R-squared:  0.5868, Adjusted R-squared:  0.585 
+#&gt; F-statistic: 329.5 on 1 and 232 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Looking at the coefficients table, it is clear that both constants have extremely small p-values and thus are significant for this data.</p>
+<p><strong>Do These Constants Even Mean Something?</strong></p>
+<p>One advantage of using linear machines is that the constants can be interpreted more meaningfully. The value of <span class="math inline">\(C_0\)</span> is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is 0. So whether this makes sense or not depends on whether the value of <span class="math inline">\(X\)</span> being 0 is meaningful. In our case, since <span class="math inline">\(X\)</span> is the displacement which cannot be 0, <span class="math inline">\(C_0\)</span> alone does not carry any meaning. The value of <span class="math inline">\(C_1\)</span> tells the change that we can expect in <span class="math inline">\(Y\)</span> <em>per unit change in <span class="math inline">\(X\)</span></em>. So in our case, <span class="math inline">\(C_0\)</span> of -3.5 means that with a 1 litre increase in engine displacement, we can expect the highway fuel economy to go down by roughly 3.5 mpg. Also, since the <em>SE</em> of <span class="math inline">\(C_1\)</span> is 0.19, the 95% confidence interval of our estimate is <span class="math inline">\(3.5 \pm 2 \times 0.19 = [3.12, 3.88]\)</span>.</p>
+<p><strong>How Can We Make Predictions Using the Simple Linear Machine?</strong></p>
+<p>We can use <code>predict</code> function to get the predictions from our linear machine.</p>
+<pre class="r white"><code>pred_hwy &lt;- predict(mdl_slr) 
+mpg %&gt;% mutate(res_hwy = hwy - pred_hwy) %&gt;%
+    ggplot(aes(hwy, res_hwy)) +
+    scatter() +
+    geom_hline(yintercept = 0, 
+               color = &quot;firebrick&quot;, 
+               linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r white"><code>RSS &lt;- sum((mpg$hwy - pred_hwy)^2)
+RSS
+#&gt; [1] 3413.829</code></pre>
+<p>So our RSS for this data has gone down from 8262 for constant-output machine to 3414 for this simple-linear machine. This is huge improvement! Although RSS represents a single number for the overall accuracy, it is not very interpretable. So now we define two important accuracy metrics for our machine.</p>
+<p><strong>Using <span class="math inline">\(RSE\)</span> and <span class="math inline">\(R^2\)</span> Statistic as Metrics for Prediction Accuracy</strong></p>
+<ul>
+<li><p><strong>Residual Standard Error</strong>: RSE is simply the square root of RSS divided by <span class="math inline">\(n-2\)</span>. This tells us how much, on average, we will be off in our predictions using this machine <em>even when the two constant were exactly known</em>. RSE is printed at the bottom in the output of summary call to our model. So in our case, we will be off by roughly 3.84 mpg in our prediction. Since the mean mpg (from the constant output model) was 23.4 mpg, the percentage error in our prediction is <span class="math inline">\((3.84 \times 100) \div 23.4 = 16\%\)</span>.</p></li>
+<li><p><strong><span class="math inline">\(R^2\)</span> Statistic</strong>: While RSE can be interpreted in relation to the units of <span class="math inline">\(Y\)</span>, another useful metric that is independent of the units of <span class="math inline">\(Y\)</span> is <span class="math inline">\(R^2\)</span>. If we define <em>total sum of squares</em>, TSS, as the sum of squares of difference between the actual output and the mean of outputs (which measures the total variance in the output), <span class="math inline">\(R^2\)</span> then is defined as the difference of TSS and RSS divided by TSS. So in this sense, <span class="math inline">\(R^2\)</span> is the proportion of the total variability in the output that can be explained by <span class="math inline">\(X\)</span>. From the summary again, in our case, roughly 58% of the variability in mpg can be explained by displacement.</p></li>
+</ul>
+</div>

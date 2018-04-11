@@ -1,25 +1,38 @@
 ---
-title: "Predicting a Numerical Outcome With Linear Models"
+title: "Predicting a Numerical Outcome"
 author: "Paramjot Singh"
 date: 2018-03-30T20:53:08-05:00
 draft: FALSE
 tags: ["R"]
 categories: ["Fundamentals", "Machine Learning"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
 ---
 
 
+<div id="TOC">
+<ul>
+<li><a href="#a-constant-output-machine">A Constant Output Machine</a></li>
+<li><a href="#how-accurate-is-our-prediction">How Accurate is our Prediction?</a></li>
+<li><a href="#a-simple-linear-regression-machine">A Simple Linear Regression Machine</a></li>
+<li><a href="#can-we-improve-our-simple-linear-machine">Can We Improve Our Simple Linear Machine?</a></li>
+<li><a href="#more-predictors-better-model">More Predictors, Better Model?</a></li>
+</ul>
+</div>
 
-<p>In an earlier post, we learned a little bit about inference and some interesting tools that we can employ to make informed decisions based on our data instead of just guessing. Next you show your analysis to your friend who suggested to look for small engine cars to get better fuel economy. He is extremely impressed by the power of statistics and asks you another question.</p>
+<p>In an earlier post, we learned a little bit about inference and some interesting tools that we can employ to make informed decisions based on our data instead of just guessing. You show this analysis to your friend who suggested to look for small engine cars to get better fuel economy. He is extremely impressed by the power of statistics and asks you another question.</p>
 <blockquote>
 <p>Can we use the data we have to <em>predict</em> the fuel economy of any car from that population that we want?</p>
 </blockquote>
-<p>This and related type of questions fall under the subject of <em>prediction</em> which is the subject of this blog. After you answer yes to your friend, he gets really excited and starts to ask a number of questions to which you really don’t know the answer to. So you start to explore the subject to get a good understanding yourself first. You immediately realize that the subject is vast, and once again to stay focused, you narrow your work to only <em>numerical</em> outcomes and <em>linear</em> models.</p>
+<p>This and related type of questions fall under the subject of <em>prediction</em>. After you answer yes to your friend, he gets really excited and starts to ask a number of questions to which you really don’t know the answer to. So you start to explore the subject to get a good understanding yourself first. Here we focus on building a machine that can predict numerical (quantitative) outcomes.</p>
 <blockquote>
 <p>It’s tough to make predictions, especially about the future. - Yogi Berra</p>
 </blockquote>
 <div id="a-constant-output-machine" class="section level3">
 <h3>A Constant Output Machine</h3>
-<p>Imagine you are tasked to come up with a solution to predict the highway fuel economy of a car. Although we have a full data set (<code>mpg</code> from <code>ggplot2</code> package), let’s pretend for a second that the only information I have is the highway fuel economy of a sample:</p>
+<p>Imagine you are tasked to come up with a solution to predict the highway fuel economy of a car. Although we have a full data set (<code>mpg</code> from <code>ggplot2</code> package), let’s pretend for a second that the only information we have is the highway fuel economy of a sample:</p>
 <pre class="r white"><code>library(tidyverse)
 mpg %&gt;% select(hwy)  
 #&gt; # A tibble: 234 x 1
@@ -48,7 +61,7 @@ mpg %&gt;% select(hwy)
 #&gt;    mean
 #&gt;   &lt;dbl&gt;
 #&gt; 1  23.4</code></pre>
-<p>In addition, we also know that what we have just computed is the sample mean which is only an estimate of poulation mean. Let’s identify this estimate of the constant and the <em>predicted</em> value of <span class="math inline">\(Y\)</span> by a hat symbol on top of each.</p>
+<p>In addition, we also know that what we have just computed is the sample mean which is only an estimate of population mean. Let’s identify this estimate of the constant and the <em>predicted</em> value of <span class="math inline">\(Y\)</span> by a hat symbol on top of each.</p>
 <p><span class="math display">\[
 \hat y = \hat C_0
 \]</span> Let’s also calculate the confidence intervals for the estimate.</p>
@@ -66,7 +79,7 @@ mpg %&gt;% select(hwy)
 #&gt; sample estimates:
 #&gt; mean of x 
 #&gt;  23.44017</code></pre>
-<p>So we are 95% confidence that the population mean is between 22.7 and 24.2 mpg. It is instructive to draw a picture of what we have built. Let’s say you have actually built a machine that takes an information (model, make, year, etc.) as <em>inputs</em> (<span class="math inline">\(x\)</span>) and gives predicted fuel economy as <em>output</em> (<span class="math inline">\(\hat y\)</span>). Our current version of the machine gives only constant output.</p>
+<p>So we are 95% confident that the population mean is between 22.7 and 24.2 mpg. It is instructive to draw a picture of what we have built. Let’s say you have actually built a machine that takes an information (model, make, year, etc.) as <em>inputs</em> (<span class="math inline">\(x\)</span>) and gives predicted fuel economy as <em>output</em> (<span class="math inline">\(\hat y\)</span>). Our current version of the machine gives only constant output.</p>
 <p><img src="../images/mpg_1.png" width="80%" style="display: block; margin: auto;" /> Alright, so we have our first answer: 23.4 mpg. While the answer is a good first guess, it’s probably not very accurate. So the next logical is…</p>
 </div>
 <div id="how-accurate-is-our-prediction" class="section level3">
@@ -107,7 +120,7 @@ Y \approx C_0 + C_1X
 <p>In our case <span class="math inline">\(X\)</span> is displacement.</p>
 <pre class="r white"><code>mpg %&gt;% ggplot(aes(displ, hwy)) +
     scatter()</code></pre>
-<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /> The problem of building a simple linear regression machine then boils down to <em>estimating</em> two constants (instead of one in our constant output machine). Once we have estimated these two constants, we can make predictions using:</p>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /> The problem of building a simple linear regression machine then boils down to <em>estimating</em> two constants (instead of one in our constant output machine). Once we have estimated these two constants, we can make predictions using:</p>
 <p><span class="math display">\[
 \hat y = \hat C_0 + \hat C_1 X
 \]</span></p>
@@ -146,7 +159,7 @@ mdl_slr
 #&gt; F-statistic: 329.5 on 1 and 232 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Looking at the coefficients table, it is clear that both constants have extremely small p-values and thus are significant for this data.</p>
 <p><strong>Do These Constants Even Mean Something?</strong></p>
-<p>One advantage of using linear machines is that the constants can be interpreted more meaningfully. The value of <span class="math inline">\(C_0\)</span> is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is 0. So whether this makes sense or not depends on whether the value of <span class="math inline">\(X\)</span> being 0 is meaningful. In our case, since <span class="math inline">\(X\)</span> is the displacement which cannot be 0, <span class="math inline">\(C_0\)</span> alone does not carry any meaning. The value of <span class="math inline">\(C_1\)</span> tells the change that we can expect in <span class="math inline">\(Y\)</span> <em>per unit change in <span class="math inline">\(X\)</span></em>. So in our case, <span class="math inline">\(C_0\)</span> of -3.5 means that with a 1 litre increase in engine displacement, we can expect the highway fuel economy to go down by roughly 3.5 mpg. Also, since the <em>SE</em> of <span class="math inline">\(C_1\)</span> is 0.19, the 95% confidence interval of our estimate is <span class="math inline">\(3.5 \pm 2 \times 0.19 = [3.12, 3.88]\)</span>.</p>
+<p>One advantage of using linear machines is that the constants can be interpreted more meaningfully. The value of <span class="math inline">\(C_0\)</span> is the value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is 0. So whether this makes sense or not depends on whether the value of <span class="math inline">\(X\)</span> being 0 is meaningful. In our case, since <span class="math inline">\(X\)</span> is the displacement which cannot be 0, <span class="math inline">\(C_0\)</span> alone does not carry any meaning. The value of <span class="math inline">\(C_1\)</span> tells the change that we can expect in <span class="math inline">\(Y\)</span> <em>per unit change in <span class="math inline">\(X\)</span></em>. So in our case, <span class="math inline">\(C_1\)</span> of -3.5 means that with a 1 litre increase in engine displacement, we can expect the highway fuel economy to go down by roughly 3.5 mpg. Also, since the <em>SE</em> of <span class="math inline">\(C_1\)</span> is 0.19, the 95% confidence interval of our estimate is <span class="math inline">\(3.5 \pm 2 \times 0.19 = [3.12, 3.88]\)</span>.</p>
 <p><strong>How Can We Make Predictions Using the Simple Linear Machine?</strong></p>
 <p>We can use <code>predict</code> function to get the predictions from our linear machine.</p>
 <pre class="r white"><code>pred_hwy &lt;- predict(mdl_slr) 
@@ -156,14 +169,187 @@ mpg %&gt;% mutate(res_hwy = hwy - pred_hwy) %&gt;%
     geom_hline(yintercept = 0, 
                color = &quot;firebrick&quot;, 
                linetype = &quot;dashed&quot;)</code></pre>
-<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <pre class="r white"><code>RSS &lt;- sum((mpg$hwy - pred_hwy)^2)
 RSS
 #&gt; [1] 3413.829</code></pre>
 <p>So our RSS for this data has gone down from 8262 for constant-output machine to 3414 for this simple-linear machine. This is huge improvement! Although RSS represents a single number for the overall accuracy, it is not very interpretable. So now we define two important accuracy metrics for our machine.</p>
-<p><strong>Using <span class="math inline">\(RSE\)</span> and <span class="math inline">\(R^2\)</span> Statistic as Metrics for Prediction Accuracy</strong></p>
+<p><strong>How Good is the Model Fit: Using <span class="math inline">\(RSE\)</span> and <span class="math inline">\(R^2\)</span> Statistic as Metrics</strong></p>
 <ul>
 <li><p><strong>Residual Standard Error</strong>: RSE is simply the square root of RSS divided by <span class="math inline">\(n-2\)</span>. This tells us how much, on average, we will be off in our predictions using this machine <em>even when the two constant were exactly known</em>. RSE is printed at the bottom in the output of summary call to our model. So in our case, we will be off by roughly 3.84 mpg in our prediction. Since the mean mpg (from the constant output model) was 23.4 mpg, the percentage error in our prediction is <span class="math inline">\((3.84 \times 100) \div 23.4 = 16\%\)</span>.</p></li>
 <li><p><strong><span class="math inline">\(R^2\)</span> Statistic</strong>: While RSE can be interpreted in relation to the units of <span class="math inline">\(Y\)</span>, another useful metric that is independent of the units of <span class="math inline">\(Y\)</span> is <span class="math inline">\(R^2\)</span>. If we define <em>total sum of squares</em>, TSS, as the sum of squares of difference between the actual output and the mean of outputs (which measures the total variance in the output), <span class="math inline">\(R^2\)</span> then is defined as the difference of TSS and RSS divided by TSS. So in this sense, <span class="math inline">\(R^2\)</span> is the proportion of the total variability in the output that can be explained by <span class="math inline">\(X\)</span>. From the summary again, in our case, roughly 58% of the variability in mpg can be explained by displacement.</p></li>
 </ul>
+<p><strong>What is the End Result?</strong></p>
+<ul>
+<li>We have built a simple linear machine, <code>mdl_slr</code>, that can be used to predict highway fuel economy.</li>
+<li>It can explain 58% variability in highway mpg.</li>
+<li>It predicts that with every one litre increase in engine displacement, highway fuel economy will decrease roughly by 3.12 ~ 3.88 mpg with 95% confidence.</li>
+</ul>
+</div>
+<div id="can-we-improve-our-simple-linear-machine" class="section level3">
+<h3>Can We Improve Our Simple Linear Machine?</h3>
+<p>We can stop here and say that this is the best we can do and deliver our machine to customer. But you are a diligent designer and want to dig further and see if there are any problems with our machine and if there are ways in which we can improve our design.</p>
+<p>Since adding one variable (engine displacement) as a <em>predictor</em> in our machine design resulted in quite a bit improement (RSS dropped from 8262 to 3414), it is reasonble to think that adding more predictors might improve it further. From the pair plots, earlier we commented that there is no clear difference in mpg between the model year 1999 and 2008. However, if we look closely, there appears to be a slight decrease in mpg for year 2008.</p>
+<pre class="r white"><code>mpg %&gt;% ggplot(aes(year, hwy)) +
+    scatter()</code></pre>
+<p><img src="/post/predicting-a-numerical-outcome-with-linear-models_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p><strong>Building a Machine with Two Predictors</strong></p>
+<p>Let’s add year to our machine, and call it a <em>multi-linear machine</em>. Before we do that, we need to convert <em>year</em> into factor since it has two discrete levels:</p>
+<pre class="r white"><code>mpg$year &lt;- factor(mpg$year)</code></pre>
+<pre class="r white"><code>mdl_mlr2 &lt;- lm(hwy ~ displ + year, data = mpg)
+summary(mdl_mlr2)
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = hwy ~ displ + year, data = mpg)
+#&gt; 
+#&gt; Residuals:
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -7.7616 -2.5187 -0.2899  1.8701 15.5852 
+#&gt; 
+#&gt; Coefficients:
+#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)  35.2757     0.7257  48.610  &lt; 2e-16 ***
+#&gt; displ        -3.6110     0.1938 -18.630  &lt; 2e-16 ***
+#&gt; year2008      1.4021     0.4998   2.806  0.00545 ** 
+#&gt; ---
+#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+#&gt; 
+#&gt; Residual standard error: 3.78 on 231 degrees of freedom
+#&gt; Multiple R-squared:  0.6004, Adjusted R-squared:  0.5969 
+#&gt; F-statistic: 173.5 on 2 and 231 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><strong>How did our Two Predictor Machine do?</strong></p>
+<p>RSE went down from 3.84 to 3.78 and <span class="math inline">\(R^2\)</span> increased from 58% to 60%. Before we knit pick on these numbers, let’s first check if it is worth doing it. So we need to first decide if the machine is statistically reasonable to use. In other words,</p>
+<p><strong>Are the Constants Significant?</strong></p>
+<p>Since all p-values are less than 0.05, it suggests that all constants are significant. But with multiple predictors, looking at individual p-values starts to get dangerous. This is because as the number of predictors go up, it gets increasingly likely to see p-values for some of the predictors to be low <em>purely by chance</em>. For example, if there are 1000 predictors, at 95% confidence, it is likely that 50 of these will show p-values less than 0.05 just by chance. There is another metric called F-statistic that does not suffer from this problem.</p>
+<p><strong>What is F-statistic?</strong></p>
+<p>F-statistic is defined as:</p>
+<p><span class="math display">\[
+F-statistic = \frac{(TSS-RSS)/p}{RSS/(n-p-1)}
+\]</span> <em>TSS: Total Sum of Squares</em></p>
+<p><em>RSS: Residual Sum of Squares</em></p>
+<p><em>p: number of predictors</em></p>
+<p><em>n: number of observations</em></p>
+<p>F-statistic closer to 1 will support null hypothesis (all constants are 0) while F-statistic greater than 1 will favor alternate hypothesis (at least one of the constants is significant). In our case, F-statistic is 173.5 (with extemely small associated p-value), which is significantly greater than 1 providing strong evidence that one of the constants is significant. One drawback of F-statistic however is that it only tells that <em>at least one</em> of the predictors in our model is significant. We are still left to find which one (or ones if there are more) are significant. In other words, we do not know yet if our two-predictor model is any better than the one-predictor model. We still need a metric to compare the two models.</p>
+<p><strong>Adjusted <span class="math inline">\(R^2\)</span> - A Metric to Compare Models with Different Number of Variables</strong></p>
+<p>One problem with looking at <span class="math inline">\(R^2\)</span> is that it always increases as more and more predictors are added to the model. A solution to this problem is to look at <em>Adjusted <span class="math inline">\(R^2\)</span></em> instead which is defined by:</p>
+<p><span class="math display">\[
+Adjusted-R^2= 1 - \frac{RSS/(n-p-1)}{TSS/(n-1)}
+\]</span></p>
+<p>Now although adding more variables will always result in decrease in RSS, if this decrease is not offset by increase in the number of variables, <em>Adjusted <span class="math inline">\(R^2\)</span></em> will not increase. Adjusted <span class="math inline">\(R^2\)</span> for <code>mdl_slr</code> is 0.585 whereas it is 0.597 for <code>mdl_mlr2</code>. So it has increased by a little over a percent. Whether this gain is important is debatable. We could very well choose the <code>mdl_slr</code> in this case for simplicity. In case we want to go with the <em>two-variable</em> model, let’s at least see how to interpret the constants.</p>
+<p><strong>What do These Constants Mean Now?</strong></p>
+<p>Now that we have two variables in our model, the interpretation of the constants will differ a bit from a single variable model. <span class="math inline">\(C_1\)</span> being -3.6 means <em>if the year variable were held constant</em> then with every one litre increase in engine displacement, we would expect the fuel consumption to go down by 3.6 mpg. In addition, <em>for the same displacement</em>, we would expect 2008 model year cars to be consuming 1.4 mpg more fuel than 1999 model year. This is somewhat counterintuitive to our observation of scatter plot of mpg versus year which suggested a decrease in mpg in 2008 compared to 1999! So what happened? Note that the constant <span class="math inline">\(C_0\)</span> and <span class="math inline">\(C_1\)</span> have been adjusted compared to the <em>displacement only</em> model. The effect of year alone is very small and the variability in <em>year only</em> has been <em>adjusted</em> in the other constants.</p>
+</div>
+<div id="more-predictors-better-model" class="section level3">
+<h3>More Predictors, Better Model?</h3>
+<p>Addition of more predictor variables appears to improve our model. So why don’t we blindly throw in all the predictors we have see if we can get a better model. Let’s convert all character variables to factors first and then create a model with all preditors.</p>
+<pre class="r white"><code>mpg %&gt;% mutate_if(is.character, as.factor)
+#&gt; # A tibble: 234 x 11
+#&gt;    manufa… model   displ year     cyl trans  drv     cty   hwy fl    class
+#&gt;    &lt;fctr&gt;  &lt;fctr&gt;  &lt;dbl&gt; &lt;fctr&gt; &lt;int&gt; &lt;fctr&gt; &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;fct&gt; &lt;fct&gt;
+#&gt;  1 audi    a4       1.80 1999       4 auto(… f        18    29 p     comp…
+#&gt;  2 audi    a4       1.80 1999       4 manua… f        21    29 p     comp…
+#&gt;  3 audi    a4       2.00 2008       4 manua… f        20    31 p     comp…
+#&gt;  4 audi    a4       2.00 2008       4 auto(… f        21    30 p     comp…
+#&gt;  5 audi    a4       2.80 1999       6 auto(… f        16    26 p     comp…
+#&gt;  6 audi    a4       2.80 1999       6 manua… f        18    26 p     comp…
+#&gt;  7 audi    a4       3.10 2008       6 auto(… f        18    27 p     comp…
+#&gt;  8 audi    a4 qua…  1.80 1999       4 manua… 4        18    26 p     comp…
+#&gt;  9 audi    a4 qua…  1.80 1999       4 auto(… 4        16    25 p     comp…
+#&gt; 10 audi    a4 qua…  2.00 2008       4 manua… 4        20    28 p     comp…
+#&gt; # ... with 224 more rows</code></pre>
+<pre class="r white"><code>mdl_mlrn &lt;- lm(hwy ~ ., data = mpg)
+summary(mdl_mlrn)
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = hwy ~ ., data = mpg)
+#&gt; 
+#&gt; Residuals:
+#&gt;      Min       1Q   Median       3Q      Max 
+#&gt; -2.56544 -0.54876  0.00631  0.46380  2.54085 
+#&gt; 
+#&gt; Coefficients: (20 not defined because of singularities)
+#&gt;                             Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)                 13.40645    2.27143   5.902 1.79e-08 ***
+#&gt; manufacturerchevrolet       -0.07523    0.79154  -0.095 0.924389    
+#&gt; manufacturerdodge           -5.13203    1.41378  -3.630 0.000371 ***
+#&gt; manufacturerford            -1.55781    1.38801  -1.122 0.263239    
+#&gt; manufacturerhonda           -0.59813    1.41389  -0.423 0.672778    
+#&gt; manufacturerhyundai         -1.28086    1.39510  -0.918 0.359810    
+#&gt; manufacturerjeep            -5.35642    1.40137  -3.822 0.000183 ***
+#&gt; manufacturerland rover      -3.27903    1.40198  -2.339 0.020459 *  
+#&gt; manufacturerlincoln         -3.17958    1.48043  -2.148 0.033095 *  
+#&gt; manufacturermercury         -4.60493    1.42801  -3.225 0.001502 ** 
+#&gt; manufacturernissan          -4.87560    1.41981  -3.434 0.000741 ***
+#&gt; manufacturerpontiac          1.00415    0.80246   1.251 0.212464    
+#&gt; manufacturersubaru          -2.19715    1.24436  -1.766 0.079174 .  
+#&gt; manufacturertoyota          -5.50331    1.38981  -3.960 0.000109 ***
+#&gt; manufacturervolkswagen       0.91416    0.67962   1.345 0.180313    
+#&gt; modela4                      2.09185    1.18317   1.768 0.078783 .  
+#&gt; modela4 quattro              0.93240    1.11315   0.838 0.403370    
+#&gt; modela6 quattro                   NA         NA      NA       NA    
+#&gt; modelaltima                  4.65544    1.19531   3.895 0.000139 ***
+#&gt; modelc1500 suburban 2wd     -3.83985    1.38658  -2.769 0.006217 ** 
+#&gt; modelcamry                   5.07921    1.30992   3.877 0.000149 ***
+#&gt; modelcamry solara            5.13686    0.99411   5.167 6.36e-07 ***
+#&gt; modelcaravan 2wd             2.99227    0.51484   5.812 2.82e-08 ***
+#&gt; modelcivic                        NA         NA      NA       NA    
+#&gt; modelcorolla                 6.35934    1.11122   5.723 4.40e-08 ***
+#&gt; modelcorvette                1.29816    1.46072   0.889 0.375365    
+#&gt; modeldakota pickup 4wd       0.26640    0.44834   0.594 0.553146    
+#&gt; modeldurango 4wd             0.13012    0.47705   0.273 0.785350    
+#&gt; modelexpedition 2wd         -1.48593    0.68925  -2.156 0.032444 *  
+#&gt; modelexplorer 4wd           -3.38590    0.53383  -6.343 1.83e-09 ***
+#&gt; modelf150 pickup 4wd        -3.89203    0.50532  -7.702 9.14e-13 ***
+#&gt; modelforester awd           -0.64526    0.63354  -1.019 0.309828    
+#&gt; modelgrand cherokee 4wd           NA         NA      NA       NA    
+#&gt; modelgrand prix                   NA         NA      NA       NA    
+#&gt; modelgti                    -1.43019    1.05924  -1.350 0.178675    
+#&gt; modelimpreza awd                  NA         NA      NA       NA    
+#&gt; modeljetta                  -1.20836    1.02930  -1.174 0.241986    
+#&gt; modelk1500 tahoe 4wd        -5.42887    1.42240  -3.817 0.000187 ***
+#&gt; modelland cruiser wagon 4wd  1.11909    0.82087   1.363 0.174520    
+#&gt; modelmalibu                       NA         NA      NA       NA    
+#&gt; modelmaxima                  3.54620    1.39625   2.540 0.011952 *  
+#&gt; modelmountaineer 4wd              NA         NA      NA       NA    
+#&gt; modelmustang                      NA         NA      NA       NA    
+#&gt; modelnavigator 2wd                NA         NA      NA       NA    
+#&gt; modelnew beetle             -1.17533    1.31465  -0.894 0.372522    
+#&gt; modelpassat                       NA         NA      NA       NA    
+#&gt; modelpathfinder 4wd               NA         NA      NA       NA    
+#&gt; modelram 1500 pickup 4wd          NA         NA      NA       NA    
+#&gt; modelrange rover                  NA         NA      NA       NA    
+#&gt; modelsonata                  1.06729    1.30742   0.816 0.415409    
+#&gt; modeltiburon                      NA         NA      NA       NA    
+#&gt; modeltoyota tacoma 4wd       0.10859    0.53127   0.204 0.838273    
+#&gt; displ                        0.27043    0.24309   1.112 0.267452    
+#&gt; year2008                     0.72624    0.20459   3.550 0.000494 ***
+#&gt; cyl                         -0.34384    0.14603  -2.355 0.019644 *  
+#&gt; transauto(l3)               -0.62059    0.96716  -0.642 0.521920    
+#&gt; transauto(l4)                0.92040    0.61091   1.507 0.133697    
+#&gt; transauto(l5)                1.39939    0.58240   2.403 0.017305 *  
+#&gt; transauto(l6)                1.29868    0.72348   1.795 0.074351 .  
+#&gt; transauto(s4)                0.63402    0.91104   0.696 0.487389    
+#&gt; transauto(s5)                2.14954    0.85193   2.523 0.012511 *  
+#&gt; transauto(s6)                0.68904    0.62041   1.111 0.268239    
+#&gt; transmanual(m5)              1.11020    0.59822   1.856 0.065140 .  
+#&gt; transmanual(m6)              0.90339    0.56318   1.604 0.110476    
+#&gt; drvf                              NA         NA      NA       NA    
+#&gt; drvr                              NA         NA      NA       NA    
+#&gt; cty                          0.91478    0.05681  16.102  &lt; 2e-16 ***
+#&gt; fld                         -1.07125    1.23220  -0.869 0.385819    
+#&gt; fle                         -4.92816    1.09789  -4.489 1.29e-05 ***
+#&gt; flp                         -4.13173    1.04039  -3.971 0.000104 ***
+#&gt; flr                         -3.32290    1.02569  -3.240 0.001429 ** 
+#&gt; classcompact                -0.44789    0.78249  -0.572 0.567779    
+#&gt; classmidsize                 0.06069    1.18808   0.051 0.959318    
+#&gt; classminivan                      NA         NA      NA       NA    
+#&gt; classpickup                       NA         NA      NA       NA    
+#&gt; classsubcompact                   NA         NA      NA       NA    
+#&gt; classsuv                          NA         NA      NA       NA    
+#&gt; ---
+#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+#&gt; 
+#&gt; Residual standard error: 0.9467 on 177 degrees of freedom
+#&gt; Multiple R-squared:  0.9808, Adjusted R-squared:  0.9747 
+#&gt; F-statistic: 161.5 on 56 and 177 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>

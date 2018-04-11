@@ -1,10 +1,14 @@
 ---
-title: "Predicting a Numerical Outcome With Linear Models"
+title: "Predicting a Numerical Outcome"
 author: "Paramjot Singh"
 date: 2018-03-30T20:53:08-05:00
 draft: FALSE
 tags: ["R"]
 categories: ["Fundamentals", "Machine Learning"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include = FALSE}
@@ -14,20 +18,21 @@ knitr::opts_chunk$set(
   message = FALSE,
   comment = "#>",
   class.source = 'white',
-  fig.align = 'center'
+  fig.align = 'center',
+  out.width = '80%'
 )
 ```
-In an earlier post, we learned a little bit about inference and some interesting tools that we can employ to make informed decisions based on our data instead of just guessing. Next you show your analysis to your friend who suggested to look for small engine cars to get better fuel economy. He is extremely impressed by the power of statistics and asks you another question. 
+In an earlier post, we learned a little bit about inference and some interesting tools that we can employ to make informed decisions based on our data instead of just guessing. You show this analysis to your friend who suggested to look for small engine cars to get better fuel economy. He is extremely impressed by the power of statistics and asks you another question. 
 
 > Can we use the data we have to *predict* the fuel economy of any car from that population that we want?
 
-This and related type of questions fall under the subject of *prediction* which is the subject of this blog. After you answer yes to your friend, he gets really excited and starts to ask a number of questions to which you really don't know the answer to. So you start to explore the subject to get a good understanding yourself first. You immediately realize that the subject is vast, and once again to stay focused, you narrow your work to only *numerical* outcomes and *linear* models.
+This and related type of questions fall under the subject of *prediction*. After you answer yes to your friend, he gets really excited and starts to ask a number of questions to which you really don't know the answer to. So you start to explore the subject to get a good understanding yourself first. Here we focus on building a machine that can predict numerical (quantitative) outcomes.
 
 > It's tough to make predictions, especially about the future. - Yogi Berra
 
 ### A Constant Output Machine
 
-Imagine you are tasked to come up with a solution to predict the highway fuel economy of a car. Although we have a full data set (`mpg` from `ggplot2` package), let's pretend for a second that the only information I have is the highway fuel economy of a sample:
+Imagine you are tasked to come up with a solution to predict the highway fuel economy of a car. Although we have a full data set (`mpg` from `ggplot2` package), let's pretend for a second that the only information we have is the highway fuel economy of a sample:
 
 ```{r}
 library(tidyverse)
@@ -47,7 +52,7 @@ So we have 234 *observations* in all. Without any other information available to
 mpg %>% select(hwy) %>%
     summarize(mean = mean(hwy))
 ```
-In addition, we also know that what we have just computed is the sample mean which is only an estimate of poulation mean. Let's identify this estimate of the constant and the *predicted* value of $Y$ by a hat symbol on top of each.
+In addition, we also know that what we have just computed is the sample mean which is only an estimate of population mean. Let's identify this estimate of the constant and the *predicted* value of $Y$ by a hat symbol on top of each.
 
 $$
 \hat y = \hat C_0
@@ -59,7 +64,7 @@ mpg %>% select(hwy) %>%
     pull() %>%
     t.test() 
 ```
-So we are 95% confidence that the population mean is between 22.7 and 24.2 mpg. It is instructive to draw a picture of what we have built. Let's say you have actually built a machine that takes an information (model, make, year, etc.) as *inputs* ($x$) and gives predicted fuel economy as *output* ($\hat y$). Our current version of the machine gives only constant output.
+So we are 95% confident that the population mean is between 22.7 and 24.2 mpg. It is instructive to draw a picture of what we have built. Let's say you have actually built a machine that takes an information (model, make, year, etc.) as *inputs* ($x$) and gives predicted fuel economy as *output* ($\hat y$). Our current version of the machine gives only constant output.
 
 ```{r, echo = FALSE, out.width = "80%"}
 knitr::include_graphics("../images/mpg_1.png")
@@ -141,7 +146,7 @@ Looking at the coefficients table, it is clear that both constants have extremel
 
 **Do These Constants Even Mean Something?**
 
-One advantage of using linear machines is that the constants can be interpreted more meaningfully. The value of $C_0$ is the value of $Y$ when $X$ is 0. So whether this makes sense or not depends on whether the value of $X$ being 0 is meaningful. In our case, since $X$ is the displacement which cannot be 0, $C_0$ alone does not carry any meaning. The value of $C_1$ tells the change that we can expect in $Y$ *per unit change in $X$*. So in our case, $C_0$ of -3.5 means that with a 1 litre increase in engine displacement, we can expect the highway fuel economy to go down by roughly 3.5 mpg. Also, since the *SE* of $C_1$ is 0.19, the 95% confidence interval of our estimate is $3.5 \pm 2 \times 0.19 = [3.12, 3.88]$.
+One advantage of using linear machines is that the constants can be interpreted more meaningfully. The value of $C_0$ is the value of $Y$ when $X$ is 0. So whether this makes sense or not depends on whether the value of $X$ being 0 is meaningful. In our case, since $X$ is the displacement which cannot be 0, $C_0$ alone does not carry any meaning. The value of $C_1$ tells the change that we can expect in $Y$ *per unit change in $X$*. So in our case, $C_1$ of -3.5 means that with a 1 litre increase in engine displacement, we can expect the highway fuel economy to go down by roughly 3.5 mpg. Also, since the *SE* of $C_1$ is 0.19, the 95% confidence interval of our estimate is $3.5 \pm 2 \times 0.19 = [3.12, 3.88]$.
 
 **How Can We Make Predictions Using the Simple Linear Machine?**
 
@@ -159,8 +164,88 @@ RSS
 ```
 So our RSS for this data has gone down from 8262 for constant-output machine to 3414 for this simple-linear machine. This is huge improvement! Although RSS represents a single number for the overall accuracy, it is not very interpretable. So now we define two important accuracy metrics for our machine.
 
-**Using $RSE$ and $R^2$ Statistic as Metrics for Prediction Accuracy**
+**How Good is the Model Fit: Using $RSE$ and $R^2$ Statistic as Metrics**
 
 * **Residual Standard Error**: RSE is simply the square root of RSS divided by $n-2$. This tells us how much, on average, we will be off in our predictions using this machine *even when the two constant were exactly known*. RSE is printed at the bottom in the output of summary call to our model. So in our case, we will be off by roughly 3.84 mpg in our prediction. Since the mean mpg (from the constant output model) was 23.4 mpg, the percentage error in our prediction is $(3.84 \times 100) \div 23.4 = 16\%$.
 
 * **$R^2$ Statistic**: While RSE can be interpreted in relation to the units of $Y$, another useful metric that is independent of the units of $Y$ is $R^2$. If we define *total sum of squares*, TSS, as the sum of squares of difference between the actual output and the mean of outputs (which measures the total variance in the output), $R^2$ then is defined as the difference of TSS and RSS divided by TSS. So in this sense, $R^2$ is the proportion of the total variability in the output that can be explained by $X$. From the summary again, in our case, roughly 58% of the variability in mpg can be explained by displacement.
+
+**What is the End Result?**
+
+* We have built a simple linear machine, `mdl_slr`, that can be used to predict highway fuel economy.
+* It can explain 58% variability in highway mpg.
+* It predicts that with every one litre increase in engine displacement, highway fuel economy will decrease roughly by 3.12 ~ 3.88 mpg with 95% confidence.
+
+### Can We Improve Our Simple Linear Machine?
+
+We can stop here and say that this is the best we can do and deliver our machine to customer. But you are a diligent designer and want to dig further and see if there are any problems with our machine and if there are ways in which we can improve our design.
+
+Since adding one variable (engine displacement) as a *predictor* in our machine design resulted in quite a bit improement (RSS dropped from 8262 to 3414), it is reasonble to think that adding more predictors might improve it further. From the pair plots, earlier we commented that there is no clear difference in mpg between the model year 1999 and 2008. However, if we look closely, there appears to be a slight decrease in mpg for year 2008.
+
+
+```{r}
+mpg %>% ggplot(aes(year, hwy)) +
+    scatter()
+```
+
+**Building a Machine with Two Predictors**
+
+Let's add year to our machine, and call it a *multi-linear machine*. Before we do that, we need to convert *year* into factor since it has two discrete levels:
+
+```{r}
+mpg$year <- factor(mpg$year)
+```
+
+```{r}
+mdl_mlr2 <- lm(hwy ~ displ + year, data = mpg)
+summary(mdl_mlr2)
+```
+**How did our Two Predictor Machine do?**
+
+RSE went down from 3.84 to 3.78 and $R^2$ increased from 58% to 60%. Before we knit pick on these numbers, let's first check if it is worth doing it. So we need to first decide if the machine is statistically reasonable to use. In other words,
+
+
+**Are the Constants Significant?**
+
+Since all p-values are less than 0.05, it suggests that all constants are significant. But with multiple predictors, looking at individual p-values starts to get dangerous. This is because as the number of predictors go up, it gets increasingly likely to see p-values for some of the predictors to be low *purely by chance*. For example, if there are 1000 predictors, at 95% confidence, it is likely that 50 of these will show p-values less than 0.05 just by chance. There is another metric called F-statistic that does not suffer from this problem.
+
+**What is F-statistic?**
+
+F-statistic is defined as:
+
+$$
+F-statistic = \frac{(TSS-RSS)/p}{RSS/(n-p-1)}
+$$
+*TSS: Total Sum of Squares*
+
+*RSS: Residual Sum of Squares*
+
+*p:   number of predictors*
+
+*n:   number of observations*
+
+F-statistic closer to 1 will support null hypothesis (all constants are 0) while F-statistic greater than 1 will favor alternate hypothesis (at least one of the constants is significant). In our case, F-statistic is 173.5 (with extemely small associated p-value), which is significantly greater than 1 providing strong evidence that one of the constants is significant. One drawback of F-statistic however is that it only tells that *at least one* of the predictors in our model is significant. We are still left to find which one (or ones if there are more) are significant. In other words, we do not know yet if our two-predictor model is any better than the one-predictor model. We still need a metric to compare the two models.
+
+**Adjusted $R^2$ - A Metric to Compare Models with Different Number of Variables**
+
+One problem with looking at $R^2$ is that it always increases as more and more predictors are added to the model. A solution to this problem is to look at *Adjusted $R^2$* instead which is defined by:
+
+$$
+Adjusted-R^2= 1 - \frac{RSS/(n-p-1)}{TSS/(n-1)}
+$$
+
+Now although adding more variables will always result in decrease in RSS, if this decrease is not offset by increase in the number of variables, *Adjusted $R^2$* will not increase. Adjusted $R^2$ for `mdl_slr` is 0.585 whereas it is 0.597 for `mdl_mlr2`. So it has increased by a little over a percent. Whether this gain is important is debatable. We could very well choose the `mdl_slr` in this case for simplicity. In case we want to go with the *two-variable* model, let's at least see how to interpret the constants.
+
+**What do These Constants Mean Now?**
+
+Now that we have two variables in our model, the interpretation of the constants will differ a bit from a single variable model. $C_1$ being -3.6 means *if the year variable were held constant* then with every one litre increase in engine displacement, we would expect the fuel consumption to go down by 3.6 mpg. In addition, *for the same displacement*, we would expect 2008 model year cars to be consuming 1.4 mpg more fuel than 1999 model year. This is somewhat counterintuitive to our observation of scatter plot of mpg versus year which suggested a decrease in mpg in 2008 compared to 1999! So what happened? Note that the constant $C_0$ and $C_1$ have been adjusted compared to the *displacement only* model. The effect of year alone is very small and the variability in *year only* has been *adjusted* in the other constants.
+
+### More Predictors, Better Model?
+
+Addition of more predictor variables appears to improve our model. So why don't we blindly throw in all the predictors we have see if we can get a better model. Let's convert all character variables to factors first and then create a model with all preditors.
+
+```{r}
+mpg %>% mutate_if(is.character, as.factor)
+mdl_mlrn <- lm(hwy ~ ., data = mpg)
+summary(mdl_mlrn)
+```

@@ -1,0 +1,42 @@
+---
+title: "quizme: An R Package to Create and Practice Any Learning Material"
+author: "Paramjot Singh"
+date: 2018-10-08T19:04:48-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools", "Package"]
+---
+
+
+
+<p>While writing code for your project, we often hit a roadblock, when we know what we want to achieve but are unaware if a function to carry that task already exists. We quickly go to the search bar of our choice and ask what we are looking for. Almost always <em>stackoverflow</em> is at the top of the search and some expert’s code is right there to rescue us. We get delighted, take a note somewhere (my favorite’s are stickies) to remember that for future and continue with our project. Next time, we want to use the same function, many of us have already forgotten but we remember it was written on a sticky. And we spend as much time looking for that sticky (and sometimes more!) as we would have again asked google.</p>
+<p>Wouldn’t it be nice if we could practice the functions or any important information for that matter, so we can recall it with ease. Some of you might be lucky and remember the first time you read something. For the rest of us, we need deliberate practice. I have created a package, <em>quizme</em> that can help you with that practice. You can build your personal quiz repository by adding questions and answers right from R console. When you want to practice, you can do that also right from the R console!</p>
+<div id="how-do-i-get-the-package" class="section level3">
+<h3>How do I get the package?</h3>
+<p>Package is currently available on Github. You can download it using:</p>
+<pre class="r white"><code>library(devtools)
+install_github(&quot;pchhina/quizme&quot;)
+library(quizme)</code></pre>
+</div>
+<div id="how-do-i-add-questions" class="section level3">
+<h3>How do I add questions?</h3>
+<p>Questions can be added with <code>addq()</code>. At the start of the session however, you have to use the function <code>make_quiz()</code>. This loads the previously created QA list or create blank data structures so new questions can be added.</p>
+<pre class="r white"><code>make_quiz()</code></pre>
+<p>With <code>addq()</code>, you can add questions in a single line. Answer must be added in a new line. Answer can consists of multi-lines. Carriage return in a blank line will add your question-answer pair to an R object.</p>
+<pre class="r white"><code>addq()</code></pre>
+</div>
+<div id="how-do-i-take-quiz" class="section level3">
+<h3>How do I take quiz?</h3>
+<p>You would use <code>ask()</code> and a randomly choosen question will be presented at the R console:</p>
+<pre class="r white"><code>ask()
+#&gt; NA</code></pre>
+</div>
+<div id="how-do-i-look-for-the-answer" class="section level3">
+<h3>How do I look for the answer?</h3>
+<p>The answer to the question that was presented last can be seen using <code>tell()</code> function:</p>
+<pre class="r white"><code>tell()</code></pre>
+</div>
+<div id="what-do-i-do-when-i-am-done-practicing" class="section level3">
+<h3>What do I do when I am done practicing?</h3>
+<p>Simply call <code>bye()</code>. This writes the updated QA data to a file in a directory that was created when <code>make_quiz()</code> was called. After that, it also removes the data structures related to testing. And you are done! Happy learning R!</p>
+</div>

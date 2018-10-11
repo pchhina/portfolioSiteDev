@@ -1,0 +1,62 @@
+---
+title: "Testing and Continuous Integration in R"
+author: "Paramjot Singh"
+date: 2018-10-10T05:27:31-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+
+
+<p>Often a useful function will do what we <em>expected</em> it to do. But sometimes it will do the unexpected. It is easy to find and address this unexpected behavior at the time of writing the function but becomes increasingly hard as the time goes by, codebase expands and dependencies become complex.</p>
+<p>To decrease the frustration when unexpected behavior occurs, it is desirable to automate the testing process. This can be accomplished by adding the following steps in your package development workflow:</p>
+<ol style="list-style-type: decimal">
+<li>Convert your ad-hoc testing into more formal <em>unit tests</em>.</li>
+<li>Setup to run these tests automatically each time you checkin your changes to Github.</li>
+</ol>
+<p>First step is made pain free with Hadley’s <code>testthat</code> package. I will demonstrate here how to setup your tests. Second step in testing circles goes by the name of <em>continuous integration</em> and depends on the choice of platform you want your tests to be run on. I will also show how to set this up on TravisCI platform which is a linux platform for testing.</p>
+<div id="where-do-i-start" class="section level3">
+<h3>Where do I start?</h3>
+<p>In your package directory, run the following commands:</p>
+<pre class="r white"><code>library(devtools)
+use_testthat()</code></pre>
+<p>This will, among other minor setup things, will create a <code>tests/testthat</code> directory in which your unit tests will reside.</p>
+</div>
+<div id="what-next" class="section level3">
+<h3>What next?</h3>
+<p>Create a file with name starting with <em>test</em> and save it inside <code>tests/testthat</code> directory. This file will contain series of <code>expect_&lt;what&gt;(&lt;test evaluating your function&gt;, &lt;value you expect&gt;)</code> statements wrapped inside <code>test_that()</code> function. This <code>test_that()</code> function will be one <em>unit</em> of test, usually testing different arguments of the same functions or related functionality from different functions. The file also contains a <code>context()</code> statement at the top with a single string argument describing what is the general theme of tests contained in this file.</p>
+<p>As an example, I have created three expectations for a <a href="https://github.com/pchhina/quizme">package</a> I am working on currently:</p>
+<pre class="r white"><code>library(quizme)
+library(testthat)
+
+context(&quot;output of ask, tell and make_quiz is correct&quot;)
+
+test_that(&quot;make_quiz returns a list&quot;,{
+              expect_type(make_quiz(), &quot;list&quot;)
+})
+
+test_that(&quot;ask and tell functions return null&quot;,{
+              expect_null(ask())
+              expect_null(tell())
+})</code></pre>
+<p>In the above tests, the first unit contains just one expectation: <code>make_quiz()</code> returns a list. The second unit has two expectations that the <code>ask()</code> and <code>tell()</code> functions return <code>null</code>.</p>
+</div>
+<div id="cool-how-do-i-run-these-tests-now" class="section level3">
+<h3>Cool, how do I run these tests now?</h3>
+<p>In your package directory, you simply use <code>devtools::check()</code> command. This runs a series of checks (running <code>R CMD check</code> behind the scenes) to make sure your package looks good. In addition, it will also run the tests you have described using above method. The output will show if anything fails or if all tests pass.</p>
+<p>Next, we want to automate this procedure so that anytime we checkin our code, these tests are run automatically. <strong>TravisCI</strong> takes care of this on Linux platform. There is a windows equivalent test platform called <strong>AppVeyor</strong> which I have not used yet.</p>
+</div>
+<div id="so-how-do-i-set-travisci-up" class="section level3">
+<h3>So how do I set TravisCI up?</h3>
+<p>Note that TravisCI will not only run your unit tests, it will actually run <code>R CMD check</code> as well. So it will do everything that <code>devtools::check()</code> is doing. To setup your repository, you will log into <a href="https://travis-ci.org/">TravisCI</a> using your github account. It will populate with a list of all public repos that you have on github. But you have to manually turn on which repo you want TravisCI to run.</p>
+<p>Next step is to run <code>devtools::use_travis()</code> in your package directory locally. This will create a <code>.travis.yaml</code> file which is a config file travis will use to set your package up for running. In addition, it will provide you a link of travis <em>badge</em> which you can copy at the top of your README file of package. This will automatically show up in your github repository in green(or rusty orange if failing) if the build passes the test.</p>
+<p>That’s it. Now anytime you push changes to your github repository, travis will start running its tests. It takes 10~20 minutes to complete the whole procedure and in the end it will tell you whether your package passed or failed. Failures obviously need to be addressed.</p>
+</div>
+<div id="learning-more" class="section level3">
+<h3>Learning More</h3>
+<ul>
+<li>Hadley’s <a href="http://r-pkgs.had.co.nz/">book</a> on everything R packages gives more in-depth knowledge of package development including unit testing.</li>
+<li>Roger Peng’s <a href="https://bookdown.org/rdpeng/RProgDA/">book</a> has an entire chapter dedicated to R packages and is a useful resource.</li>
+</ul>
+</div>

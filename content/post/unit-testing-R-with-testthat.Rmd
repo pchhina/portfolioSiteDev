@@ -1,0 +1,82 @@
+---
+title: "Testing and Continuous Integration in R"
+author: "Paramjot Singh"
+date: 2018-10-10T05:27:31-05:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center',
+  eval = FALSE
+)
+```
+Often a useful function will do what we *expected* it to do. But sometimes it will do the unexpected. It is easy to find and address this unexpected behavior at the time of writing the function but becomes increasingly hard as the time goes by, codebase expands and dependencies become complex.
+
+To decrease the frustration when unexpected behavior occurs, it is desirable to automate the testing process. This can be accomplished by adding the following steps in your package development workflow:
+
+1. Convert your ad-hoc testing into more formal *unit tests*. 
+2. Setup to run these tests automatically each time you checkin your changes to Github.
+
+First step is made pain free with Hadley's `testthat` package. I will demonstrate here how to setup your tests. Second step in testing circles goes by the name of *continuous integration* and 
+depends on the choice of platform you want your tests to be run on. I will also show how to set this up on TravisCI platform which is a linux platform for testing.
+
+### Where do I start?
+
+In your package directory, run the following commands:
+
+```{r}
+library(devtools)
+use_testthat()
+```
+
+This will, among other minor setup things, will create a `tests/testthat` directory in which your unit tests will reside.
+
+### What next?
+
+Create a file with name starting with *test* and save it inside `tests/testthat` directory. This file will contain series of `expect_<what>(<test evaluating your function>, <value you expect>)` statements wrapped inside `test_that()` function. This `test_that()` function will be one *unit* of test, usually testing different arguments of the same functions or related functionality from different functions. The file also contains a `context()` statement at the top with a single string argument describing what is the general theme of tests contained in this file.
+
+As an example, I have created three expectations for a [package](https://github.com/pchhina/quizme) I am working on currently:
+
+```{r}
+library(quizme)
+library(testthat)
+
+context("output of ask, tell and make_quiz is correct")
+
+test_that("make_quiz returns a list",{
+              expect_type(make_quiz(), "list")
+})
+
+test_that("ask and tell functions return null",{
+              expect_null(ask())
+              expect_null(tell())
+})
+```
+
+In the above tests, the first unit contains just one expectation: `make_quiz()` returns a list. The second unit has two expectations that the `ask()` and `tell()` functions return `null`.
+
+### Cool, how do I run these tests now?
+
+In your package directory, you simply use `devtools::check()` command. This runs a series of checks (running `R CMD check` behind the scenes) to make sure your package looks good. In addition, it will also run the tests you have described using above method. The output will show if anything fails or if all tests pass.
+
+Next, we want to automate this procedure so that anytime we checkin our code, these tests are run automatically. **TravisCI** takes care of this on Linux platform. There is a windows equivalent test platform called **AppVeyor** which I have not used yet.
+
+### So how do I set TravisCI up?
+
+Note that TravisCI will not only run your unit tests, it will actually run `R CMD check` as well. So it will do everything that `devtools::check()` is doing. To setup your repository, you will log into [TravisCI](https://travis-ci.org/) using your github account. It will populate with a list of all public repos that you have on github. But you have to manually turn on which repo you want TravisCI to run.
+
+Next step is to run `devtools::use_travis()` in your package directory locally. This will create a `.travis.yaml` file which is a config file travis will use to set your package up for running. In addition, it will provide you a link of travis *badge* which you can copy at the top of your README file of package. This will automatically show up in your github repository in green(or rusty orange if failing) if the build passes the test. 
+
+That's it. Now anytime you push changes to your github repository, travis will start running its tests. It takes 10~20 minutes to complete the whole procedure and in the end it will tell you whether your package passed or failed. Failures obviously need to be addressed. 
+
+### Learning More
+- Hadley's [book](http://r-pkgs.had.co.nz/) on everything R packages gives more in-depth knowledge of package development including unit testing.
+- Roger Peng's [book](https://bookdown.org/rdpeng/RProgDA/) has an entire chapter dedicated to R packages and is a useful resource.

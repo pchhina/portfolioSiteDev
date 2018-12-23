@@ -1,0 +1,10 @@
+modalID: 2
+title: Word Up!
+date: 2017-07-13
+img: wordup.png
+imgicon: wordup_2.png
+caption: a fast yet accurate word prediction app
+client: Personal (See Code on Github)
+clientLink: "https://github.com/pchhina/wordup"
+category: Text Mining, Web Applications
+description: This project is a web application to predict the next likely word(s) that the user intends to type. The main goal is to keep the predictions accurate yet fast for limiting the memory footprint since it is intended for mobile applications. Feel free to checkout the application [here](https://param-singh.shinyapps.io/word_prediction_app/).

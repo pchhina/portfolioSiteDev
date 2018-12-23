@@ -36,7 +36,7 @@ staticDir = ["static"]
 	custom_js  = []
 
     [params.navigation]
-        brand = "@bitsBeagle"
+        brand = "paramjot singh"
     
     [taxonomies]
         tag = "tags"
@@ -45,9 +45,9 @@ staticDir = ["static"]
 
     [params.header]
         # Copy your own image into './static/img/'' if you wish
-        image = "profile.png"
-        name = "Paramjot Singh"
-        subtitle = "Data Scientist - Tinkerer -Blogger"
+        image = "param2.jpg"
+        name = "Hi! I am Paramjot Singh"
+        subtitle = "I am a mechanical engineer interested in using open source tools to derive meaning from data."
 
 
     [params.portfolio]
@@ -79,8 +79,8 @@ staticDir = ["static"]
     [params.about]
         title = "About"
         # The about text is splitted into a left and right column
-        left = "I just like to play with data. The open-source tools available today makes it hard not to have fun with data. The community developing these tools is hard not to be a part of! Broad topics I am interested in for data exploration purposes are technology, climate change, energy, transportation and public health."
-        right = " The tools I currently use are vim and R. I have recently started to get my hands dirty with a bit of Python too. Feel free to checkout my projects and posts. I try to make all the code available on Github. You are welcome to contact me if you think we can collaborate on a project."
+        left = "I work at [Gamma Technologies](https://www.gtisoft.com/) where I help engineers at **Ferrari, BMW, Ford, US Air Force** and many others design better vehicles. I do that through developing and supporting GT-SUITE, a powerful system-level simulation software, that allows our customers to evaluate their design ideas accurately before making any test prototypes. Please see my [linkedin](https://www.linkedin.com/in/paramjot-singh-569959139/) account if you are interested in learning more about this area of my work."
+        right = "In my spare time, I learn and try to build things using open source tools. The powerful nature of these tools and the awesome community building them has kept my curiosity growing to understand data in useful and meaningful ways. All my work on this website is open source and available on [Github] (https://github.com/pchhina). Please feel free to look through my projects. I would appreciate any critique and feedback."
 
         [params.about.button]
             text = "Download them"

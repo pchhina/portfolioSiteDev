@@ -1,5 +1,5 @@
 ---
-title: "quizme: An R Package to Create and Practice Any Learning Material"
+title: "Quizme Introduction and Usage"
 author: "Paramjot Singh"
 date: 2018-10-08T19:04:48-05:00
 draft: FALSE
@@ -20,8 +20,8 @@ install_github(&quot;pchhina/quizme&quot;)</code></pre>
 </div>
 <div id="how-do-i-add-questions" class="section level3">
 <h3>How do I add questions?</h3>
-<p>Questions can be added with <code>addq()</code>. At the start of the session however, you have to use the function <code>make_quiz()</code>. This loads the previously created QA list or create blank data structures so new questions can be added.</p>
-<pre class="r white"><code>make_quiz()</code></pre>
+<p>Questions can be added with <code>addq()</code>. At the start of the session however, you have to use the function <code>quizme()</code>. This loads the previously created QA list or create blank data structures so new questions can be added.</p>
+<pre class="r white"><code>quizme()</code></pre>
 <p>With <code>addq()</code>, you can add questions in a single line. Answer must be added in a new line. Answer can contain multiple lines. Carriage return in a blank line will add your question-answer pair to an R object.</p>
 <pre class="r white"><code>addq()</code></pre>
 </div>
@@ -29,16 +29,17 @@ install_github(&quot;pchhina/quizme&quot;)</code></pre>
 <h3>How do I take quiz?</h3>
 <p>You would use <code>ask()</code> and a randomly chosen question will be presented at the R console:</p>
 <pre class="r white"><code>ask()
-#&gt; sample 10 random observations from mpg data</code></pre>
+#&gt; r: name the elements of 1:3 as a, b, c using three different methods</code></pre>
 </div>
 <div id="how-do-i-look-for-the-answer" class="section level3">
 <h3>How do I look for the answer?</h3>
 <p>The answer to the question that was presented last can be seen using <code>tell()</code> function:</p>
 <pre class="r white"><code>tell()
-#&gt; library(dplyr) 
-#&gt; mpg %&gt;% sample_n(10)</code></pre>
+#&gt; x &lt;- c(a = 1, b = 2, c = 3) 
+#&gt; x &lt;- 1:3; names(x) &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;) 
+#&gt; x &lt;- setNames(1:3, c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))</code></pre>
 </div>
 <div id="what-do-i-do-when-i-am-done-practicing" class="section level3">
 <h3>What do I do when I am done practicing?</h3>
-<p>Simply call <code>bye()</code>. This writes the updated QA data to a file in a directory that was created when <code>make_quiz()</code> was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!</p>
+<p>Simply call <code>bye()</code>. This writes the updated QA data to a file in a directory that was created when <code>(quizme())</code> was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!</p>
 </div>

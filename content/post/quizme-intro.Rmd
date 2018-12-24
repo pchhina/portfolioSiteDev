@@ -1,5 +1,5 @@
 ---
-title: "quizme: An R Package to Create and Practice Any Learning Material"
+title: "Quizme Introduction and Usage"
 author: "Paramjot Singh"
 date: 2018-10-08T19:04:48-05:00
 draft: FALSE
@@ -32,9 +32,9 @@ library(quizme)
 ```
 
 ### How do I add questions?
-Questions can be added with `addq()`. At the start of the session however, you have to use the function `make_quiz()`. This loads the previously created QA list or create blank data structures so new questions can be added.
+Questions can be added with `addq()`. At the start of the session however, you have to use the function `quizme()`. This loads the previously created QA list or create blank data structures so new questions can be added.
 ```{r}
-make_quiz()
+quizme()
 ```
 
 With `addq()`, you can add questions in a single line. Answer must be added in a new line. Answer can contain multiple lines. Carriage return in a blank line will add your question-answer pair to an R object.
@@ -55,6 +55,6 @@ tell()
 ```
 
 ### What do I do when I am done practicing?
-Simply call `bye()`. This writes the updated QA data to a file in a directory that was created when `make_quiz()` was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!
+Simply call `bye()`. This writes the updated QA data to a file in a directory that was created when `(quizme())` was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!
 
 

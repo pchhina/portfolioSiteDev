@@ -1,0 +1,84 @@
+---
+title: "Quizme Design"
+author: "Paramjot Singh"
+date: 2018-12-23T15:53:00-06:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+
+
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>The idea of <a href="https://github.com/pchhina/quizme">quizme</a> started with a need to learn R more effectively as I could not spend more than few hours a day outside of my regular life. My first approach to the problem, while I thought was neat, needed a lot of manual intervention. In this design, I had two text files - one containing questions and another containing questions and answers. A simple function would randomly select 10 questions. You would open this test file in a text editor, write code to test your understanding, then go back to the file containing answers to see if your answers are correct. This approach had some serious drawbacks:</p>
+<ol style="list-style-type: decimal">
+<li>There is no way to evaluate if you are improving; the function just randomly picks 10 questions.</li>
+<li>You have to maintain two separate files containing same information.</li>
+<li>You have to switch between files to check the answers.</li>
+<li>It is not efficient to share just the function with other users without proper documentation.</li>
+</ol>
+</div>
+<div id="design-goals-and-solutions" class="section level3">
+<h3>Design Goals and Solutions</h3>
+<p>Quizme was my solution to address these drawbacks. I drew some ideas from books I read earlier on the subject of memory and learning (<a href="https://www.amazon.com/Make-Stick-Science-Successful-Learning/dp/0674729013/ref=sr_1_1?ie=UTF8&amp;qid=1545611894&amp;sr=8-1&amp;keywords=make+it+stick">Make It Stick</a> and <a href="https://www.amazon.com/Mind-Numbers-Science-Flunked-Algebra/dp/039916524X/ref=pd_bxgy_14_img_2?_encoding=UTF8&amp;pd_rd_i=039916524X&amp;pd_rd_r=5ff2d190-0714-11e9-a244-c1f675b879f4&amp;pd_rd_w=2akPJ&amp;pd_rd_wg=6dhLG&amp;pf_rd_p=6725dbd6-9917-451d-beba-16af7874e407&amp;pf_rd_r=8VVX0ZC67249QR0E8286&amp;psc=1&amp;refRID=8VVX0ZC67249QR0E8286">A Mind for Numbers: How to Excel at Math and Science</a>) and a software solution I had used before, <a href="https://apps.ankiweb.net/">Anki</a>. I set out with the following design goals and the solutions driven by these goals:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Simple</strong> I do not have any formal training in UI/UX design but in my current job, I get frequent opportunities to discuss what a good design should be. While for some applications (graphic design tools for example) it is unavoidable to have many buttons and dialogs, many others can do without (linux utilities for example) fancy UIs</li>
+</ol>
+<ul>
+<li><em>Solution</em>: Keep the interface in command-line only</li>
+</ul>
+<p><img src="../images/simple_interface.png" width="80%" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Intelligent</strong> There has to be some way of recording the performance so that tool can schedule the next quiz intelligently to minimize the time needed to learn a certain concept</li>
+</ol>
+<ul>
+<li><em>Solution</em>: This is where the tool takes care of which questions to quiz you on based on your past performance. Based on whether you were able to solve the problem and the time it took you to solve, the tool will schedule when to ask you the same question next time. Two concepts are employed to this end: a) <strong>mixing up your practice</strong>, questions from available pool of <em>new</em> questions are randomly chosen which are brought into <em>learning</em> category. So if you have an assortment of questions from different subjects, these may enter in a single quiz thereby mixing things up. This has the potential to create stronger connections withing the brain. b) <strong>spaced repetetion</strong>, where the <em>learning</em> questions are ranked based on your performance: a problem that took longer to recall will be asked more often than the problem that took shorter to recall. This makes efficient use of your learning time.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Ease of use</strong> If you have to do more work to learn or remember how to use the tool, it becomes a distraction that can potentially take away our limited amount of cognitive energy</li>
+</ol>
+<ul>
+<li><em>Solution</em>: Show the commands at the command prompt. In the example below, if you want the tool to show you the answer, you simply press ‘t’ followed by return key</li>
+</ul>
+<p><img src="../images/ease_of_use.png" width="80%" style="display: block; margin: auto;" /></p>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Fast</strong> As the data grows, it should not slow down the response which can become frustrating enough to give up on the tool</li>
+</ol>
+<ul>
+<li><em>Solution</em>: The underlying data structures for ranking, questions and metadata uses <a href="https://github.com/Rdatatable/data.table/wiki">data.table</a> under the hood, which is the fastest library to wrangle in-memory data</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Expandable</strong> If i need to improve/change the algorithm later, the metadata has to be kept separate from quiz data</li>
+</ol>
+<ul>
+<li><em>Solution</em>: a separate data table (called ‘testlog’) tracks all the performance statisctics of the tester. This data can be used later to develop/improve the algorithm</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Shareable</strong> Not only this would allow me to share the tool with others, it makes the documentation and maintainence easier and allows for collaboration to make additional improvements</li>
+</ol>
+<ul>
+<li><em>Solution</em>: create a package. Another thing I did in this regard is to create a command line wrapper around the R code. This extends the usability to non-R users by allowing them to launch the tool from command line and learn any language or subject without the need to learn/know R programming</li>
+</ul>
+</div>
+<div id="features" class="section level3">
+<h3>Features</h3>
+<ol style="list-style-type: decimal">
+<li>Easily add question-answer pairs</li>
+<li>Active learning respository and total number of questions are separated so you can freely add as much learning material</li>
+<li>Topic tags</li>
+<li>Image answers</li>
+<li>Cloud synchronization</li>
+<li>Week ahead status</li>
+<li>Control of number of new questions to learn</li>
+</ol>
+</div>
+<div id="learning-more" class="section level3">
+<h3>Learning More</h3>
+<ul>
+<li><a href="../quizme-intro">Quizme Usage</a> for information on installation and usage</li>
+<li><a href="../quizme-devel">Quizme Development</a> on discussion of code and related functions</li>
+<li><a href="../quizme-workflow">Quizme Workflow</a> for an example workflow</li>
+<li><a href="https://github.com/pchhina/quizme">Quizme Package</a> to install and try it!</li>
+</ul>
+</div>

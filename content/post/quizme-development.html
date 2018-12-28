@@ -73,12 +73,12 @@ categories: ["Tools"]
 </div>
 <div id="controlling-new-questions-to-learn" class="section level3">
 <h3>Controlling New Questions to Learn</h3>
-<p>Quizme allows you to add as many questions to the repository as the you want because the number of questions you are learning actively is controlled independently. The following set of functions control how many <em>new</em> questions you want to learn. At the end of the quiz session (when all due questions are completed, 6 new questions are automatically added, and if those are completed as well, any number of additional questions can still be added (if available in the repository)).</p>
+<p>Quizme allows you to add as many questions to the repository as you want because the number of questions you are learning actively is controlled independently. The following set of functions control how many <em>new</em> questions you want to learn. At the end of the quiz session (when all due questions are completed, 6 new questions are automatically added, and if those are completed as well, any number of additional questions can still be added (if available in the repository)).</p>
 <p><code>newParked()</code>: Helper function used in <code>newMove()</code>. Returns total number of <em>new</em> questions (only added to the repository but never practiced).</p>
 <p><code>newActive()</code>: Returns total number of <em>new</em> questions that are actively being learned.</p>
 <p><code>newDelta()</code> : Additional questions to be added to meet the target of 6 new questions.</p>
 <p><code>newMove()</code> : Main function that moves the requested number of questions from <em>new</em> repository to actively <em>learning</em>. It simply randomly selects the requested number of questions from <em>new</em> repository and changes their due date to today.</p>
-<p><strong>NOTE</strong>: After using the tool now for a couple of months now, it appears that the logic to first add 6 questions automatically and then ask the user if they want to add additional questions is more confusing than it is useful. It would be simpler just to directly prompt the user to add the desired number of questions.</p>
+<p><strong>NOTE</strong>: After using the tool for a couple of months now, it appears that the logic to first add 6 questions automatically and then ask the user if they want to add additional questions is more confusing than it is useful. It would be simpler just to directly prompt the user to add the desired number of questions.</p>
 </div>
 <div id="learning-more" class="section level3">
 <h3>Learning More</h3>

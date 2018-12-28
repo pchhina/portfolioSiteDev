@@ -162,7 +162,7 @@ so it keeps the question in the same session until it is answered correctly.
 
 ### Controlling New Questions to Learn
 
-Quizme allows you to add as many questions to the repository as the you want because
+Quizme allows you to add as many questions to the repository as you want because
 the number of questions you are learning actively is controlled independently. The
 following set of functions control how many *new* questions you want to learn. At the 
 end of the quiz session (when all due questions are completed, 6 new questions are
@@ -180,7 +180,7 @@ questions (only added to the repository but never practiced).
 repository to actively *learning*. It simply randomly selects the requested number of
 questions from *new* repository and changes their due date to today.
 
-**NOTE**: After using the tool now for a couple of months now, it appears that the logic to 
+**NOTE**: After using the tool for a couple of months now, it appears that the logic to 
 first add 6 questions automatically and then ask the user if they want to add additional
 questions is more confusing than it is useful. It would be simpler just to directly
 prompt the user to add the desired number of questions.

@@ -29,13 +29,13 @@ install_github(&quot;pchhina/quizme&quot;)</code></pre>
 <h3>How do I take quiz?</h3>
 <p>You would use <code>ask()</code> and a randomly chosen question will be presented at the R console:</p>
 <pre class="r white"><code>ask()
-#&gt; r: list files and directories in home</code></pre>
+#&gt; r: value of DISPLAY environment variable</code></pre>
 </div>
 <div id="how-do-i-look-for-the-answer" class="section level3">
 <h3>How do I look for the answer?</h3>
 <p>The answer to the question that was presented last can be seen using <code>tell()</code> function:</p>
 <pre class="r white"><code>tell()
-#&gt; list.files(&quot;~/&quot;)</code></pre>
+#&gt; Sys.getenv(&quot;DISPLAY&quot;)</code></pre>
 </div>
 <div id="what-do-i-do-when-i-am-done-practicing" class="section level3">
 <h3>What do I do when I am done practicing?</h3>

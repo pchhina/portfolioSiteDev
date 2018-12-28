@@ -1,0 +1,66 @@
+---
+title: "Autoquiz: A Wrapper to Run Quizme from Terminal"
+author: "Paramjot Singh"
+date: 2018-12-28T06:09:53-06:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+
+
+<p><a href="https://github.com/pchhina/quizme">Quizme</a> is an R package that allows you to create a personalized quiz repository and enables you to learn <em>any</em> material efficiently. <a href="https://github.com/pchhina/autoquiz">Autoquiz</a> is a simple wrapper script that allows you to run <em>quizme</em> directly from the terminal window. Here I discuss the advantages of running the tool from terminal as well as describe the implementation.</p>
+<div id="benefits-of-running-quizme-from-command-line" class="section level3">
+<h3>Benefits of Running Quizme from Command Line</h3>
+<p>While quizme is quite powerful, integrating it to your daily workflow can be a bit of a challenge. This is mainly because although there are just a few simple functions you need to remember, these are repeated as many times as the number of questions you are practicing. Autoquiz addresses this challenge with the following advantages:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Run from terminal:</strong> I think this is the biggest advantage of autoquiz. This essentially separates R and Quizme from each other. You can run quizme in a separate terminal window, thus enabling you to learn any material without having any knowledge of R!</p></li>
+<li><p><strong>Single key responses:</strong> All the user functions available in quizme can be called now with a single key, which enables the tool to get out of your way. For example, to call <code>hit()</code> function as a response that you know the answer, you simply type <code>h</code> followed by return.</p></li>
+<li><p><strong>Command menu visible at prompt:</strong> You do not have to remember even the single letter function calls. These are avaialble right at the command prompt.</p></li>
+<li><p><strong>Fully automated:</strong> The quizzing process itself is automated; all you need to do is launch the tool using <code>autoquiz</code> at the terminal. Your most typical responses will be a) yes reponse <code>(h)it</code>, no respnse <code>(m)iss</code> or adding a new question using <code>(a)dd</code>. It will keep on posing new questions automatically until all due questions are completed.</p></li>
+<li><p><strong>Cloud synchronization:</strong> This allows you to work on different machines without loosing the progress of your work. I have set it to sync with google cloud, but this can be changed to any other service if needed (Amazon, Dropbox etc) since it uses <a href="https://rclone.org/">rclone</a> for this functionality.</p></li>
+</ol>
+</div>
+<div id="implementation" class="section level3">
+<h3>Implementation</h3>
+<p>Key enabler for autoquiz was to launch the R script in interactive mode since we want to allow user to continuously interact with the script. This is done by reading the <code>R_PROFILE_USER</code> environment variable from a bash script as described in this <a href="https://thesquareplanet.com/blog/interactive-r-scripts/">post</a> by Jon Gjengset.</p>
+<p>Following line reads the bash script to run R in interactive mode:</p>
+<pre class="bash white"><code>#!/usr/local/bin/Rint</code></pre>
+<p>This is followed by loading of quizme library. Then the <code>.quizme</code> repository contaning quiz files is synced with google cloud using:</p>
+<pre class="r white"><code>system(&#39;rclone sync gcloud:quizme ~/.quizme&#39;)</code></pre>
+<p>Then the local <code>.quizme</code> repository is read into R environment using <code>quizme()</code> function. After this, <code>readline</code> and <code>switch</code> are used to simplyfy the function calls:</p>
+<pre class="r white"><code>input &lt;- &#39;z&#39; # dummy input to force into while loop
+while (input != &#39;b&#39;) {
+    if (input == &#39;h&#39; | input == &#39;m&#39; | input == &#39;z&#39;) {
+    cat(&#39;\n&#39;)
+    ask()
+    }
+    cat(&#39;\n&#39;)
+    input &lt;- readline(prompt = &#39;(h)it (m)iss (t)ell (b)ye (a)dd (c)hange (s)tatus (r)epeat (w)eek: &#39;)
+    cat(&#39;\n&#39;)
+    input &lt;- as.character(input)
+    switch(input,
+           h = hit(),
+           m = miss(),
+           t = tell(),
+           a = addq(),
+           c = changeq(),
+           s = show_status(),
+           r = ask(),
+           w = week_ahead(),
+           dl = delete_last())
+}</code></pre>
+<p>If there are no more due questions in the current session, <code>(b)ye</code> is called automatically. <code>(b)ye</code> can also be called at any time during the quiz. Call to bye will update the local <code>.quizme</code> repository. Finally <code>rclone</code> is called again to update the google cloud quizme directory with the local .quizme repository:</p>
+<pre class="r white"><code>system(&#39;rclone sync ~/.quizme gcloud:quizme&#39;)</code></pre>
+</div>
+<div id="learning-more-about-quizme-and-autoquiz" class="section level3">
+<h3>Learning More about Quizme and Autoquiz</h3>
+<ul>
+<li><a href="https://github.com/pchhina/autoquiz">Autoquiz</a> to install and try autoquiz</li>
+<li><a href="../quizme-intro">Quizme Usage</a> for information on installation and usage</li>
+<li><a href="../quizme-development">Quizme Development</a> for discussion of code and related functions</li>
+<li><a href="../quizme-design">Quizme Design</a> on discussion on design philosophy</li>
+<li><a href="../quizme-workflow">Quizme Workflow</a> for an example workflow</li>
+<li><a href="https://github.com/pchhina/quizme">Quizme Package</a> to install and try quizme</li>
+</ul>
+</div>

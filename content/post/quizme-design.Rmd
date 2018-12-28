@@ -74,6 +74,6 @@ knitr::include_graphics("../images/ease_of_use.png")
 ### Learning More
 
 - [Quizme Usage](../quizme-intro) for information on installation and usage
-- [Quizme Development](../quizme-devel) on discussion of code and related functions
+- [Quizme Development](../quizme-development) on discussion of code and related functions
 - [Quizme Workflow](../quizme-workflow) for an example workflow
 - [Quizme Package](https://github.com/pchhina/quizme) to install and try it!

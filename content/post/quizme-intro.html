@@ -29,17 +29,24 @@ install_github(&quot;pchhina/quizme&quot;)</code></pre>
 <h3>How do I take quiz?</h3>
 <p>You would use <code>ask()</code> and a randomly chosen question will be presented at the R console:</p>
 <pre class="r white"><code>ask()
-#&gt; r: name the elements of 1:3 as a, b, c using three different methods</code></pre>
+#&gt; r: list files and directories in home</code></pre>
 </div>
 <div id="how-do-i-look-for-the-answer" class="section level3">
 <h3>How do I look for the answer?</h3>
 <p>The answer to the question that was presented last can be seen using <code>tell()</code> function:</p>
 <pre class="r white"><code>tell()
-#&gt; x &lt;- c(a = 1, b = 2, c = 3) 
-#&gt; x &lt;- 1:3; names(x) &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;) 
-#&gt; x &lt;- setNames(1:3, c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))</code></pre>
+#&gt; list.files(&quot;~/&quot;)</code></pre>
 </div>
 <div id="what-do-i-do-when-i-am-done-practicing" class="section level3">
 <h3>What do I do when I am done practicing?</h3>
 <p>Simply call <code>bye()</code>. This writes the updated QA data to a file in a directory that was created when <code>(quizme())</code> was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!</p>
+</div>
+<div id="learning-more" class="section level3">
+<h3>Learning More</h3>
+<ul>
+<li><a href="../quizme-development">Quizme Development</a> for discussion of code and related functions</li>
+<li><a href="../quizme-design">Quizme Design</a> on discussion on design philosophy</li>
+<li><a href="../quizme-workflow">Quizme Workflow</a> for an example workflow</li>
+<li><a href="https://github.com/pchhina/quizme">Quizme Package</a> to install and try it!</li>
+</ul>
 </div>

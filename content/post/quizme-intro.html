@@ -29,13 +29,15 @@ install_github(&quot;pchhina/quizme&quot;)</code></pre>
 <h3>How do I take quiz?</h3>
 <p>You would use <code>ask()</code> and a randomly chosen question will be presented at the R console:</p>
 <pre class="r white"><code>ask()
-#&gt; r: value of DISPLAY environment variable</code></pre>
+#&gt; r: gcookbook::cabbage_exp: stacked bar of weight vs date filled by cultivar using pastel1 brewer palette</code></pre>
 </div>
 <div id="how-do-i-look-for-the-answer" class="section level3">
 <h3>How do I look for the answer?</h3>
 <p>The answer to the question that was presented last can be seen using <code>tell()</code> function:</p>
 <pre class="r white"><code>tell()
-#&gt; Sys.getenv(&quot;DISPLAY&quot;)</code></pre>
+#&gt; ggplot(cabbage_exp, aes(Date, Weight, fill = Cultivar)) + 
+#&gt;     geom_bar(stat = &quot;identity&quot;) + 
+#&gt;     scale_fill_brewer(palette = &quot;Pastel1&quot;)</code></pre>
 </div>
 <div id="what-do-i-do-when-i-am-done-practicing" class="section level3">
 <h3>What do I do when I am done practicing?</h3>

@@ -187,7 +187,8 @@ prompt the user to add the desired number of questions.
 
 ### Learning More
 
-- [Quizme Usage](../quizme-intro) for information on installation and usage
+- [Quizme Introduction](../quizme-intro) for information on installation and usage without autoquiz
 - [Quizme Design](../quizme-design) on discussion on design philosophy
-- [Quizme Workflow](../quizme-workflow) for an example workflow
+- [Autoquiz Workflow](../quizme-workflow-with-autoquiz) for an example workflow with autoquiz
 - [Quizme Package](https://github.com/pchhina/quizme) to install and try it!
+- [Autoquiz](https://github.com/pchhina/autoquiz) to install and try autoquiz

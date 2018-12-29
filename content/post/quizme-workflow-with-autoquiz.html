@@ -1,0 +1,82 @@
+---
+title: "Quizme Workflow With Autoquiz"
+author: "Paramjot Singh"
+date: 2018-12-28T13:27:08-06:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+---
+
+
+
+<p>In earlier posts I have discussed in detail the design philosophy and development of <em>quizme</em> and <em>autoquiz</em>. While quizme manages the core functionality (storing quiz data and schedule quiz sessions), autoquiz works as a front end enabling to run quizme from terminal in interactive mode. Here I show the autoquiz in action for a typical quiz session.</p>
+<div id="start-autoquiz" class="section level3">
+<h3>Start autoquiz</h3>
+<p>You start the quiz by launching <code>autoquiz</code> at the terminal command prompt. Make sure the autoquiz script is in a place that is in your path environment. In my case I store my bash scripts in <code>~/bin</code> directory.</p>
+<p><img src="../images/workflow-blog/start.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Notice that first it updates the local quizme directory (<code>~/.quizme</code>) using the remote. Then it reads the local directory to load all objects in R environment. Then the first question is presented. The first letter (r:) in the question indicates that it’s an R language question. We can try to solve the problem in a separate environment (R console or RStudio).</p>
+</div>
+<div id="show-the-answer" class="section level3">
+<h3>Show the answer</h3>
+<p>To confirm if our answer is correct we can then use <code>t</code> command to see the solution:</p>
+<p><img src="../images/workflow-blog/tell.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="edit-a-question" class="section level3">
+<h3>Edit a question</h3>
+<p>In the above problem, note that there was a typo in the question (grey60 was written as gre60). To edit the current question, we use <code>c</code> command:</p>
+<p><img src="../images/workflow-blog/change.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>It shows the line numbers now and allow you to add the question. Here we have to type the whole question again (it does not allow you to do a specific edit). I have not researched if there is a way to do that. Although not ideal, it gets the job done.</p>
+</div>
+<div id="success-response" class="section level3">
+<h3>Success Response</h3>
+<p>Assuming that our answer is correct, we use <code>h</code> to tell quizme that we successfully answered the question. Once we do that, it presents the next question. Most often in R, we are solving a problem related to some data. So I start my question with <em>&lt;package::dataset&gt;</em>. If the dataset is not a part of any package, I would store that in <code>.quizme/data</code> directory. In the following example, <em>nyflights14.csv</em> is stored in this directory.</p>
+<p><img src="../images/workflow-blog/hit.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="fail-response" class="section level3">
+<h3>Fail Response</h3>
+<p>Let’s say we do not recall the answer to this question. We will use <code>m</code> to tell quizme that we don’t know the answer. Quizme poses us a new question and the missed question will be asked again soon.</p>
+<p><img src="../images/workflow-blog/miss.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="adding-a-new-question" class="section level3">
+<h3>Adding a New Question</h3>
+<p>While thinking about the current question, let’s assume we get distracted with some other topic that we don’t know. We do a little bit of research and learn how to calculate probabilities of a normal distribution. It’s good time to add our new knowledge into quizme. We do that using <code>a</code> command:</p>
+<p><img src="../images/workflow-blog/add.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Then we continue to solve our original problem. Using <code>t</code>, we ask quizme to show us the answer so we can confirm. Assuming that our answer was correct, we use <code>h</code> again. Note that the new question is the one which we missed earlier:</p>
+<p><img src="../images/workflow-blog/after-add.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="checking-status" class="section level3">
+<h3>Checking Status</h3>
+<p>Ok, before we answer this question, we want to know where we are in the quiz (how many more questions to go and other stats). We will use <code>s</code> to show the status:</p>
+<p><img src="../images/workflow-blog/status.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>First the total number of questions split by status and topics is shown. In this example, I am learning 346 questions and there are 74 new questions. I have not implemented criteria to move <em>learning</em> questions to <em>learned</em> and <em>mastered</em> yet. In addition, it shows how many questions are due tomorrow (34) and how many are remaining today (1, yippie!).</p>
+</div>
+<div id="checking-weeks-workload" class="section level3">
+<h3>Checking Weeks Workload</h3>
+<p>Besides looking at overall statistics, we can use <code>w</code> to see workload for the whole week. It shows number of questions for each day that are due in the next 7 days. This is helpful to plan your week.</p>
+<p><img src="../images/workflow-blog/week.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="display-the-last-question" class="section level3">
+<h3>Display the last question</h3>
+<p>Alright, after looking at these stats, I’ll typically forget the question that I was supposed to be working on. Instead of scrolling up the terminal, we can use <code>r</code> to repeat the last question:</p>
+<p><img src="../images/workflow-blog/repeat.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="end-of-quiz" class="section level3">
+<h3>End of Quiz</h3>
+<p>Let’s say we know the answer this time. We will use <code>h</code> to tell quizme just that. Since this was our last question, ‘Finished Quiz!!!’ message is displayed followed by overall stats. It detects that I did not learn any new questions today and automatically adds 5 new questions from the repository.</p>
+<p><img src="../images/workflow-blog/last.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="end-of-session" class="section level3">
+<h3>End of Session</h3>
+<p>Now we are really spent and plan to tackle the new questions sometime later, so we use <code>b</code> to call bye. It updates the local files first followed by updating the network files and we are done!</p>
+<p><img src="../images/workflow-blog/bye.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="learning-more" class="section level3">
+<h3>Learning More</h3>
+<ul>
+<li><a href="../quizme-intro">Quizme Introduction</a> for information on installation and usage without autoquiz</li>
+<li><a href="../quizme-development">Quizme Development</a> on discussion of code and related functions</li>
+<li><a href="../quizme-design">Quizme Design</a> on discussion on design philosophy</li>
+<li><a href="https://github.com/pchhina/quizme">Quizme Package</a> to install and try it!</li>
+<li><a href="https://github.com/pchhina/autoquiz">Autoquiz</a> to install and try autoquiz</li>
+</ul>
+</div>

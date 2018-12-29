@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
   class.source = 'white',
   fig.align = 'center',
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  eval = FALSE
 )
 ```
 
@@ -27,13 +28,14 @@ library(devtools)
 install_github("pchhina/quizme")
 ```
 Then we will just load the library as usual:
-```{r}
+```{r, eval = TRUE}
 library(quizme)
 ```
+**NOTE**: On Linux, I would recommend to also install [Autoquiz](https://github.com/pchhina/autoquiz) as it simplify the quiz workflow.
 
 ### How do I add questions?
 Questions can be added with `addq()`. At the start of the session however, you have to use the function `quizme()`. This loads the previously created QA list or create blank data structures so new questions can be added.
-```{r}
+```{r, eval = TRUE}
 quizme()
 ```
 
@@ -44,15 +46,28 @@ addq()
 
 ### How do I take quiz?
 You would use `ask()` and a randomly chosen question will be presented at the R console:
-```{r}
+```{r, eval = TRUE}
 ask()
 ```
 
 ### How do I look for the answer?
 The answer to the question that was presented last can be seen using `tell()` function:
-```{r}
+```{r, eval = TRUE}
 tell()
 ```
+### What if don't know the answer?
+If you want to tell quizme me that you don't know the answer to the current question, you can use `miss()` function:
+```{r}
+miss()
+```
+
+### How many questions are remaining?
+If you want to know the status of your quiz session, you can use `show_status()` function. In addition you could also use `week_ahead()` to see number of questions for each day for the next 7 days:
+```{r}
+show_status()
+week_ahead()
+```
+
 
 ### What do I do when I am done practicing?
 Simply call `bye()`. This writes the updated QA data to a file in a directory that was created when `(quizme())` was called. After that, it also removes the data structures related to testing. And you are done. Happy learning!
@@ -62,5 +77,6 @@ Simply call `bye()`. This writes the updated QA data to a file in a directory th
 
 - [Quizme Development](../quizme-development) for discussion of code and related functions
 - [Quizme Design](../quizme-design) on discussion on design philosophy
-- [Quizme Workflow](../quizme-workflow) for an example workflow
+- [Autoquiz Workflow](../quizme-workflow-with-autoquiz) for an example workflow using autoquiz
 - [Quizme Package](https://github.com/pchhina/quizme) to install and try it!
+- [Autoquiz](https://github.com/pchhina/autoquiz) to install and try autoquiz

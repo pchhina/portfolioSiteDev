@@ -26,7 +26,7 @@ While quizme is quite powerful, integrating it to your daily workflow can be a b
 
 2. **Single key responses:** All the user functions available in quizme can be called now with a single key, which enables the tool to get out of your way. For example, to call `hit()` function as a response that you know the answer, you simply type `h` followed by return.
 
-3. **Command menu visible at prompt:** You do not have to remember even the single letter function calls. These are avaialble right at the command prompt.
+3. **Command menu visible at prompt:** You do not have to remember even the single letter function calls. These are available right at the command prompt.
 
 4. **Fully automated:** The quizzing process itself is automated; all you need to do is launch the tool using `autoquiz` at the terminal. Your most typical responses will be a) yes reponse `(h)it`, no respnse `(m)iss` or adding a new question using `(a)dd`. It will keep on posing new questions automatically until all due questions are completed.
 
@@ -41,7 +41,7 @@ Following line reads the bash script to run R in interactive mode:
 #!/usr/local/bin/Rint
 ```
 
-This is followed by loading of quizme library. Then the `.quizme` repository contaning quiz files is synced with google cloud using:
+This is followed by loading of quizme library. Then the `.quizme` repository containing quiz files is synced with google cloud using:
 
 ```{r, eval = FALSE}
 system('rclone sync gcloud:quizme ~/.quizme')
@@ -81,8 +81,8 @@ system('rclone sync ~/.quizme gcloud:quizme')
 ### Learning More about Quizme and Autoquiz
 
 - [Autoquiz](https://github.com/pchhina/autoquiz) to install and try autoquiz
-- [Quizme Usage](../quizme-intro) for information on installation and usage
+- [Quizme Introduction](../quizme-intro) for information on installation and usage without autoquiz
 - [Quizme Development](../quizme-development) for discussion of code and related functions
 - [Quizme Design](../quizme-design) on discussion on design philosophy
-- [Quizme Workflow](../quizme-workflow) for an example workflow
+- [Autoquiz Workflow](../quizme-workflow-with-autoquiz) for an example workflow using autoquiz
 - [Quizme Package](https://github.com/pchhina/quizme) to install and try quizme

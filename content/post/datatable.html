@@ -1,0 +1,219 @@
+---
+title: "data.table: Swiss Army Knife for Data Wrangling"
+author: "Paramjot Singh"
+date: 2018-12-29T10:06:58-06:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#row-selection">Row Selection</a></li>
+<li><a href="#column-variable-selection">Column (variable) Selection</a></li>
+<li><a href="#computing-on-j">Computing on J</a></li>
+<li><a href="#more-expressions-in-j">More Expressions in J</a></li>
+<li><a href="#update-by-reference">Update by Reference</a></li>
+<li><a href="#remove-columns">Remove Columns</a></li>
+</ul>
+</div>
+
+<p>While <a href="https://github.com/Rdatatable/data.table/wiki">data.table</a> is mostly praised for its speed (which is undeniable), I was impressed with its versatility as well. The ability to manipulate the data in variety of ways using an extremely compact syntax is second to none. Sure it needs a bit of getting used to but the payoffs are phenomenal. I implemented one of my recent <a href="https://github.com/pchhina/quizme">project</a> using data.table which helped me learn some of its really cool features. The package’s <a href="https://github.com/Rdatatable/data.table/wiki/Getting-started">documentation</a> does an impressive job too communicating the philosophy as well as usage. Here I document some of its features I have learned so far. I plan to update this regularly as I learn more.</p>
+<p>I am going to use <code>ggplot2::mpg</code> data set for demonstration of its data wrangling features. So let’s first create a data.table from this data:</p>
+<pre class="r white"><code>library(data.table)
+mpg &lt;- data.table(ggplot2::mpg)
+mpg
+#&gt;      manufacturer  model displ year cyl      trans drv cty hwy fl   class
+#&gt;   1:         audi     a4   1.8 1999   4   auto(l5)   f  18  29  p compact
+#&gt;   2:         audi     a4   1.8 1999   4 manual(m5)   f  21  29  p compact
+#&gt;   3:         audi     a4   2.0 2008   4 manual(m6)   f  20  31  p compact
+#&gt;   4:         audi     a4   2.0 2008   4   auto(av)   f  21  30  p compact
+#&gt;   5:         audi     a4   2.8 1999   6   auto(l5)   f  16  26  p compact
+#&gt;  ---                                                                     
+#&gt; 230:   volkswagen passat   2.0 2008   4   auto(s6)   f  19  28  p midsize
+#&gt; 231:   volkswagen passat   2.0 2008   4 manual(m6)   f  21  29  p midsize
+#&gt; 232:   volkswagen passat   2.8 1999   6   auto(l5)   f  16  26  p midsize
+#&gt; 233:   volkswagen passat   2.8 1999   6 manual(m5)   f  18  26  p midsize
+#&gt; 234:   volkswagen passat   3.6 2008   6   auto(s6)   f  17  26  p midsize</code></pre>
+<div id="row-selection" class="section level3">
+<h3>Row Selection</h3>
+<p><strong>Select first row</strong></p>
+<pre class="r white"><code>mpg[1]</code></pre>
+<p><strong>Select first three rows</strong></p>
+<pre class="r white"><code>mpg[1:3]</code></pre>
+<p><strong>Select all but first three rows</strong></p>
+<pre class="r white"><code>mpg[-(1:3)]</code></pre>
+<p><strong>Select rows five through seven but with order reversed</strong></p>
+<pre class="r white"><code>mpg[7:5]</code></pre>
+<p><strong>Select the last row</strong></p>
+<p><code>.N</code> is a special symbol to get the number of rows in the data table:</p>
+<pre class="r white"><code>mpg[.N]</code></pre>
+<p><strong>Select all rows except the last row</strong></p>
+<pre class="r white"><code>mpg[-.N]</code></pre>
+<p><strong>Random 10 observations</strong></p>
+<pre class="r white"><code>mpg[sample(.N, 10)]</code></pre>
+<p><strong>Random 10% observations</strong></p>
+<pre class="r white"><code>mpg[sample(.N, (.N * 0.1))]</code></pre>
+<p><strong>Top 10 rows</strong></p>
+<p>Any data.frame functions can directly be used because data.table is also a data.frame</p>
+<pre class="r white"><code>head(mpg, 10)</code></pre>
+<p><strong>Bottom 10 rows</strong></p>
+<pre class="r white"><code>tail(mpg, 10)</code></pre>
+<p><strong>Select all <code>a4</code> model observations</strong></p>
+<pre class="r white"><code>mpg[model == &quot;a4&quot;]</code></pre>
+<p><strong>Select all <code>6</code> cylinder <code>a4</code> models</strong></p>
+<pre class="r white"><code>mpg[model == &quot;a4&quot; &amp; cyl == 6]</code></pre>
+<p><strong>Select all non-<code>a4</code> model observations</strong></p>
+<pre class="r white"><code>mpg[model != &quot;a4&quot;]</code></pre>
+<p><strong>Select all models except <code>a4</code> and <code>passat</code></strong></p>
+<pre class="r white"><code>mpg[!model %in% c(&quot;a4&quot;, &quot;passat&quot;)]</code></pre>
+<p><strong>Select models with city fuel economy more than 25 mpg</strong></p>
+<pre class="r white"><code>mpg[cty &gt; 25]</code></pre>
+<p><strong>Select every other row</strong></p>
+<pre class="r white"><code>mpg[rep(c(TRUE, FALSE), length = .N)]</code></pre>
+<p><strong>Select <code>compact</code> vehicles for <code>2008</code> model year</strong></p>
+<p>Multiple variables can be used with <code>on</code> argument</p>
+<pre class="r white"><code>mpg[.(2008, &quot;compact&quot;), on = c(&quot;year&quot;, &quot;class&quot;)]</code></pre>
+<p><strong>Amongst <code>subcompact</code> and <code>midsize</code> vehicles of <code>1999</code> model year, what is the best highway fuel economy</strong></p>
+<pre class="r white"><code>mpg[.(1999, c(&quot;subcompact&quot;, &quot;midsize&quot;)), min(hwy), on = c(&quot;year&quot;, &quot;class&quot;)]</code></pre>
+<p><strong>Select all observations with model name starting with <em>c</em> </strong></p>
+<pre class="r white"><code>mpg[grep(&quot;^c&quot;, model)]</code></pre>
+<p><strong>First row of <code>2008</code> model year <code>compact</code> vehicles</strong></p>
+<p><code>mult</code> argument can be used to get first/last observation in a sub-group</p>
+<pre class="r white"><code>mpg[.(2008, &quot;compact&quot;), mult = &quot;first&quot;, on = c(&quot;year&quot;, &quot;class&quot;)]</code></pre>
+<p><strong>Last row of <code>1999</code> model year <code>SUVs</code></strong></p>
+<pre class="r white"><code>mpg[.(1999, &quot;suv&quot;), mult = &quot;last&quot;, on = c(&quot;year&quot;, &quot;class&quot;)]</code></pre>
+<p><strong>First row of all three subgroups: <code>4, 5 and 6</code> cylinder rear wheel drive cars</strong></p>
+<pre class="r white"><code>mpg[.(c(4, 5, 6), &quot;r&quot;), mult = &quot;first&quot;, on = c(&quot;cyl&quot;, &quot;drv&quot;)]
+#&gt;    manufacturer   model displ year cyl      trans drv cty hwy   fl
+#&gt; 1:         &lt;NA&gt;    &lt;NA&gt;    NA   NA   4       &lt;NA&gt;   r  NA  NA &lt;NA&gt;
+#&gt; 2:         &lt;NA&gt;    &lt;NA&gt;    NA   NA   5       &lt;NA&gt;   r  NA  NA &lt;NA&gt;
+#&gt; 3:         ford mustang   3.8 1999   6 manual(m5)   r  18  26    r
+#&gt;         class
+#&gt; 1:       &lt;NA&gt;
+#&gt; 2:       &lt;NA&gt;
+#&gt; 3: subcompact</code></pre>
+<p><strong>First row of all three subgroups: <code>4, 5 and 6</code> cylinder rear wheel drive cars, but matching rows only</strong></p>
+<p><code>nomatch = 0L</code> can be used to show only matching rows</p>
+<pre class="r white"><code>mpg[.(c(4, 5, 6), &quot;r&quot;), mult = &quot;first&quot;, nomatch = 0L, on = c(&quot;cyl&quot;, &quot;drv&quot;)]
+#&gt;    manufacturer   model displ year cyl      trans drv cty hwy fl
+#&gt; 1:         ford mustang   3.8 1999   6 manual(m5)   r  18  26  r
+#&gt;         class
+#&gt; 1: subcompact</code></pre>
+<p><strong>First row of each class</strong></p>
+<p><code>.SD</code> can be used to select all columns</p>
+<pre class="r white"><code>mpg[, head(.SD, 1), by = class]</code></pre>
+<p><strong>Last row of each class</strong></p>
+<pre class="r white"><code>mpg[, tail(.SD, 1), by = class]</code></pre>
+<p><strong>Five worst highway fuel economy vehicles</strong></p>
+<pre class="r white"><code>head(mpg[order(hwy)], 5)</code></pre>
+<p><strong>Five best highway fuel economy vehicles</strong></p>
+<pre class="r white"><code>head(mpg[order(-hwy)], 5)</code></pre>
+<p><strong>Best fuel economy vehicle in each class</strong></p>
+<pre class="r white"><code>mpg[order(hwy), head(.SD, 1), by = class]</code></pre>
+</div>
+<div id="column-variable-selection" class="section level3">
+<h3>Column (variable) Selection</h3>
+<p><strong>Select model, cyl, drv, hwy</strong></p>
+<pre class="r white"><code>mpg[, .(model, cyl, drv, hwy)]</code></pre>
+<p><strong>Select first three variables</strong></p>
+<pre class="r white"><code>mpg[, 1:3]</code></pre>
+<p><strong>Select all but first three variables</strong></p>
+<pre class="r white"><code>mpg[, -(1:3)]</code></pre>
+<p><strong>Select variables by first storing in a character vector</strong></p>
+<pre class="r white"><code>cols &lt;- c(&quot;model&quot;, &quot;cyl&quot;, &quot;drv&quot;, &quot;hwy&quot;)
+mpg[, ..cols] # option 1
+mpg[, cols, with = FALSE] # option 2</code></pre>
+<p><strong>Select all but variables stored in a character vector</strong></p>
+<pre class="r white"><code>cols &lt;- c(&quot;model&quot;, &quot;cyl&quot;, &quot;drv&quot;, &quot;hwy&quot;)
+mpg[, -..cols] # option 1
+mpg[, -cols, with = FALSE] # option 2</code></pre>
+<p><strong>Select all variables in the range displ:drv</strong></p>
+<pre class="r white"><code>mpg[, displ:drv]</code></pre>
+<p><strong>Select all variables except those in the range displ:drv</strong></p>
+<pre class="r white"><code>mpg[, -(displ:drv)]</code></pre>
+<p><strong>Select all variables starting with <em>m</em> </strong></p>
+<pre class="r white"><code>cols &lt;- grep(&quot;^m&quot;, names(mpg))
+mpg[, ..cols]</code></pre>
+<p><strong>Select all variables not starting with <em>m</em> </strong></p>
+<pre class="r white"><code>cols &lt;- grep(&quot;^m&quot;, names(mpg))
+mpg[, -..cols]</code></pre>
+<p><strong>Select all numeric columns </strong></p>
+<pre class="r white"><code>cols &lt;- mpg[, sapply(.SD, is.numeric)]
+mpg[, ..cols]</code></pre>
+<p><strong>Select all non-numeric columns </strong></p>
+<pre class="r white"><code>cols &lt;- mpg[, sapply(.SD, is.numeric)]
+mpg[, -..cols]</code></pre>
+</div>
+<div id="computing-on-j" class="section level3">
+<h3>Computing on J</h3>
+<p><strong>Number of observations</strong></p>
+<pre class="r white"><code>mpg[, .N]</code></pre>
+<p><strong>Number of observations in each class</strong></p>
+<pre class="r white"><code>mpg[, .N, by = class]</code></pre>
+<p><strong>Number of observations in each class, ordered alphabetically by class</strong></p>
+<pre class="r white"><code>mpg[, .N, keyby = class]</code></pre>
+<p><strong>Mean city fuel economy for each class</strong></p>
+<pre class="r white"><code>mpg[, mean(cty), by = class]</code></pre>
+<p><strong>Mean city fuel economy for each class and assign column name</strong></p>
+<pre class="r white"><code>mpg[, .(mean_city = mean(cty)), by = class]</code></pre>
+<p><strong>Mean city fuel economy for each class in increasing order</strong></p>
+<pre class="r white"><code>mpg[, .(mean_city = mean(cty)), keyby = class]</code></pre>
+<p><strong>Mean highway fuel economy for <code>honda</code> and <code>toyota</code> vehicles</strong></p>
+<pre class="r white"><code>mpg[manufacturer %in% c(&quot;honda&quot;, &quot;toyota&quot;), mean(hwy), by = manufacturer]</code></pre>
+<p><strong>Class of all variables, return as data table</strong></p>
+<pre class="r white"><code>mpg[, lapply(.SD, class)]</code></pre>
+<p><strong>Class of all variables, return as vector</strong></p>
+<pre class="r white"><code>mpg[, sapply(.SD, class)]</code></pre>
+<p><strong>Fraction of NA values for each variable</strong></p>
+<pre class="r white"><code>mpg[, lapply(.SD, function(x) mean(is.na(x)))]</code></pre>
+<p><strong>Mean of all numeric variables</strong></p>
+<p><code>.SDcols</code> can be used to apply a function to only subset of columns</p>
+<pre class="r white"><code>cols &lt;- mpg[, sapply(.SD, is.numeric)]
+mpg[, lapply(.SD, mean), .SDcols = cols]</code></pre>
+<p><strong>Change all non-numeric columns to upper case</strong></p>
+<pre class="r white"><code>cols &lt;- mpg[, sapply(.SD, is.numeric)]
+mpg[, lapply(.SD, toupper), .SDcols = -cols]</code></pre>
+<p><strong>Number of vehicles with average fuel economy more than 25</strong></p>
+<pre class="r white"><code>mpg[, sum(((cty + hwy) / 2) &gt; 25)]</code></pre>
+</div>
+<div id="more-expressions-in-j" class="section level3">
+<h3>More Expressions in J</h3>
+<p><strong>Scatterplot of city fuel economy versus displacement</strong></p>
+<pre class="r white"><code>mpg[, lattice::xyplot(cty ~ displ)]</code></pre>
+<p><img src="/post/datatable_files/figure-html/unnamed-chunk-54-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><strong>Density plot of highway fuel economy</strong></p>
+<pre class="r white"><code>mpg[, lattice::densityplot(~ hwy)]</code></pre>
+<p><img src="/post/datatable_files/figure-html/unnamed-chunk-55-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="update-by-reference" class="section level3">
+<h3>Update by Reference</h3>
+<p><code>:=</code> is used to update data.table by reference</p>
+<p><strong>Add a column for average fuel economy</strong></p>
+<pre class="r white"><code>mpg[, avg_mpg := (cty + hwy) / 2]</code></pre>
+<p><strong>Add a column with mean of city fuel economy</strong></p>
+<pre class="r white"><code>mpg[, avecty := mean(cty)]</code></pre>
+<p><strong>Add a factor variable (values = good, bad) based on city fuel economy being more or less than average city fuel economy</strong></p>
+<pre class="r white"><code>mpg[, mpgrating := ifelse(cty &lt; mean(cty), &quot;good&quot;, &quot;bad&quot;)]</code></pre>
+<p><strong>Change ‘f’ to ‘Front’ for drv values</strong></p>
+<pre class="r white"><code>mpg[&quot;f&quot;, drv := &quot;Front&quot;, on = &quot;drv&quot;]</code></pre>
+</div>
+<div id="remove-columns" class="section level3">
+<h3>Remove Columns</h3>
+<p><strong>Remove <code>fl</code> column</strong></p>
+<pre class="r white"><code>mpg[, fl := NULL]</code></pre>
+<p><strong>Remove first three columns</strong></p>
+<pre class="r white"><code>mpg[, c(1:3) := NULL]</code></pre>
+<p><strong>Remove last column</strong></p>
+<pre class="r white"><code>mpg[, length(mpg) := NULL]</code></pre>
+<p><strong>Remove all columns starting with m</strong></p>
+<pre class="r white"><code>mpg[, grep(&quot;^m&quot;, names(mpg)) := NULL]</code></pre>
+<p><strong>Remove manufacturer and year columns</strong></p>
+<pre class="r white"><code>mpg[, `:=`(manufacturer = NULL,
+           year = NULL)]</code></pre>
+</div>

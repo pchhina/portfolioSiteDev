@@ -1,0 +1,392 @@
+---
+title: "data.table: Swiss Army Knife for Data Wrangling"
+author: "Paramjot Singh"
+date: 2018-12-29T10:06:58-06:00
+draft: FALSE
+tags: ["R"]
+categories: ["Tools"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  class.source = 'white',
+  fig.align = 'center',
+  eval = FALSE
+)
+```
+While [data.table](https://github.com/Rdatatable/data.table/wiki) is mostly praised for its speed (which is undeniable), I was impressed with its versatility as well. The ability to manipulate the data in variety of ways using an extremely compact syntax is second to none. Sure it needs a bit of getting used to but the payoffs are phenomenal. I implemented one of my recent [project](https://github.com/pchhina/quizme) using data.table which helped me learn some of its really cool features. The package's [documentation](https://github.com/Rdatatable/data.table/wiki/Getting-started) does an impressive job too communicating the philosophy as well as usage. Here I document some of its features I have learned so far. I plan to update this regularly as I learn more.
+
+I am going to use `ggplot2::mpg` data set for demonstration of its data wrangling features. So let's first create a data.table from this data:
+
+```{r, eval = TRUE}
+library(data.table)
+mpg <- data.table(ggplot2::mpg)
+mpg
+```
+
+### Row Selection
+**Select first row**
+```{r}
+mpg[1]
+```
+
+**Select first three rows**
+```{r}
+mpg[1:3]
+```
+
+**Select all but first three rows**
+```{r}
+mpg[-(1:3)]
+```
+
+**Select rows five through seven but with order reversed**
+```{r}
+mpg[7:5]
+```
+
+**Select the last row**
+
+`.N` is a special symbol to get the number of rows in the data table:
+```{r}
+mpg[.N]
+```
+
+**Select all rows except the last row**
+```{r}
+mpg[-.N]
+```
+
+**Random 10 observations**
+```{r}
+mpg[sample(.N, 10)]
+```
+
+**Random 10% observations**
+```{r}
+mpg[sample(.N, (.N * 0.1))]
+```
+
+**Top 10 rows**
+
+Any data.frame functions can directly be used because data.table is also a data.frame
+```{r}
+head(mpg, 10)
+```
+
+**Bottom 10 rows**
+```{r}
+tail(mpg, 10)
+```
+
+**Select all `a4` model observations**
+```{r}
+mpg[model == "a4"]
+```
+
+**Select all `6` cylinder `a4` models**
+```{r}
+mpg[model == "a4" & cyl == 6]
+```
+
+**Select all non-`a4` model observations**
+```{r}
+mpg[model != "a4"]
+```
+
+**Select all models except `a4` and `passat`**
+```{r}
+mpg[!model %in% c("a4", "passat")]
+```
+
+**Select models with city fuel economy more than 25 mpg**
+```{r}
+mpg[cty > 25]
+```
+
+**Select every other row**
+```{r}
+mpg[rep(c(TRUE, FALSE), length = .N)]
+```
+
+**Select `compact` vehicles for `2008` model year**
+
+Multiple variables can be used with `on` argument
+
+```{r}
+mpg[.(2008, "compact"), on = c("year", "class")]
+```
+
+**Amongst `subcompact` and `midsize` vehicles of `1999` model year, what is the best highway fuel economy**
+```{r}
+mpg[.(1999, c("subcompact", "midsize")), min(hwy), on = c("year", "class")]
+```
+
+**Select all observations with model name starting with *c* **
+```{r}
+mpg[grep("^c", model)]
+```
+
+**First row of `2008` model year `compact` vehicles**
+
+`mult` argument can be used to get first/last observation in a sub-group
+
+```{r}
+mpg[.(2008, "compact"), mult = "first", on = c("year", "class")]
+```
+
+**Last row of `1999` model year `SUVs`**
+```{r}
+mpg[.(1999, "suv"), mult = "last", on = c("year", "class")]
+```
+
+**First row of all three subgroups: `4, 5 and 6` cylinder rear wheel drive cars**
+```{r, eval = TRUE}
+mpg[.(c(4, 5, 6), "r"), mult = "first", on = c("cyl", "drv")]
+```
+
+**First row of all three subgroups: `4, 5 and 6` cylinder rear wheel drive cars, but matching rows only**
+
+`nomatch = 0L` can be used to show only matching rows
+
+```{r, eval = TRUE}
+mpg[.(c(4, 5, 6), "r"), mult = "first", nomatch = 0L, on = c("cyl", "drv")]
+```
+
+**First row of each class**
+
+`.SD` can be used to select all columns
+
+```{r}
+mpg[, head(.SD, 1), by = class]
+```
+
+**Last row of each class**
+```{r}
+mpg[, tail(.SD, 1), by = class]
+```
+
+**Five worst highway fuel economy vehicles**
+```{r}
+head(mpg[order(hwy)], 5)
+```
+
+**Five best highway fuel economy vehicles**
+```{r}
+head(mpg[order(-hwy)], 5)
+```
+
+**Best fuel economy vehicle in each class**
+```{r}
+mpg[order(hwy), head(.SD, 1), by = class]
+```
+
+### Column (variable) Selection
+
+**Select model, cyl, drv, hwy**
+```{r}
+mpg[, .(model, cyl, drv, hwy)]
+```
+
+**Select first three variables**
+```{r}
+mpg[, 1:3]
+```
+
+**Select all but first three variables**
+```{r}
+mpg[, -(1:3)]
+```
+
+**Select variables by first storing in a character vector**
+```{r}
+cols <- c("model", "cyl", "drv", "hwy")
+mpg[, ..cols] # option 1
+mpg[, cols, with = FALSE] # option 2
+```
+
+**Select all but variables stored in a character vector**
+```{r}
+cols <- c("model", "cyl", "drv", "hwy")
+mpg[, -..cols] # option 1
+mpg[, -cols, with = FALSE] # option 2
+```
+
+**Select all variables in the range displ:drv**
+```{r}
+mpg[, displ:drv]
+```
+
+**Select all variables except those in the range displ:drv**
+```{r}
+mpg[, -(displ:drv)]
+```
+
+**Select all variables starting with *m* **
+```{r}
+cols <- grep("^m", names(mpg))
+mpg[, ..cols]
+```
+
+**Select all variables not starting with *m* **
+```{r}
+cols <- grep("^m", names(mpg))
+mpg[, -..cols]
+```
+
+**Select all numeric columns **
+```{r}
+cols <- mpg[, sapply(.SD, is.numeric)]
+mpg[, ..cols]
+```
+
+**Select all non-numeric columns **
+```{r}
+cols <- mpg[, sapply(.SD, is.numeric)]
+mpg[, -..cols]
+```
+
+### Computing on J
+
+**Number of observations**
+```{r}
+mpg[, .N]
+```
+
+**Number of observations in each class**
+```{r}
+mpg[, .N, by = class]
+```
+
+**Number of observations in each class, ordered alphabetically by class**
+```{r}
+mpg[, .N, keyby = class]
+```
+
+**Mean city fuel economy for each class**
+```{r}
+mpg[, mean(cty), by = class]
+```
+
+**Mean city fuel economy for each class and assign column name**
+```{r}
+mpg[, .(mean_city = mean(cty)), by = class]
+```
+
+**Mean city fuel economy for each class in increasing order**
+```{r}
+mpg[, .(mean_city = mean(cty)), keyby = class]
+```
+
+**Mean highway fuel economy for `honda` and `toyota` vehicles**
+```{r}
+mpg[manufacturer %in% c("honda", "toyota"), mean(hwy), by = manufacturer]
+```
+
+**Class of all variables, return as data table**
+```{r}
+mpg[, lapply(.SD, class)]
+```
+
+**Class of all variables, return as vector**
+```{r}
+mpg[, sapply(.SD, class)]
+```
+
+**Fraction of NA values for each variable**
+```{r}
+mpg[, lapply(.SD, function(x) mean(is.na(x)))]
+```
+
+**Mean of all numeric variables**
+
+`.SDcols` can be used to apply a function to only subset of columns
+
+```{r}
+cols <- mpg[, sapply(.SD, is.numeric)]
+mpg[, lapply(.SD, mean), .SDcols = cols]
+```
+
+**Change all non-numeric columns to upper case**
+```{r}
+cols <- mpg[, sapply(.SD, is.numeric)]
+mpg[, lapply(.SD, toupper), .SDcols = -cols]
+```
+
+**Number of vehicles with average fuel economy more than 25**
+```{r}
+mpg[, sum(((cty + hwy) / 2) > 25)]
+```
+
+### More Expressions in J
+
+**Scatterplot of city fuel economy versus displacement**
+```{r, eval = TRUE}
+mpg[, lattice::xyplot(cty ~ displ)]
+```
+
+**Density plot of highway fuel economy**
+```{r, eval = TRUE}
+mpg[, lattice::densityplot(~ hwy)]
+```
+
+### Update by Reference
+
+`:=` is used to update data.table by reference
+
+**Add a column for average fuel economy**
+```{r, eval = TRUE}
+mpg[, avg_mpg := (cty + hwy) / 2]
+```
+
+**Add a column with mean of city fuel economy**
+```{r, eval = TRUE}
+mpg[, avecty := mean(cty)]
+```
+
+**Add a factor variable (values = good, bad) based on city fuel economy being more or less than average city fuel economy**
+```{r, eval = TRUE}
+mpg[, mpgrating := ifelse(cty < mean(cty), "good", "bad")]
+```
+
+**Change 'f' to 'Front' for drv values**
+```{r, eval = TRUE}
+mpg["f", drv := "Front", on = "drv"]
+```
+
+### Remove Columns
+
+**Remove `fl` column**
+```{r, eval = TRUE}
+mpg[, fl := NULL]
+```
+
+**Remove first three columns**
+```{r, eval = TRUE}
+mpg[, c(1:3) := NULL]
+```
+
+**Remove last column**
+```{r, eval = TRUE}
+mpg[, length(mpg) := NULL]
+```
+
+**Remove all columns starting with m**
+```{r, eval = TRUE}
+mpg[, grep("^m", names(mpg)) := NULL]
+```
+
+**Remove manufacturer and year columns**
+```{r, eval = TRUE}
+mpg[, `:=`(manufacturer = NULL,
+           year = NULL)]
+```
+

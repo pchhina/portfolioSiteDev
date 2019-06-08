@@ -1,0 +1,10 @@
+modalID: 4
+title: Guess the Number
+date: 2019-06-08
+img: guess_number_gui.png
+imgicon: guess_the_number.png
+caption: explore built-in R datasets with ease
+client: Personal (See Code on Github)
+clientLink: "https://github.com/pchhina/rdataexplorer"
+category: Interactive Programming, Games
+description: This is a fun application to explore and learn Tkinter, a python library that interfaces with Tk, a library for building GUIs. The game itself is simple - you try to guess a number between 1 and 100 within 7 trials, but it showcases the use of few elements of graphical user interfaces - buttons, data entry fields and labels. Feel free to check this out at my github account.

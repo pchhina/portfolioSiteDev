@@ -2,7 +2,7 @@ modalID: 1
 title: Quizme
 date: 2018-10-18
 img: quizme_sample.png
-imgicon: quizme.png
+imgicon: learn_anything.png
 caption: learn anything and make it stick using a spaced repetition quizzing tool
 client: Personal (See Code on Github)
 clientLink: "https://github.com/pchhina/quizme"

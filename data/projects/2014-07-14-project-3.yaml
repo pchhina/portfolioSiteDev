@@ -2,7 +2,7 @@ modalID: 3
 title: R Data Explorer
 date: 2017-03-23
 img: rdata.png
-imgicon: dataexp_1.png
+imgicon: explore_r_data.png
 caption: explore built-in R datasets with ease
 client: Personal (See Code on Github)
 clientLink: "https://github.com/pchhina/rdataexplorer"

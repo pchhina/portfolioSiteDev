@@ -1,0 +1,10 @@
+modalID: 5
+title: Stopwatch
+date: 2019-06-13
+img: stopwatch_gui.png
+imgicon: stopwatch_icon.png
+caption: stopwatch and fun little game of testing your reflexes!
+client: Personal (See Code on Github)
+clientLink: "https://github.com/pchhina/interactive-programming/tree/master/stopwatch"
+category: Interactive Programming, Games
+description: A stopwatch built with python library, tkinter. Time is displayed to tenth of a second precision. Beyond the basic stopwatch functionality, a game-mode can be toggled on/off with a checkbox at the bottom. This allows the user to play a game where a player scores a point each time they could stop on a whole second.

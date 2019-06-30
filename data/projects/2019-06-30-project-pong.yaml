@@ -1,0 +1,10 @@
+modalID: 6
+title: Pong
+date: 2019-06-30
+img: pong_gui.png
+imgicon: pong_icon.png
+caption: Python version of the classic game of pong
+client: Personal (See Code on Github)
+clientLink: "https://github.com/pchhina/interactive-programming/tree/master/pong"
+category: Interactive Programming, Games
+description: Game of pong built using Tkinter. If the ball hits the gutter instead of paddle, the opponent scores a point. If the player is successful at blocking the ball with paddle, the ball bounces off the paddle towards the opponent at a slightly higher speed. Key pairs (f, d) and (j, k) are used to move both paddles to make contact with the ball.
